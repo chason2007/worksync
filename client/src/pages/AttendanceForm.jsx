@@ -1,13 +1,19 @@
 import { useState } from 'react';
 import axios from 'axios';
 
-function AttendanceForm({ userId }) {
+function AttendanceForm() {
     const [status, setStatus] = useState('Present');
+    const user = JSON.parse(localStorage.getItem('user'));
 
     const markAttendance = async () => {
+        if (!user || !user.id) {
+            alert('User not found. Please log in.');
+            return;
+        }
+
         try {
             await axios.post('http://localhost:5000/api/attendance/mark', {
-                userId,
+                userId: user.id,
                 status
             });
             alert('Attendance Marked!');

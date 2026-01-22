@@ -4,11 +4,7 @@ function Dashboard() {
     return (
         <div>
             <h1>Employee Portal Dashboard</h1>
-            <nav>
-                <ul>
-                    <li><Link to="/attendance">Mark Attendance</Link></li>
-                </ul>
-            </nav>
+            <p>Welcome to the Employee Portal.</p>
         </div>
     );
 }

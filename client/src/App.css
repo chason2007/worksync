@@ -1,0 +1,30 @@
+/* App.css */
+.app-container {
+  padding: 20px;
+}
+
+nav {
+  margin-bottom: 20px;
+  padding: 10px;
+  background: #f0f0f0;
+}
+
+nav a {
+  margin-right: 10px;
+  text-decoration: none;
+  color: #333;
+}
+
+.auth-container {
+  max-width: 300px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.auth-container input {
+  padding: 8px;
+  margin-bottom: 10px;
+  width: 100%;
+}
