@@ -50,4 +50,18 @@ router.delete('/users/:id', verify, async (req, res) => {
     }
 });
 
+const Leave = require('../models/Leave');
+
+// DELETE ALL LEAVES
+router.delete('/leaves', verify, async (req, res) => {
+    if (req.user.role !== 'Admin') return res.status(403).send('Access Denied');
+
+    try {
+        const result = await Leave.deleteMany({});
+        res.json({ message: `Deleted ${result.deletedCount} leave requests.` });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 module.exports = router;

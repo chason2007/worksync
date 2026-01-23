@@ -29,28 +29,45 @@ function Login() {
     };
 
     return (
-        <div className="auth-container">
-            <h2>Login</h2>
-            <form onSubmit={handleLogin}>
-                <input
-                    type="email"
-                    placeholder="Email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                />
-                <input
-                    type="password"
-                    placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                />
-                <button type="submit">Login</button>
-            </form>
-            <p>
-                Don't have an account? <Link to="/register">Register</Link>
-            </p>
+        <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            minHeight: 'calc(100vh - 80px)',
+            padding: '1rem'
+        }}>
+            <div className="card" style={{ width: '100%', maxWidth: '400px', margin: '0' }}>
+                <h2 style={{ textAlign: 'center', marginBottom: '2rem' }}>Welcome Back</h2>
+                <form onSubmit={handleLogin} className="flex flex-col gap-4">
+                    <div>
+                        <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>Email</label>
+                        <input
+                            type="email"
+                            placeholder="name@company.com"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>Password</label>
+                        <input
+                            type="password"
+                            placeholder="••••••••"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                        />
+                    </div>
+
+                    <button type="submit" className="btn btn-primary" style={{ marginTop: '0.5rem', width: '100%' }}>
+                        Sign In
+                    </button>
+                </form>
+                <p style={{ textAlign: 'center', marginTop: '1.5rem', color: 'var(--pk-text-muted)', fontSize: '0.95rem' }}>
+                    Don't have an account? <Link to="/register" style={{ fontWeight: '600', color: 'var(--pk-primary)' }}>Create account</Link>
+                </p>
+            </div>
         </div>
     );
 }

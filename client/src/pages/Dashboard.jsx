@@ -6,14 +6,10 @@ function Dashboard() {
     const { user } = useAuth();
 
     if (!user) {
-        return <div>Loading...</div>;
+        return <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20vh' }}>Loading user data...</div>;
     }
 
-    if (user.role === 'Admin') {
-        return <AdminDashboard />;
-    }
-
-    return <EmployeeDashboard user={user} />;
+    return user.role === 'Admin' ? <AdminDashboard /> : <EmployeeDashboard user={user} />;
 }
 
 export default Dashboard;

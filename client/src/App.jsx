@@ -3,29 +3,22 @@ import Dashboard from './pages/Dashboard';
 import AttendanceForm from './pages/AttendanceForm';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import Settings from './pages/Settings';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import './App.css';
 
+import Header from './components/Header';
+
 function AppRoutes() {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
 
   return (
     <div className="app-container">
-      <nav>
-        {user ? (
-          <>
-            <Link to="/">Home</Link> | <Link to="/attendance">Attendance</Link> |
-            <button onClick={logout} style={{ marginLeft: '10px' }}>Logout</button>
-          </>
-        ) : (
-          <>
-            <Link to="/login">Login</Link> | <Link to="/register">Register</Link>
-          </>
-        )}
-      </nav>
+      <Header />
       <Routes>
         <Route path="/" element={user ? <Dashboard /> : <Navigate to="/login" />} />
         <Route path="/attendance" element={user ? <AttendanceForm /> : <Navigate to="/login" />} />
+        <Route path="/settings" element={user?.role === 'Admin' ? <Settings /> : <Navigate to="/" />} />
         <Route path="/login" element={user ? <Navigate to="/" /> : <Login />} />
         <Route path="/register" element={user ? <Navigate to="/" /> : <Register />} />
       </Routes>
