@@ -1,12 +1,19 @@
-import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import AdminDashboard from '../components/AdminDashboard';
+import EmployeeDashboard from '../components/EmployeeDashboard';
 
 function Dashboard() {
-    return (
-        <div>
-            <h1>Employee Portal Dashboard</h1>
-            <p>Welcome to the Employee Portal.</p>
-        </div>
-    );
+    const { user } = useAuth();
+
+    if (!user) {
+        return <div>Loading...</div>;
+    }
+
+    if (user.role === 'Admin') {
+        return <AdminDashboard />;
+    }
+
+    return <EmployeeDashboard user={user} />;
 }
 
 export default Dashboard;

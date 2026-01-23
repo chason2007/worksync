@@ -5,6 +5,7 @@ const bcrypt = require('bcryptjs');
 
 // REGISTER (Create a new user)
 router.post('/register', async (req, res) => {
+    console.log("Register endpoint hit with body:", req.body);
     try {
         // 1. Check if user already exists
         const emailExist = await User.findOne({ email: req.body.email });
@@ -27,7 +28,8 @@ router.post('/register', async (req, res) => {
         res.send({ user: savedUser._id });
 
     } catch (err) {
-        res.status(400).send(err);
+        console.error("REGISTER ERROR:", err);
+        res.status(400).json({ error: err.message, stack: err.stack });
     }
 });
 
@@ -61,6 +63,7 @@ router.post('/login', async (req, res) => {
         });
 
     } catch (err) {
+        console.error("LOGIN ERROR:", err);
         res.status(500).send(err.message);
     }
 });

@@ -1,38 +1,60 @@
 const express = require('express');
 const router = express.Router();
 const Leave = require('../models/Leave');
-// Import the middleware
-const { verifyToken, isAdmin } = require('../middleware/auth');
+const verify = require('./verifyToken');
 
-// PUBLIC ROUTE: Submit a leave request (Any logged-in user)
-router.post('/request', verifyToken, async (req, res) => {
-    const newLeave = new Leave({
-        userId: req.user._id, // Taken from the token!
-        reason: req.body.reason,
-        dates: req.body.dates,
-        status: 'Pending'
-    });
-
+// GET ALL LEAVES (or just user's)
+router.get('/', verify, async (req, res) => {
     try {
-        const savedLeave = await newLeave.save();
-        res.json(savedLeave);
+        let query = {};
+        // If not admin, only show own leaves
+        if (req.user.role !== 'Admin') {
+            query.userId = req.user._id;
+        }
+
+        const leaves = await Leave.find(query).populate('userId', 'name email role').sort({ createdAt: -1 });
+        res.json(leaves);
     } catch (err) {
-        res.status(400).send(err);
+        res.status(500).json({ error: err.message });
     }
 });
 
-// ADMIN ROUTE: Approve/Reject leave (Only Admins)
-// Notice we pass BOTH middleware functions
-router.put('/approve/:id', verifyToken, isAdmin, async (req, res) => {
+// SUBMIT LEAVE REQUEST
+router.post('/', verify, async (req, res) => {
     try {
-        const leave = await Leave.findByIdAndUpdate(
-            req.params.id,
-            { status: req.body.status }, // e.g., "Approved" or "Rejected"
-            { new: true }
-        );
-        res.json(leave);
+        const { reason, startDate, endDate } = req.body;
+        const newLeave = new Leave({
+            userId: req.user._id, // From token
+            reason,
+            startDate,
+            endDate
+        });
+        const savedLeave = await newLeave.save();
+        res.status(201).json(savedLeave);
     } catch (err) {
-        res.status(400).send(err);
+        res.status(400).json({ error: err.message });
+    }
+});
+
+// APPROVE/REJECT LEAVE (Admin Only)
+router.put('/:id', verify, async (req, res) => {
+    if (req.user.role !== 'Admin') return res.status(403).send('Access Denied');
+
+    try {
+        const { status } = req.body; // 'Approved' or 'Rejected'
+        if (!['Approved', 'Rejected'].includes(status)) {
+            return res.status(400).json({ error: "Invalid status update" });
+        }
+
+        const updatedLeave = await Leave.findByIdAndUpdate(
+            req.params.id,
+            { status: status },
+            { new: true }
+        ).populate('userId', 'name email');
+
+        res.json(updatedLeave);
+    } catch (err) {
+        res.status(400).json({ error: err.message });
     }
 });
 
