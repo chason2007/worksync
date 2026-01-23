@@ -47,7 +47,13 @@ function AdminDashboard() {
 
                 // Fetch Users
                 const usersRes = await axios.get('http://localhost:5001/api/admin/users', { headers: { 'auth-token': token } });
-                setUsers(usersRes.data);
+                // Sort users: Admin first, then Employee
+                const sortedUsers = usersRes.data.sort((a, b) => {
+                    if (a.role === 'Admin' && b.role !== 'Admin') return -1;
+                    if (a.role !== 'Admin' && b.role === 'Admin') return 1;
+                    return 0;
+                });
+                setUsers(sortedUsers);
 
                 // Fetch Leaves
                 const leavesRes = await axios.get('http://localhost:5001/api/leaves', { headers: { 'auth-token': token } });
