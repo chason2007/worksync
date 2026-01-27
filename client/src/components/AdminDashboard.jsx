@@ -19,6 +19,9 @@ function AdminDashboard() {
     const [resetUserName, setResetUserName] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [resetLoading, setResetLoading] = useState(false);
+    const [editingAttendance, setEditingAttendance] = useState(null);
+    const [editAttendanceStatus, setEditAttendanceStatus] = useState('');
+    const [showEditAttendanceModal, setShowEditAttendanceModal] = useState(false);
     const [modalConfig, setModalConfig] = useState({ isOpen: false, title: '', message: '', onConfirm: null });
     const { showToast } = useToast();
 
@@ -245,6 +248,41 @@ function AdminDashboard() {
     const copyToClipboard = () => {
         navigator.clipboard.writeText(newPassword);
         showToast('Password copied to clipboard!', 'success');
+    };
+
+    // Edit Attendance Handlers
+    const openEditAttendanceModal = (log) => {
+        setEditingAttendance(log);
+        setEditAttendanceStatus(log.status);
+        setShowEditAttendanceModal(true);
+    };
+
+    const handleUpdateAttendance = async () => {
+        if (!editingAttendance) return;
+
+        try {
+            const token = localStorage.getItem('auth-token');
+            await axios.put(`http://localhost:5001/api/attendance/${editingAttendance._id}`, {
+                status: editAttendanceStatus
+            }, {
+                headers: { 'auth-token': token }
+            });
+
+            showToast(`Attendance updated for ${editingAttendance.userId?.name || 'User'}`, 'success');
+            setShowEditAttendanceModal(false);
+            setEditingAttendance(null);
+
+            // Refresh logs
+            const attendanceUrl = selectedDate
+                ? `http://localhost:5001/api/attendance?date=${selectedDate}`
+                : 'http://localhost:5001/api/attendance';
+            const attendanceRes = await axios.get(attendanceUrl, { headers: { 'auth-token': token } });
+            setAttendanceLogs(attendanceRes.data);
+
+        } catch (err) {
+            console.error('Update attendance error:', err);
+            showToast(err.response?.data?.error || 'Failed to update attendance', 'error');
+        }
     };
 
     // Calculate stats
@@ -530,6 +568,7 @@ function AdminDashboard() {
                                 <th>Email</th>
                                 <th>Date/Time</th>
                                 <th>Status</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -542,13 +581,33 @@ function AdminDashboard() {
                                         </div>
                                     </td>
                                     <td>{log.userId?.email || 'N/A'}</td>
-                                    <td>{new Date(log.date).toLocaleString()}</td>
                                     <td>
-                                        <span className="badge badge-success">{log.status}</span>
+                                        <div>{new Date(log.date).toLocaleString()}</div>
+                                        {(log.modifiedBy || log.modifiedAt) && (
+                                            <div style={{ fontSize: '0.75rem', color: 'var(--pk-text-muted)', marginTop: '2px' }}>
+                                                Edited {log.modifiedAt && new Date(log.modifiedAt).toLocaleDateString()}
+                                            </div>
+                                        )}
+                                    </td>
+                                    <td>
+                                        <span className={`badge ${log.status === 'Present' ? 'badge-success' :
+                                            log.status === 'Half-day' ? 'badge-warning' : 'badge-danger'
+                                            }`}>
+                                            {log.status}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <button
+                                            onClick={() => openEditAttendanceModal(log)}
+                                            className="btn btn-ghost"
+                                            style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem', color: 'var(--pk-primary)', borderColor: 'var(--pk-primary)' }}
+                                        >
+                                            Edit
+                                        </button>
                                     </td>
                                 </tr>
                             ))}
-                            {attendanceLogs.length === 0 && <tr><td colSpan="4" style={{ textAlign: 'center' }}>No attendance records found for this date.</td></tr>}
+                            {attendanceLogs.length === 0 && <tr><td colSpan="5" style={{ textAlign: 'center' }}>No attendance records found for this date.</td></tr>}
                         </tbody>
                     </table>
                 </div>
@@ -636,6 +695,70 @@ function AdminDashboard() {
                                 disabled={resetLoading || !newPassword}
                             >
                                 {resetLoading ? 'Resetting...' : 'Reset Password'}
+                            </button>
+                        </div>
+                    </div>
+                </>
+            )}
+            {/* Edit Attendance Modal */}
+            {showEditAttendanceModal && editingAttendance && (
+                <>
+                    <div
+                        className="modal-backdrop"
+                        onClick={() => setShowEditAttendanceModal(false)}
+                    />
+                    <div className="modal">
+                        <div className="modal-header">
+                            <h3>Edit Attendance</h3>
+                            <button
+                                className="modal-close"
+                                onClick={() => setShowEditAttendanceModal(false)}
+                            >
+                                ✕
+                            </button>
+                        </div>
+                        <div className="modal-body">
+                            <p style={{ marginBottom: '1rem', color: 'var(--pk-text-muted)' }}>
+                                Updating attendance for <strong>{editingAttendance.userId?.name}</strong>
+                                <br />
+                                <span style={{ fontSize: '0.9rem' }}>
+                                    Original Date: {new Date(editingAttendance.date).toLocaleString()}
+                                </span>
+                            </p>
+                            <div>
+                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
+                                    Status
+                                </label>
+                                <div className="status-grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem' }}>
+                                    {['Present', 'Half-day', 'Absent'].map((status) => (
+                                        <div
+                                            key={status}
+                                            className={`status-card ${editAttendanceStatus === status ? 'selected' : ''}`}
+                                            onClick={() => setEditAttendanceStatus(status)}
+                                            style={{ padding: '0.75rem', fontSize: '0.9rem', minHeight: 'auto' }}
+                                        >
+                                            <div style={{ textAlign: 'center' }}>
+                                                {status === 'Present' ? '✅' : status === 'Half-day' ? '⏰' : '❌'} {status}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                        <div className="modal-footer">
+                            <button
+                                type="button"
+                                onClick={() => setShowEditAttendanceModal(false)}
+                                className="btn btn-ghost"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="button"
+                                onClick={handleUpdateAttendance}
+                                className="btn btn-primary"
+                            >
+                                Update Attendance
                             </button>
                         </div>
                     </div>

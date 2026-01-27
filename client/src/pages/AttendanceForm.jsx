@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import Toast from '../components/Toast';
+import { useToast } from '../context/ToastContext';
 
 function AttendanceForm() {
     const [status, setStatus] = useState('Present');
@@ -8,7 +9,9 @@ function AttendanceForm() {
     const [toast, setToast] = useState(null);
     const [currentTime, setCurrentTime] = useState(new Date());
     const [attendanceHistory, setAttendanceHistory] = useState([]);
-    const [todayStatus, setTodayStatus] = useState(null);
+    const [todayAttendance, setTodayAttendance] = useState(null);
+    const [hasSubmittedToday, setHasSubmittedToday] = useState(false);
+    const { showToast } = useToast();
     const user = JSON.parse(localStorage.getItem('user'));
 
     // Update current time every second
@@ -20,10 +23,30 @@ function AttendanceForm() {
         return () => clearInterval(timer);
     }, []);
 
-    // Fetch attendance history on mount
+    // Fetch attendance history and check today's status on mount
     useEffect(() => {
+        checkTodayAttendance();
         fetchAttendanceHistory();
     }, []);
+
+    const checkTodayAttendance = async () => {
+        if (!user || !user.id) return;
+
+        try {
+            const token = localStorage.getItem('auth-token');
+            const response = await axios.get(
+                `http://localhost:5001/api/attendance/today/${user.id}`,
+                { headers: { 'auth-token': token } }
+            );
+
+            if (response.data.hasAttendance) {
+                setHasSubmittedToday(true);
+                setTodayAttendance(response.data.attendance);
+            }
+        } catch (error) {
+            console.error('Failed to check today\'s attendance:', error);
+        }
+    };
 
     const fetchAttendanceHistory = async () => {
         if (!user || !user.id) return;
@@ -32,13 +55,6 @@ function AttendanceForm() {
             const response = await axios.get(`http://localhost:5001/api/attendance/user/${user.id}`);
             const records = response.data || [];
             setAttendanceHistory(records.slice(0, 7)); // Last 7 days
-
-            // Check if already marked today
-            const today = new Date().toISOString().split('T')[0];
-            const todayRecord = records.find(record =>
-                new Date(record.date).toISOString().split('T')[0] === today
-            );
-            setTodayStatus(todayRecord?.status || null);
         } catch (error) {
             console.error('Failed to fetch attendance history:', error);
         }
@@ -46,21 +62,33 @@ function AttendanceForm() {
 
     const markAttendance = async () => {
         if (!user || !user.id) {
-            setToast({ message: 'User not found. Please log in.', type: 'error' });
+            showToast('User not found. Please log in.', 'error');
+            return;
+        }
+
+        if (hasSubmittedToday) {
+            showToast('You have already submitted attendance for today', 'error');
             return;
         }
 
         setLoading(true);
         try {
+            const token = localStorage.getItem('auth-token');
             await axios.post('http://localhost:5001/api/attendance/mark', {
                 userId: user.id,
                 status
+            }, {
+                headers: { 'auth-token': token }
             });
-            setToast({ message: 'Attendance marked successfully!', type: 'success' });
+
+            showToast('Attendance marked successfully!', 'success');
+            setHasSubmittedToday(true);
+            checkTodayAttendance(); // Refresh today's status
             fetchAttendanceHistory(); // Refresh history
         } catch (error) {
-            console.error(error);
-            setToast({ message: 'Failed to mark attendance', type: 'error' });
+            console.error('Mark attendance error:', error);
+            const errorMessage = error.response?.data?.error || 'Failed to mark attendance';
+            showToast(errorMessage, 'error');
         } finally {
             setLoading(false);
         }
@@ -146,20 +174,38 @@ function AttendanceForm() {
             {/* Mark Attendance Section */}
             <div className="card">
                 <h3 style={{ marginBottom: '1.5rem' }}>
-                    {todayStatus ? '✓ Already Marked Today' : 'Mark Your Attendance'}
+                    {hasSubmittedToday ? '✓ Attendance Already Submitted' : 'Mark Your Attendance'}
                 </h3>
 
-                {todayStatus && (
+                {hasSubmittedToday && todayAttendance && (
                     <div style={{
-                        padding: '1rem',
+                        padding: '1.5rem',
                         background: 'var(--pk-bg)',
-                        borderRadius: 'var(--pk-radius-sm)',
+                        borderRadius: 'var(--pk-radius)',
                         marginBottom: '1.5rem',
-                        textAlign: 'center'
+                        border: '2px solid var(--pk-primary-light)'
                     }}>
-                        <p style={{ margin: 0, color: 'var(--pk-text-muted)' }}>
-                            Today's Status: <span className={`badge ${getStatusBadgeClass(todayStatus)}`}>{todayStatus}</span>
-                        </p>
+                        <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
+                            <p style={{ margin: '0 0 0.5rem 0', color: 'var(--pk-text-muted)', fontSize: '0.9rem' }}>
+                                Today's Status
+                            </p>
+                            <span className={`badge ${getStatusBadgeClass(todayAttendance.status)}`} style={{ fontSize: '1rem', padding: '0.5rem 1rem' }}>
+                                {todayAttendance.status}
+                            </span>
+                        </div>
+                        <div style={{ textAlign: 'center', fontSize: '0.85rem', color: 'var(--pk-text-muted)' }}>
+                            Submitted at {new Date(todayAttendance.date).toLocaleTimeString()}
+                        </div>
+                        <div style={{
+                            marginTop: '1rem',
+                            padding: '0.75rem',
+                            background: 'var(--pk-warning-light)',
+                            borderRadius: 'var(--pk-radius-sm)',
+                            textAlign: 'center',
+                            fontSize: '0.9rem'
+                        }}>
+                            ℹ️ You can only submit attendance once per day. Contact an administrator if changes are needed.
+                        </div>
                     </div>
                 )}
 
@@ -167,8 +213,12 @@ function AttendanceForm() {
                     {statusOptions.map((option) => (
                         <div
                             key={option.value}
-                            className={`status-card ${status === option.value ? 'selected' : ''}`}
-                            onClick={() => setStatus(option.value)}
+                            className={`status-card ${status === option.value ? 'selected' : ''} ${hasSubmittedToday ? 'disabled' : ''}`}
+                            onClick={() => !hasSubmittedToday && setStatus(option.value)}
+                            style={{
+                                cursor: hasSubmittedToday ? 'not-allowed' : 'pointer',
+                                opacity: hasSubmittedToday ? 0.5 : 1
+                            }}
                         >
                             <span className="status-card-icon">{option.emoji}</span>
                             <h4 className="status-card-title">{option.label}</h4>
