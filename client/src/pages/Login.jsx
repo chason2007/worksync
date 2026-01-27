@@ -1,16 +1,22 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 
 function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
+    const [loading, setLoading] = useState(false);
     const { login } = useAuth();
     const navigate = useNavigate();
+    const { showToast } = useToast();
 
     const handleLogin = async (e) => {
         e.preventDefault();
+        setLoading(true);
+
         try {
             const res = await axios.post('http://localhost:5001/api/auth/login', {
                 email,
@@ -19,51 +25,129 @@ function Login() {
 
             // Update context state
             login(res.data.token, res.data.user);
+            showToast('Login successful! Welcome back.', 'success');
 
             // Redirect to dashboard
             navigate('/');
         } catch (err) {
             console.error(err);
-            alert(err.response?.data || 'Login Failed');
+            showToast(err.response?.data || 'Login failed. Please check your credentials.', 'error');
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
-        <div style={{
+        <div className="fade-in" style={{
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
             minHeight: 'calc(100vh - 80px)',
-            padding: '1rem'
+            padding: '1rem',
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            position: 'relative',
+            overflow: 'hidden'
         }}>
-            <div className="card" style={{ width: '100%', maxWidth: '400px', margin: '0' }}>
-                <h2 style={{ textAlign: 'center', marginBottom: '2rem' }}>Welcome Back</h2>
+            {/* Animated Background Pattern */}
+            <div style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                opacity: 0.1,
+                backgroundImage: 'radial-gradient(circle at 20% 50%, white 1px, transparent 1px), radial-gradient(circle at 80% 80%, white 1px, transparent 1px)',
+                backgroundSize: '50px 50px',
+                animation: 'pulse 4s ease-in-out infinite'
+            }}></div>
+
+            <div className="card" style={{
+                width: '100%',
+                maxWidth: '420px',
+                margin: '0',
+                position: 'relative',
+                zIndex: 1
+            }}>
+                {/* Logo */}
+                <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+                    <img
+                        src="/worksync-logo.png"
+                        alt="WorkSync Logo"
+                        style={{
+                            width: '80px',
+                            height: '80px',
+                            marginBottom: '1rem'
+                        }}
+                    />
+                    <h2 style={{ marginBottom: '0.5rem' }}>Welcome Back</h2>
+                    <p style={{ color: 'var(--pk-text-muted)', fontSize: '0.95rem' }}>
+                        Sign in to your account to continue
+                    </p>
+                </div>
+
                 <form onSubmit={handleLogin} className="flex flex-col gap-4">
+                    {/* Email Input */}
                     <div>
-                        <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>Email</label>
-                        <input
-                            type="email"
-                            placeholder="name@company.com"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>Password</label>
-                        <input
-                            type="password"
-                            placeholder="••••••••"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                        />
+                        <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
+                            Email Address
+                        </label>
+                        <div className="input-group">
+                            <span className="input-icon">📧</span>
+                            <input
+                                type="email"
+                                placeholder="name@company.com"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                                disabled={loading}
+                            />
+                        </div>
                     </div>
 
-                    <button type="submit" className="btn btn-primary" style={{ marginTop: '0.5rem', width: '100%' }}>
-                        Sign In
+                    {/* Password Input */}
+                    <div>
+                        <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
+                            Password
+                        </label>
+                        <div className="input-group">
+                            <span className="input-icon">🔒</span>
+                            <input
+                                type={showPassword ? 'text' : 'password'}
+                                placeholder="••••••••"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                                disabled={loading}
+                                style={{ paddingRight: '2.5rem' }}
+                            />
+                            <span
+                                className="input-icon-right"
+                                onClick={() => setShowPassword(!showPassword)}
+                                title={showPassword ? 'Hide password' : 'Show password'}
+                            >
+                                {showPassword ? '👁️' : '👁️‍🗨️'}
+                            </span>
+                        </div>
+                    </div>
+
+                    <button
+                        type="submit"
+                        className={`btn btn-primary ${loading ? 'loading' : ''}`}
+                        disabled={loading}
+                        style={{ marginTop: '0.5rem', width: '100%' }}
+                    >
+                        {loading ? 'Signing in...' : 'Sign In'}
                     </button>
                 </form>
+
+                <div style={{
+                    marginTop: '1.5rem',
+                    textAlign: 'center',
+                    fontSize: '0.9rem',
+                    color: 'var(--pk-text-muted)'
+                }}>
+                    <p>Secure login powered by WorkSync</p>
+                </div>
             </div>
         </div>
     );

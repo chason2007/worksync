@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import AddUser from './pages/AddUser';
 import Settings from './pages/Settings';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { ToastProvider } from './context/ToastContext';
 import './App.css';
 
 import Header from './components/Header';
@@ -30,9 +31,11 @@ function AppRoutes() {
 function App() {
   return (
     <AuthProvider>
-      <Router>
-        <AppRoutes />
-      </Router>
+      <ToastProvider>
+        <Router>
+          <AppRoutes />
+        </Router>
+      </ToastProvider>
     </AuthProvider>
   );
 }
