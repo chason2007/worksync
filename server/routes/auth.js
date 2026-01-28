@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const User = require('../models/User');
-const PasswordReset = require('../models/PasswordReset');
+
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
@@ -16,47 +16,7 @@ router.get('/user', verify, async (req, res) => {
     }
 });
 
-// FORGOT PASSWORD (Create password reset request)
-router.post('/forgot-password', async (req, res) => {
-    try {
-        let { email } = req.body;
-        if (!email) return res.status(400).json({ error: 'Email is required' });
 
-        email = email.trim().toLowerCase();
-
-        // Check if user exists
-        const user = await User.findOne({ email });
-        if (!user) {
-            return res.status(404).json({ error: 'No account found with this email address' });
-        }
-
-        // Check if there's already a pending request
-        const existingRequest = await PasswordReset.findOne({
-            userId: user._id,
-            status: 'Pending'
-        });
-
-        if (existingRequest) {
-            return res.status(400).json({ error: 'A password reset request is already pending for this account' });
-        }
-
-        // Create password reset request
-        const resetRequest = new PasswordReset({
-            userId: user._id,
-            email: user.email
-        });
-
-        await resetRequest.save();
-
-        res.json({
-            message: 'Password reset request submitted successfully. An administrator will reset your password shortly.'
-        });
-
-    } catch (err) {
-        console.error('Forgot password error:', err);
-        res.status(500).json({ error: err.message });
-    }
-});
 
 // REGISTER (Create a new user)
 router.post('/register', async (req, res) => {

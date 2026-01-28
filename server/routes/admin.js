@@ -2,26 +2,14 @@ const router = require('express').Router();
 const User = require('../models/User');
 const Attendance = require('../models/Attendance');
 const Leave = require('../models/Leave');
-const PasswordReset = require('../models/PasswordReset');
+
 const verify = require('./verifyToken');
 const upload = require('../middleware/upload');
 const bcrypt = require('bcryptjs');
 const path = require('path');
 const fs = require('fs');
 
-// GET ALL PASSWORD RESET REQUESTS
-router.get('/password-resets', verify, async (req, res) => {
-    if (req.user.role !== 'Admin') return res.status(403).send('Access Denied');
-    try {
-        const requests = await PasswordReset.find()
-            .populate('userId', 'name email profileImage')
-            .populate('completedBy', 'name')
-            .sort({ requestDate: -1 });
-        res.json(requests);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
+
 
 // RESET USER PASSWORD
 router.put('/users/:id/reset-password', verify, async (req, res) => {
@@ -53,27 +41,7 @@ router.put('/users/:id/reset-password', verify, async (req, res) => {
     }
 });
 
-// COMPLETE PASSWORD RESET REQUEST
-router.post('/password-resets/:id/complete', verify, async (req, res) => {
-    if (req.user.role !== 'Admin') return res.status(403).send('Access Denied');
-    try {
-        const request = await PasswordReset.findByIdAndUpdate(
-            req.params.id,
-            {
-                status: 'Completed',
-                completedBy: req.user._id,
-                completedDate: new Date()
-            },
-            { new: true }
-        ).populate('userId', 'name email profileImage');
 
-        if (!request) return res.status(404).send('Request not found');
-
-        res.json({ message: 'Request marked as completed', request });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
 
 // UPLOAD PROFILE IMAGE
 router.post('/users/:id/upload-image', verify, upload.single('profileImage'), async (req, res) => {
