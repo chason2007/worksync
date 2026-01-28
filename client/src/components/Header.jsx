@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import Avatar from './Avatar';
+import ThemeToggle from './ThemeToggle';
 
 function Header() {
     const { user, logout } = useAuth();
@@ -90,7 +91,8 @@ function Header() {
                 </div>
 
                 {/* Right Side - User / Auth Buttons */}
-                <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+                    <ThemeToggle />
                     {user ? (
                         <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
                             {/* Notification Bell (placeholder) */}
