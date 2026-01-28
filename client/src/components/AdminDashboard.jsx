@@ -6,6 +6,7 @@ import ConfirmModal from './ConfirmModal';
 import Avatar from './Avatar';
 import Skeleton from './Skeleton';
 import EmptyState from './EmptyState';
+import StatusBadge from './StatusBadge';
 
 function AdminDashboard() {
     const { user: currentUser } = useAuth();
@@ -469,7 +470,7 @@ function AdminDashboard() {
                                                         </div>
                                                     </td>
                                                     <td>{u.email}</td>
-                                                    <td><span className={`badge ${u.role === 'Admin' ? 'badge-primary' : 'badge-warning'}`}>{u.role}</span></td>
+                                                    <td><StatusBadge status={u.role} /></td>
                                                     <td>
                                                         {/* Show actions if user is Employee OR if current user is Super Admin covering an Admin */}
                                                         {(u.role !== 'Admin' || (currentUser && currentUser.email === 'admin@worksync.com')) && (
@@ -544,9 +545,7 @@ function AdminDashboard() {
                                     <td>{l.reason}</td>
                                     <td>{new Date(l.startDate).toLocaleDateString()} - {new Date(l.endDate).toLocaleDateString()}</td>
                                     <td>
-                                        <span className={`badge ${l.status === 'Approved' ? 'badge-success' : l.status === 'Rejected' ? 'badge-danger' : 'badge-warning'}`}>
-                                            {l.status}
-                                        </span>
+                                        <StatusBadge status={l.status} />
                                     </td>
                                     <td>
                                         {l.status === 'Pending' && (
@@ -607,9 +606,7 @@ function AdminDashboard() {
                                     <td>{request.email}</td>
                                     <td>{new Date(request.requestDate).toLocaleString()}</td>
                                     <td>
-                                        <span className={`badge ${request.status === 'Pending' ? 'badge-warning' : 'badge-success'}`}>
-                                            {request.status}
-                                        </span>
+                                        <StatusBadge status={request.status} />
                                     </td>
                                     <td>
                                         {request.status === 'Pending' && (
@@ -697,11 +694,7 @@ function AdminDashboard() {
                                         )}
                                     </td>
                                     <td>
-                                        <span className={`badge ${log.status === 'Present' ? 'badge-success' :
-                                            log.status === 'Half-day' ? 'badge-warning' : 'badge-danger'
-                                            }`}>
-                                            {log.status}
-                                        </span>
+                                        <StatusBadge status={log.status} />
                                     </td>
                                     <td>
                                         <button

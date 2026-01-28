@@ -9,16 +9,25 @@ function Header() {
     const navigate = useNavigate();
     const location = useLocation();
     const [showDropdown, setShowDropdown] = useState(false);
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
 
     const handleLogout = () => {
         logout();
         navigate('/login');
         setShowDropdown(false);
+        setMobileMenuOpen(false);
     };
 
     const isActive = (path) => {
         return location.pathname === path;
     };
+
+    const toggleMobileMenu = () => {
+        setMobileMenuOpen(!mobileMenuOpen);
+    };
+
+
 
     return (
         <header style={{
@@ -37,7 +46,26 @@ function Header() {
                 justifyContent: 'space-between',
                 alignItems: 'center'
             }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                    {/* Mobile Menu Button - Visible only on mobile via CSS (we'll add class) */}
+                    {user && (
+                        <button
+                            className="mobile-menu-btn"
+                            onClick={toggleMobileMenu}
+                            style={{
+                                background: 'none',
+                                border: 'none',
+                                fontSize: '1.5rem',
+                                cursor: 'pointer',
+                                padding: '0.25rem',
+                                marginRight: '0.5rem',
+                                display: 'none' // Hidden by default, shown in mobile.css
+                            }}
+                        >
+                            ☰
+                        </button>
+                    )}
+
                     <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', textDecoration: 'none' }}>
                         <img
                             src="/worksync-logo.png"
@@ -51,9 +79,9 @@ function Header() {
                         <h2 style={{ fontSize: '1.25rem', margin: 0, color: 'var(--pk-text-main)' }}>WorkSync</h2>
                     </Link>
 
-                    {/* Navigation - Middle */}
+                    {/* Desktop Navigation */}
                     {user && (
-                        <nav style={{ display: 'flex', gap: '1.5rem' }}>
+                        <nav className="desktop-nav" style={{ display: 'flex', gap: '1.5rem', marginLeft: '1.5rem' }}>
                             <Link
                                 to="/"
                                 className={`nav-link ${isActive('/') ? 'active' : ''}`}
@@ -90,11 +118,11 @@ function Header() {
                     )}
                 </div>
 
-                {/* Right Side - User / Auth Buttons */}
+                {/* Right Side - Same as before */}
                 <div>
                     {user ? (
                         <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-                            {/* Notification Bell (placeholder) */}
+                            {/* Notification Bell */}
                             <div style={{ position: 'relative', cursor: 'pointer' }}>
                                 <span style={{ fontSize: '1.3rem' }}>🔔</span>
                                 <span className="notification-badge">0</span>
@@ -113,8 +141,6 @@ function Header() {
                                         borderRadius: 'var(--pk-radius-sm)',
                                         transition: 'background 0.2s'
                                     }}
-                                    onMouseEnter={(e) => e.currentTarget.style.background = 'var(--pk-bg)'}
-                                    onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
                                 >
                                     <Avatar user={user} size="sm" />
                                     <div className="desktop-only" style={{ textAlign: 'left' }}>
@@ -126,13 +152,10 @@ function Header() {
 
                                 {showDropdown && (
                                     <div className="dropdown-menu">
-
-                                        {user.role === 'Admin' && (
-                                            <Link to="/settings" className="dropdown-item" onClick={() => setShowDropdown(false)}>
-                                                <span>⚙️</span>
-                                                <span>Settings</span>
-                                            </Link>
-                                        )}
+                                        <Link to="/settings" className="dropdown-item" onClick={() => setShowDropdown(false)}>
+                                            <span>⚙️</span>
+                                            <span>Settings</span>
+                                        </Link>
                                         <div className="dropdown-divider"></div>
                                         <div className="dropdown-item" onClick={handleLogout}>
                                             <span>🚪</span>
@@ -150,6 +173,8 @@ function Header() {
                 </div>
             </div>
 
+
+
             {/* Click outside to close dropdown */}
             {showDropdown && (
                 <div
@@ -163,6 +188,51 @@ function Header() {
                         zIndex: 39
                     }}
                 />
+            )}
+            {/* Mobile Menu Overlay */}
+            {mobileMenuOpen && user && (
+                <div className="mobile-menu-overlay" style={{
+                    position: 'fixed',
+                    top: '73px',
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    background: 'var(--pk-surface)',
+                    zIndex: 35,
+                    padding: '1rem',
+                    borderTop: '1px solid var(--pk-border)'
+                }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                        <Link to="/" className="btn" onClick={() => setMobileMenuOpen(false)} style={{ justifyContent: 'flex-start', background: 'transparent', color: 'var(--pk-text-main)', border: 'none' }}>
+                            📊 Dashboard
+                        </Link>
+                        <Link to="/attendance" className="btn" onClick={() => setMobileMenuOpen(false)} style={{ justifyContent: 'flex-start', background: 'transparent', color: 'var(--pk-text-main)', border: 'none' }}>
+                            📅 Attendance
+                        </Link>
+                        {user.role === 'Admin' && (
+                            <>
+                                <Link to="/add-user" className="btn" onClick={() => setMobileMenuOpen(false)} style={{ justifyContent: 'flex-start', background: 'transparent', color: 'var(--pk-text-main)', border: 'none' }}>
+                                    ➕ Add User
+                                </Link>
+                                <Link to="/settings" className="btn" onClick={() => setMobileMenuOpen(false)} style={{ justifyContent: 'flex-start', background: 'transparent', color: 'var(--pk-text-main)', border: 'none' }}>
+                                    ⚙️ Settings
+                                </Link>
+                            </>
+                        )}
+                        <div style={{ padding: '0.5rem', marginTop: '1rem', borderTop: '1px solid var(--pk-border)' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
+                                <Avatar user={user} size="sm" />
+                                <div>
+                                    <div style={{ fontWeight: '600' }}>{user.name}</div>
+                                    <div style={{ fontSize: '0.8rem', color: 'var(--pk-text-muted)' }}>{user.email}</div>
+                                </div>
+                            </div>
+                            <button onClick={handleLogout} className="btn btn-danger" style={{ width: '100%' }}>
+                                Sign Out
+                            </button>
+                        </div>
+                    </div>
+                </div>
             )}
         </header>
     );

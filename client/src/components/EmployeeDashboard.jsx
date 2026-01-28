@@ -4,6 +4,7 @@ import { useToast } from '../context/ToastContext';
 import Avatar from './Avatar';
 import Skeleton from './Skeleton';
 import EmptyState from './EmptyState';
+import StatusBadge from './StatusBadge';
 
 function EmployeeDashboard({ user }) {
     const [pageLoading, setPageLoading] = useState(true);
@@ -215,9 +216,7 @@ function EmployeeDashboard({ user }) {
                                                 <td>{l.reason}</td>
                                                 <td>{new Date(l.startDate).toLocaleDateString()} - {new Date(l.endDate).toLocaleDateString()}</td>
                                                 <td>
-                                                    <span className={`badge ${l.status === 'Approved' ? 'badge-success' : l.status === 'Rejected' ? 'badge-danger' : 'badge-warning'}`}>
-                                                        {l.status}
-                                                    </span>
+                                                    <StatusBadge status={l.status} />
                                                 </td>
                                             </tr>
                                         ))}

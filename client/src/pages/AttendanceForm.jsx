@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import Toast from '../components/Toast';
 import { useToast } from '../context/ToastContext';
+import StatusBadge from '../components/StatusBadge';
 
 function AttendanceForm() {
     const [status, setStatus] = useState('Present');
@@ -111,18 +112,7 @@ function AttendanceForm() {
         });
     };
 
-    const getStatusBadgeClass = (status) => {
-        switch (status) {
-            case 'Present':
-                return 'badge-success';
-            case 'Half-day':
-                return 'badge-warning';
-            case 'Absent':
-                return 'badge-danger';
-            default:
-                return '';
-        }
-    };
+
 
     const statusOptions = [
         { value: 'Present', icon: '✓', label: 'Present', emoji: '✅' },
@@ -189,9 +179,7 @@ function AttendanceForm() {
                             <p style={{ margin: '0 0 0.5rem 0', color: 'var(--pk-text-muted)', fontSize: '0.9rem' }}>
                                 Today's Status
                             </p>
-                            <span className={`badge ${getStatusBadgeClass(todayAttendance.status)}`} style={{ fontSize: '1rem', padding: '0.5rem 1rem' }}>
-                                {todayAttendance.status}
-                            </span>
+                            <StatusBadge status={todayAttendance.status} className="text-lg" />
                         </div>
                         <div style={{ textAlign: 'center', fontSize: '0.85rem', color: 'var(--pk-text-muted)' }}>
                             Submitted at {new Date(todayAttendance.date).toLocaleTimeString()}
@@ -255,9 +243,7 @@ function AttendanceForm() {
                                         <td>{new Date(record.date).toLocaleDateString()}</td>
                                         <td>{new Date(record.date).toLocaleDateString('en-US', { weekday: 'long' })}</td>
                                         <td>
-                                            <span className={`badge ${getStatusBadgeClass(record.status)}`}>
-                                                {record.status}
-                                            </span>
+                                            <StatusBadge status={record.status} />
                                         </td>
                                     </tr>
                                 ))}
