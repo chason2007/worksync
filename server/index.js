@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const attendanceRoutes = require('./routes/attendance');
 const authRoute = require('./routes/auth');
+const path = require('path');
 require('dotenv').config();
 
 const app = express();
@@ -11,7 +12,7 @@ app.use(cors());
 app.use(express.json());
 
 // Serve static files from uploads directory
-app.use('/uploads', express.static('public/uploads'));
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
 app.use((req, res, next) => {
   console.log(`[GLOBAL LOG] ${req.method} ${req.url}`);

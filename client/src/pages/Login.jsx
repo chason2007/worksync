@@ -83,9 +83,7 @@ function Login() {
                         }}
                     />
                     <h2 style={{ marginBottom: '0.5rem' }}>Welcome Back</h2>
-                    <p style={{ color: 'var(--pk-text-muted)', fontSize: '0.95rem' }}>
-                        Sign in to your account to continue
-                    </p>
+
                 </div>
 
                 <form onSubmit={handleLogin} className="flex flex-col gap-4">

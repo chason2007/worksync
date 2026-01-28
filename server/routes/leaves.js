@@ -30,6 +30,8 @@ router.post('/', verify, async (req, res) => {
             endDate
         });
         const savedLeave = await newLeave.save();
+        // Populate user details so frontend can display it immediately
+        await savedLeave.populate('userId', 'name email profileImage');
         res.status(201).json(savedLeave);
     } catch (err) {
         res.status(400).json({ error: err.message });
