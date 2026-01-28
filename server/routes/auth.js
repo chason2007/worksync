@@ -4,6 +4,18 @@ const PasswordReset = require('../models/PasswordReset');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
+const verify = require('./verifyToken');
+
+// GET CURRENT USER
+router.get('/user', verify, async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id).select('-password');
+        res.json(user);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // FORGOT PASSWORD (Create password reset request)
 router.post('/forgot-password', async (req, res) => {
     try {

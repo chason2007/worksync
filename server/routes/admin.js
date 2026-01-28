@@ -14,7 +14,7 @@ router.get('/password-resets', verify, async (req, res) => {
     if (req.user.role !== 'Admin') return res.status(403).send('Access Denied');
     try {
         const requests = await PasswordReset.find()
-            .populate('userId', 'name email')
+            .populate('userId', 'name email profileImage')
             .populate('completedBy', 'name')
             .sort({ requestDate: -1 });
         res.json(requests);
@@ -65,7 +65,7 @@ router.post('/password-resets/:id/complete', verify, async (req, res) => {
                 completedDate: new Date()
             },
             { new: true }
-        ).populate('userId', 'name email');
+        ).populate('userId', 'name email profileImage');
 
         if (!request) return res.status(404).send('Request not found');
 
@@ -167,8 +167,21 @@ router.put('/users/:id', verify, async (req, res) => {
 router.delete('/users/:id', verify, async (req, res) => {
     if (req.user.role !== 'Admin') return res.status(403).send('Access Denied');
     try {
-        const deletedUser = await User.findByIdAndDelete(req.params.id);
-        if (!deletedUser) return res.status(404).send('User not found');
+        // Check if user to be deleted is an admin
+        const userToDelete = await User.findById(req.params.id);
+        if (!userToDelete) return res.status(404).send('User not found');
+
+        if (userToDelete.role === 'Admin') {
+            // Fetch requester's details to check if they are Super Admin
+            const requester = await User.findById(req.user._id);
+            console.log(`[DELETE ADMIN] Req: ${requester ? requester.email : 'Unknown'} vs Target: ${userToDelete.email}`);
+
+            if (!requester || requester.email !== 'admin@worksync.com') {
+                return res.status(403).json({ error: 'Only Super Admin (admin@worksync.com) can delete other Admins.' });
+            }
+        }
+
+        await User.findByIdAndDelete(req.params.id);
         res.json({ message: 'User deleted' });
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -179,7 +192,7 @@ router.delete('/users/:id', verify, async (req, res) => {
 router.delete('/users', verify, async (req, res) => {
     if (req.user.role !== 'Admin') return res.status(403).send('Access Denied');
     try {
-        const result = await User.deleteMany({ email: { $ne: 'admin@company.com' } });
+        const result = await User.deleteMany({ email: { $ne: 'admin@worksync.com' } });
         res.json({ message: `Deleted ${result.deletedCount} users.` });
     } catch (err) {
         res.status(500).json({ error: err.message });

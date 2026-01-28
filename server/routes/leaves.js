@@ -12,7 +12,7 @@ router.get('/', verify, async (req, res) => {
             query.userId = req.user._id;
         }
 
-        const leaves = await Leave.find(query).populate('userId', 'name email role').sort({ createdAt: -1 });
+        const leaves = await Leave.find(query).populate('userId', 'name email role profileImage').sort({ createdAt: -1 });
         res.json(leaves);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -50,7 +50,7 @@ router.put('/:id', verify, async (req, res) => {
             req.params.id,
             { status: status },
             { new: true }
-        ).populate('userId', 'name email');
+        ).populate('userId', 'name email profileImage');
 
         res.json(updatedLeave);
     } catch (err) {

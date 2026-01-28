@@ -1,4 +1,5 @@
 import { createContext, useState, useEffect, useContext } from 'react';
+import axios from 'axios';
 
 const AuthContext = createContext(null);
 
@@ -7,19 +8,31 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const token = localStorage.getItem('auth-token');
-        const storedUser = localStorage.getItem('user');
+        const checkLoggedIn = async () => {
+            const token = localStorage.getItem('auth-token');
 
-        if (token && storedUser) {
-            try {
-                setUser(JSON.parse(storedUser));
-            } catch (error) {
-                console.error("Failed to parse user data", error);
-                localStorage.removeItem('auth-token');
-                localStorage.removeItem('user');
+            if (token) {
+                try {
+                    const userRes = await axios.get('http://localhost:5001/api/auth/user', {
+                        headers: { 'auth-token': token }
+                    });
+                    setUser(userRes.data);
+                    // Update local storage user just in case
+                    localStorage.setItem('user', JSON.stringify(userRes.data));
+                } catch (error) {
+                    console.error("Failed to fetch user data", error);
+                    // If token is invalid, clear it
+                    localStorage.removeItem('auth-token');
+                    localStorage.removeItem('user');
+                    setUser(null);
+                }
+            } else {
+                setUser(null);
             }
-        }
-        setLoading(false);
+            setLoading(false);
+        };
+
+        checkLoggedIn();
     }, []);
 
     const login = (token, userData) => {

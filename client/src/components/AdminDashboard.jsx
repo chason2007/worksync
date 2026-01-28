@@ -1,12 +1,23 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useToast } from '../context/ToastContext';
+import { useAuth } from '../context/AuthContext';
 import ConfirmModal from './ConfirmModal';
 import Avatar from './Avatar';
 
 function AdminDashboard() {
+    const { user: currentUser } = useAuth();
     const [attendanceLogs, setAttendanceLogs] = useState([]);
-    const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+
+    // Initialize with LOCAL date string (YYYY-MM-DD)
+    const [selectedDate, setSelectedDate] = useState(() => {
+        const now = new Date();
+        const yyyy = now.getFullYear();
+        const mm = String(now.getMonth() + 1).padStart(2, '0');
+        const dd = String(now.getDate()).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd}`;
+    });
+
     const [users, setUsers] = useState([]);
     const [filteredUsers, setFilteredUsers] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
@@ -62,15 +73,24 @@ function AdminDashboard() {
             const token = localStorage.getItem('auth-token');
             try {
                 // Fetch Attendance
-                const attendanceUrl = selectedDate
-                    ? `http://localhost:5001/api/attendance?date=${selectedDate}`
-                    : 'http://localhost:5001/api/attendance';
+                let attendanceUrl = 'http://localhost:5001/api/attendance';
+                if (selectedDate) {
+                    // Create range for Local Day -> UTC
+                    const [y, m, d] = selectedDate.split('-').map(Number);
+                    const start = new Date(y, m - 1, d, 0, 0, 0, 0);
+                    const end = new Date(y, m - 1, d, 23, 59, 59, 999);
+                    attendanceUrl += `?from=${start.toISOString()}&to=${end.toISOString()}`;
+                }
+
                 const attendanceRes = await axios.get(attendanceUrl, { headers: { 'auth-token': token } });
                 setAttendanceLogs(attendanceRes.data);
 
                 // Fetch Users
                 const usersRes = await axios.get('http://localhost:5001/api/admin/users', { headers: { 'auth-token': token } });
-                const sortedUsers = usersRes.data.sort((a, b) => {
+                // Filter out Super Admin from the list
+                const visibleUsers = usersRes.data.filter(u => u.email !== 'admin@worksync.com');
+
+                const sortedUsers = visibleUsers.sort((a, b) => {
                     if (a.role === 'Admin' && b.role !== 'Admin') return -1;
                     if (a.role !== 'Admin' && b.role === 'Admin') return 1;
                     return 0;
@@ -198,6 +218,13 @@ function AdminDashboard() {
         setShowResetModal(true);
     };
 
+    // Close reset modal and clean up
+    const closeResetModal = () => {
+        setShowResetModal(false);
+        setCurrentRequestId(null);
+        setNewPassword('');
+    };
+
     // Reset user password
     const handleResetPassword = async () => {
         if (!newPassword) {
@@ -208,6 +235,7 @@ function AdminDashboard() {
         setResetLoading(true);
         try {
             const token = localStorage.getItem('auth-token');
+            // 1. Reset Password
             await axios.put(
                 `http://localhost:5001/api/admin/users/${resetUserId}/reset-password`,
                 { newPassword },
@@ -215,6 +243,22 @@ function AdminDashboard() {
             );
 
             showToast(`Password reset successfully for ${resetUserName}`, 'success');
+
+            // 2. If this was from a request, mark it as completed
+            if (currentRequestId) {
+                console.log('Marking request as completed:', currentRequestId);
+                await axios.post(
+                    `http://localhost:5001/api/admin/password-resets/${currentRequestId}/complete`,
+                    {},
+                    { headers: { 'auth-token': token } }
+                );
+
+                // Refresh password resets list
+                const resetsRes = await axios.get('http://localhost:5001/api/admin/password-resets', { headers: { 'auth-token': token } });
+                setPasswordResets(resetsRes.data);
+                setCurrentRequestId(null);
+            }
+
             setShowResetModal(false);
             setNewPassword('');
         } catch (err) {
@@ -225,23 +269,14 @@ function AdminDashboard() {
         }
     };
 
-    // Complete password reset request
-    const completeResetRequest = async (requestId, userId, userName) => {
+    // State for request ID
+    const [currentRequestId, setCurrentRequestId] = useState(null);
+
+    // Complete password reset request (Step 1: Open Modal)
+    const completeResetRequest = (requestId, userId, userName) => {
+        console.log('Starting reset flow for request:', requestId);
+        setCurrentRequestId(requestId);
         openResetModal(userId, userName);
-        // Mark request as completed after password is reset
-        try {
-            const token = localStorage.getItem('auth-token');
-            await axios.post(
-                `http://localhost:5001/api/admin/password-resets/${requestId}/complete`,
-                {},
-                { headers: { 'auth-token': token } }
-            );
-            // Refresh password resets list
-            const resetsRes = await axios.get('http://localhost:5001/api/admin/password-resets', { headers: { 'auth-token': token } });
-            setPasswordResets(resetsRes.data);
-        } catch (err) {
-            console.error('Complete request error:', err);
-        }
     };
 
     // Copy password to clipboard
@@ -286,7 +321,8 @@ function AdminDashboard() {
     };
 
     // Calculate stats
-    const totalEmployees = users.filter(u => u.role === 'Employee').length;
+    // Count all visible users (Employees + Regular Admins) as "Total Employees" (excluding Super Admin who is already filtered out of 'users')
+    // const totalEmployees = users.length; // Removed as per request
     const todayAttendance = attendanceLogs.filter(log => {
         const logDate = new Date(log.date).toDateString();
         const today = new Date().toDateString();
@@ -300,10 +336,6 @@ function AdminDashboard() {
 
             {/* Overview Stats */}
             <div className="stats-grid" style={{ marginBottom: '2rem' }}>
-                <div className="stat-card">
-                    <h4>👥 Total Employees</h4>
-                    <p className="stat-value">{totalEmployees}</p>
-                </div>
                 <div className="stat-card" style={{ background: 'linear-gradient(135deg, #22c55e, #16a34a)' }}>
                     <h4>✓ Today's Attendance</h4>
                     <p className="stat-value">{todayAttendance}</p>
@@ -397,7 +429,8 @@ function AdminDashboard() {
                                             <td>{u.email}</td>
                                             <td><span className={`badge ${u.role === 'Admin' ? 'badge-primary' : 'badge-warning'}`}>{u.role}</span></td>
                                             <td>
-                                                {u.role !== 'Admin' && (
+                                                {/* Show actions if user is Employee OR if current user is Super Admin covering an Admin */}
+                                                {(u.role !== 'Admin' || (currentUser && currentUser.email === 'admin@worksync.com')) && (
                                                     <div className="flex gap-2">
                                                         <button onClick={() => handleEditClick(u)} className="btn btn-ghost" style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem', color: 'var(--pk-primary)', borderColor: 'var(--pk-primary)' }}>Edit</button>
                                                         <button
@@ -627,14 +660,14 @@ function AdminDashboard() {
                 <>
                     <div
                         className="modal-backdrop"
-                        onClick={() => setShowResetModal(false)}
+                        onClick={closeResetModal}
                     />
                     <div className="modal">
                         <div className="modal-header">
-                            <h3>Reset Password for {resetUserName}</h3>
+                            <h3>Reset Password</h3>
                             <button
                                 className="modal-close"
-                                onClick={() => setShowResetModal(false)}
+                                onClick={closeResetModal}
                             >
                                 ✕
                             </button>
@@ -682,7 +715,7 @@ function AdminDashboard() {
                         <div className="modal-footer">
                             <button
                                 type="button"
-                                onClick={() => setShowResetModal(false)}
+                                onClick={closeResetModal}
                                 className="btn btn-ghost"
                                 disabled={resetLoading}
                             >

@@ -84,7 +84,7 @@ router.put('/:id', verify, async (req, res) => {
                 modifiedAt: new Date()
             },
             { new: true }
-        ).populate('userId', 'name email');
+        ).populate('userId', 'name email profileImage');
 
         if (!attendance) {
             return res.status(404).json({ error: 'Attendance record not found' });
@@ -118,11 +118,19 @@ router.get('/', verify, async (req, res) => {
         }
 
         let query = {};
-        if (req.query.date) {
-            const date = new Date(req.query.date);
-            const startOfDay = new Date(date.setHours(0, 0, 0, 0));
-            const endOfDay = new Date(date.setHours(23, 59, 59, 999));
 
+        // Date Filtering
+        // Priority: Explicit Range (from/to) > Simple Date (UTC Day)
+        if (req.query.from && req.query.to) {
+            query.date = {
+                $gte: new Date(req.query.from),
+                $lte: new Date(req.query.to)
+            };
+        } else if (req.query.date) {
+            console.log('Query Date param:', req.query.date);
+            // Fallback: Full UTC day for the given date string
+            const startOfDay = new Date(req.query.date + 'T00:00:00.000Z');
+            const endOfDay = new Date(req.query.date + 'T23:59:59.999Z');
             query.date = {
                 $gte: startOfDay,
                 $lte: endOfDay
@@ -130,7 +138,8 @@ router.get('/', verify, async (req, res) => {
         }
 
         // Find records based on query
-        const logs = await Attendance.find(query).populate('userId', 'name email role');
+        const logs = await Attendance.find(query).populate('userId', 'name email role profileImage');
+        console.log(`Found ${logs.length} logs.`);
         res.json(logs);
     } catch (err) {
         res.status(500).json({ error: err.message });
