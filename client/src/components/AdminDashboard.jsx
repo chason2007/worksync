@@ -84,7 +84,7 @@ function AdminDashboard() {
         }
         try {
             const attendanceRes = await axios.get(attendanceUrl, { headers: { 'auth-token': token } });
-            setAttendanceLogs(attendanceRes.data);
+            setAttendanceLogs(Array.isArray(attendanceRes.data) ? attendanceRes.data : []);
         } catch (err) {
             console.error("Failed to fetch attendance", err);
         }
@@ -99,7 +99,7 @@ function AdminDashboard() {
 
                 // Fetch Users
                 const usersRes = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/users`, { headers: { 'auth-token': token } });
-                const visibleUsers = usersRes.data.filter(u => u.email !== 'admin@worksync.com');
+                const visibleUsers = (Array.isArray(usersRes.data) ? usersRes.data : []).filter(u => u.email !== 'admin@worksync.com');
                 const sortedUsers = visibleUsers.sort((a, b) => {
                     if (a.role === 'Admin' && b.role !== 'Admin') return -1;
                     if (a.role !== 'Admin' && b.role === 'Admin') return 1;
@@ -110,11 +110,11 @@ function AdminDashboard() {
 
                 // Fetch Leaves
                 const leavesRes = await axios.get(`${import.meta.env.VITE_API_URL}/api/leaves`, { headers: { 'auth-token': token } });
-                setLeaves(leavesRes.data);
+                setLeaves(Array.isArray(leavesRes.data) ? leavesRes.data : []);
 
                 // Fetch Password Resets
                 const resetsRes = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/password-resets`, { headers: { 'auth-token': token } });
-                setPasswordResets(resetsRes.data);
+                setPasswordResets(Array.isArray(resetsRes.data) ? resetsRes.data : []);
 
             } catch (err) {
                 console.error("Failed to fetch admin data", err);

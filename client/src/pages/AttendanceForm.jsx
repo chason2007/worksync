@@ -54,7 +54,7 @@ function AttendanceForm() {
 
         try {
             const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/attendance/user/${user.id}`);
-            const records = response.data || [];
+            const records = Array.isArray(response.data) ? response.data : [];
             setAttendanceHistory(records.slice(0, 7)); // Last 7 days
         } catch (error) {
             console.error('Failed to fetch attendance history:', error);

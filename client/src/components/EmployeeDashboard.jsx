@@ -27,13 +27,13 @@ function EmployeeDashboard({ user }) {
             const leavesRes = await axios.get(`${import.meta.env.VITE_API_URL}/api/leaves`, {
                 headers: { 'auth-token': token }
             });
-            setLeaves(leavesRes.data);
+            setLeaves(Array.isArray(leavesRes.data) ? leavesRes.data : []);
 
             // Fetch attendance
             if (user?._id || user?.id) {
                 const userId = user._id || user.id;
                 const attendanceRes = await axios.get(`${import.meta.env.VITE_API_URL}/api/attendance/${userId}`);
-                setAttendanceRecords(attendanceRes.data || []);
+                setAttendanceRecords(Array.isArray(attendanceRes.data) ? attendanceRes.data : []);
             }
         } catch (err) {
             console.error("Failed to fetch data", err);
