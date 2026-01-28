@@ -20,7 +20,7 @@ function AppRoutes() {
       <Header />
       <Routes>
         <Route path="/" element={user ? <Dashboard /> : <Navigate to="/login" />} />
-        <Route path="/attendance" element={user ? (user.role !== 'Admin' ? <AttendanceForm /> : <Navigate to="/" />) : <Navigate to="/login" />} />
+        <Route path="/attendance" element={user ? (user.email !== 'admin@worksync.com' ? <AttendanceForm /> : <Navigate to="/" />) : <Navigate to="/login" />} />
         <Route path="/settings" element={user?.role === 'Admin' ? <Settings /> : <Navigate to="/" />} />
         <Route path="/add-user" element={user?.role === 'Admin' ? <AddUser /> : <Navigate to="/" />} />
         <Route path="/login" element={user ? <Navigate to="/" /> : <Login />} />
