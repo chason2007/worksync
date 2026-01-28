@@ -68,6 +68,11 @@ router.post('/register', async (req, res) => {
         const emailExist = await User.findOne({ email: email });
         if (emailExist) return res.status(400).send('Email already exists');
 
+        // Check if Employee ID is provided and unique
+        if (!req.body.employeeId) return res.status(400).send('Employee ID is required');
+        const idExist = await User.findOne({ employeeId: req.body.employeeId });
+        if (idExist) return res.status(400).send('Employee ID already exists');
+
         // 2. Hash the password (encrypt it)
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(req.body.password, salt);
@@ -79,7 +84,8 @@ router.post('/register', async (req, res) => {
             password: hashedPassword,
             role: req.body.role || 'Employee', // Default to Employee
             position: req.body.position,
-            salary: req.body.salary
+            salary: req.body.salary,
+            employeeId: req.body.employeeId
         });
 
         const savedUser = await user.save();

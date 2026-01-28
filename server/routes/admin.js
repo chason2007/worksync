@@ -142,6 +142,13 @@ router.put('/users/:id', verify, async (req, res) => {
     console.log(`[DEBUG] PUT /users/${req.params.id}`, req.body); // Log receipt
     if (req.user.role !== 'Admin') return res.status(403).send('Access Denied');
     try {
+        // Check uniqueness of Employee ID if provided
+        if (req.body.employeeId) {
+            const existingUser = await User.findOne({ employeeId: req.body.employeeId });
+            if (existingUser && existingUser._id.toString() !== req.params.id) {
+                return res.status(400).json({ error: 'Employee ID already exists assigned to another user' });
+            }
+        }
         const updatedUser = await User.findByIdAndUpdate(
             req.params.id,
             {

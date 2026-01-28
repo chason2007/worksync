@@ -28,8 +28,9 @@ function EmployeeDashboard({ user }) {
             setLeaves(leavesRes.data);
 
             // Fetch attendance
-            if (user?.id) {
-                const attendanceRes = await axios.get(`http://localhost:5001/api/attendance/user/${user.id}`);
+            if (user?._id || user?.id) {
+                const userId = user._id || user.id;
+                const attendanceRes = await axios.get(`http://localhost:5001/api/attendance/${userId}`);
                 setAttendanceRecords(attendanceRes.data || []);
             }
         } catch (err) {
@@ -70,7 +71,9 @@ function EmployeeDashboard({ user }) {
     const thisMonthAttendance = attendanceRecords.filter(r => {
         const recordDate = new Date(r.date);
         const now = new Date();
-        return recordDate.getMonth() === now.getMonth() && recordDate.getFullYear() === now.getFullYear();
+        return recordDate.getMonth() === now.getMonth() &&
+            recordDate.getFullYear() === now.getFullYear() &&
+            r.status === 'Present';
     }).length;
 
     return (
