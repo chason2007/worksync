@@ -200,4 +200,35 @@ router.delete('/leaves', verify, async (req, res) => {
     }
 });
 
+// SYSTEM RESET (Danger Zone)
+router.post('/reset-system', verify, async (req, res) => {
+    // Only Admin can do this. Extra check: maybe require password confirmation or specific Super Admin check?
+    // For now, standard Admin check.
+    if (req.user.role !== 'Admin') return res.status(403).send('Access Denied');
+
+    try {
+        // 1. Delete all Attendance
+        await Attendance.deleteMany({});
+
+        // 2. Delete all Leaves
+        await Leave.deleteMany({});
+
+        // 3. Delete all Users EXCEPT:
+        //    a) The Super Admin (env var)
+        //    b) The current requester (just to be safe, though usually same as Super Admin)
+        const superAdminEmail = process.env.SUPER_ADMIN_EMAIL || 'admin@worksync.com';
+
+        await User.deleteMany({
+            _id: { $ne: req.user._id },
+            email: { $ne: superAdminEmail }
+        });
+
+        res.json({ message: 'System reset successfully. All data cleared.' });
+    } catch (err) {
+        console.error("System Reset Error:", err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+
 module.exports = router;

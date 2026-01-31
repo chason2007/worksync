@@ -210,6 +210,22 @@ function AdminDashboard() {
         }
     };
 
+    const handleSystemReset = async () => {
+        try {
+            const token = localStorage.getItem('auth-token');
+            // Hard delete everything
+            await axios.post(`${import.meta.env.VITE_API_URL}/api/admin/reset-system`, {}, {
+                headers: { 'auth-token': token }
+            });
+            showToast("System Reset Complete", 'success');
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        } catch (err) {
+            showToast("Reset Failed: " + (err.response?.data?.error || err.message), 'error');
+        }
+    };
+
     // Export attendance to CSV
     const exportToCSV = () => {
         if (attendanceLogs.length === 0) {
@@ -711,6 +727,29 @@ function AdminDashboard() {
                     </div>
                 )
             }
+
+            {/* Danger Zone */}
+            <div className="danger-zone card" style={{ borderColor: 'var(--pk-danger)', background: '#fef2f2', marginTop: '3rem', maxWidth: '600px', margin: '3rem auto 0', position: 'static' }}>
+                <div className="flex items-center gap-4 mb-4">
+                    <span style={{ fontSize: '2rem' }}>⚠️</span>
+                    <div>
+                        <h3 style={{ color: 'var(--pk-danger)', margin: 0 }}>Danger Zone</h3>
+                        <p style={{ margin: 0, color: 'var(--pk-danger-hover)' }}>Irreversible actions. Proceed with caution.</p>
+                    </div>
+                </div>
+
+                <button
+                    onClick={() => openModal(
+                        'RESET ENTIRE SYSTEM',
+                        'WARNING: This will delete ALL attendance records, ALL leaves, and ALL users (except you). This cannot be undone. Are you absolutely sure?',
+                        handleSystemReset
+                    )}
+                    className="btn btn-danger"
+                    style={{ width: '100%', justifyContent: 'center' }}
+                >
+                    🗑️ RESET SYSTEM (DELETE ALL DATA)
+                </button>
+            </div>
 
             <ConfirmModal
                 isOpen={modalConfig.isOpen}
