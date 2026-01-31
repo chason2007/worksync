@@ -8,7 +8,7 @@ function AddUser() {
     const [password, setPassword] = useState('');
     const [role, setRole] = useState('Employee');
     const [position, setPosition] = useState('');
-    const [employeeId, setEmployeeId] = useState('');
+
     const [loading, setLoading] = useState(false);
     const [profileImage, setProfileImage] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
@@ -108,7 +108,7 @@ function AddUser() {
                 password,
                 role,
                 position,
-                employeeId
+
             });
 
             console.log('User created:', res.data);
@@ -129,7 +129,7 @@ function AddUser() {
             setPassword('');
             setRole('Employee');
             setPosition('');
-            setEmployeeId('');
+
             setProfileImage(null);
             setImagePreview(null);
         } catch (err) {
@@ -164,23 +164,7 @@ function AddUser() {
                         </div>
                     </div>
 
-                    {/* Employee ID */}
-                    <div>
-                        <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
-                            Employee ID *
-                        </label>
-                        <div className="input-group">
-                            <span className="input-icon">🆔</span>
-                            <input
-                                type="text"
-                                placeholder="EMP001"
-                                value={employeeId}
-                                onChange={(e) => setEmployeeId(e.target.value)}
-                                required
-                                disabled={loading}
-                            />
-                        </div>
-                    </div>
+
 
                     {/* Profile Image */}
                     <div>

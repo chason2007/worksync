@@ -28,10 +28,16 @@ router.post('/register', async (req, res) => {
         const emailExist = await User.findOne({ email: email });
         if (emailExist) return res.status(400).send('Email already exists');
 
-        // Check if Employee ID is provided and unique
-        if (!req.body.employeeId) return res.status(400).send('Employee ID is required');
-        const idExist = await User.findOne({ employeeId: req.body.employeeId });
-        if (idExist) return res.status(400).send('Employee ID already exists');
+        // Auto-generate Employee ID
+        let newEmployeeId = 'EMP001';
+        const lastUser = await User.findOne({ employeeId: { $exists: true } }).sort({ _id: -1 });
+        if (lastUser && lastUser.employeeId) {
+            const match = lastUser.employeeId.match(/^EMP(\d+)$/);
+            if (match) {
+                const nextNum = parseInt(match[1], 10) + 1;
+                newEmployeeId = `EMP${String(nextNum).padStart(3, '0')}`;
+            }
+        }
 
         // 2. Hash the password (encrypt it)
         const salt = await bcrypt.genSalt(10);
@@ -45,7 +51,7 @@ router.post('/register', async (req, res) => {
             role: req.body.role || 'Employee', // Default to Employee
             position: req.body.position,
             salary: req.body.salary,
-            employeeId: req.body.employeeId
+            employeeId: newEmployeeId
         });
 
         const savedUser = await user.save();
