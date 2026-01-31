@@ -7,39 +7,51 @@
 }
 
 :root {
-  /* Colors - Modern Slate/Indigo Palette */
-  --pk-primary: #6366f1;
-  /* Indigo-500 */
-  --pk-primary-hover: #4f46e5;
+  /* Colors - Premium Modern Palette */
+  --pk-primary: #4f46e5;       /* Indigo 600 */
+  --pk-primary-hover: #4338ca; /* Indigo 700 */
+  --pk-accent: #8b5cf6;        /* Violet 500 */
+  
   --pk-danger: #ef4444;
   --pk-danger-hover: #dc2626;
-  --pk-success: #22c55e;
-  --pk-warning: #f59e0b;
+  --pk-success: #10b981;       /* Emerald 500 */
+  --pk-warning: #f59e0b;       /* Amber 500 */
 
-  --pk-bg: #f8fafc;
-  /* Slate-50 */
+  /* Backgrounds */
+  --pk-bg: #f9fafb;            /* Gray 50 */
   --pk-surface: #ffffff;
-  --pk-text-main: #1e293b;
-  /* Slate-800 */
-  --pk-text-muted: #64748b;
-  --pk-border: #e2e8f0;
+  --pk-surface-hover: #f3f4f6;
+  
+  /* Text */
+  --pk-text-main: #111827;     /* Gray 900 */
+  --pk-text-muted: #6b7280;    /* Gray 500 */
+  
+  /* Borders & Dividers */
+  --pk-border: #e5e7eb;        /* Gray 200 */
 
   /* Spacing & Radius */
-  --pk-radius: 12px;
-  --pk-radius-sm: 8px;
-  --pk-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --pk-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --pk-radius: 16px;
+  --pk-radius-sm: 10px;
+  
+  /* Modern Shadows */
+  --pk-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  --pk-shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+  --pk-shadow-color: 0 10px 15px -3px rgba(79, 70, 229, 0.2); /* Colored shadow for primary elements */
 }
 
 [data-theme="dark"] {
-  --pk-bg: #0f172a;
-  /* Slate-900 */
-  --pk-surface: #1e293b;
-  /* Slate-800 */
-  --pk-text-main: #f1f5f9;
-  --pk-text-muted: #94a3b8;
-  --pk-border: #334155;
-  --pk-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.3);
+  --pk-bg: #0f172a;            /* Slate 900 */
+  --pk-surface: #1e293b;       /* Slate 800 */
+  --pk-surface-hover: #334155;
+  
+  --pk-text-main: #f8fafc;     /* Slate 50 */
+  --pk-text-muted: #94a3b8;    /* Slate 400 */
+  
+  --pk-border: #334155;        /* Slate 700 */
+  
+  --pk-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+  --pk-shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
+  --pk-shadow-color: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
 }
 
 .desktop-only {
