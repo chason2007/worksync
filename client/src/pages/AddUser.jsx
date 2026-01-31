@@ -8,6 +8,22 @@ function AddUser() {
     const [password, setPassword] = useState('');
     const [role, setRole] = useState('Employee');
     const [position, setPosition] = useState('');
+    const [employeeId, setEmployeeId] = useState('');
+
+    useEffect(() => {
+        const fetchNextId = async () => {
+            try {
+                const token = localStorage.getItem('auth-token');
+                const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/next-employee-id`, {
+                    headers: { 'auth-token': token }
+                });
+                setEmployeeId(res.data.nextEmployeeId);
+            } catch (err) {
+                console.error("Failed to fetch next Employee ID", err);
+            }
+        };
+        fetchNextId();
+    }, []);
 
     const [loading, setLoading] = useState(false);
     const [profileImage, setProfileImage] = useState(null);
@@ -108,6 +124,7 @@ function AddUser() {
                 password,
                 role,
                 position,
+                employeeId
 
             });
 
@@ -129,6 +146,11 @@ function AddUser() {
             setPassword('');
             setRole('Employee');
             setPosition('');
+            // Refetch next ID after successful creation
+            const token = localStorage.getItem('auth-token');
+            axios.get(`${import.meta.env.VITE_API_URL}/api/admin/next-employee-id`, {
+                headers: { 'auth-token': token }
+            }).then(res => setEmployeeId(res.data.nextEmployeeId)).catch(console.error);
 
             setProfileImage(null);
             setImagePreview(null);
@@ -164,7 +186,22 @@ function AddUser() {
                         </div>
                     </div>
 
-
+                    {/* Employee ID */}
+                    <div>
+                        <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
+                            Employee ID
+                        </label>
+                        <div className="input-group">
+                            <span className="input-icon">🆔</span>
+                            <input
+                                type="text"
+                                placeholder="EMP001"
+                                value={employeeId}
+                                onChange={(e) => setEmployeeId(e.target.value)}
+                                disabled={loading}
+                            />
+                        </div>
+                    </div>
 
                     {/* Profile Image */}
                     <div>

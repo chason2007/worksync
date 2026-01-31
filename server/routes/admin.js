@@ -11,6 +11,26 @@ const fs = require('fs');
 
 
 
+
+// GET NEXT EMPLOYEE ID
+router.get('/next-employee-id', verify, async (req, res) => {
+    if (req.user.role !== 'Admin') return res.status(403).send('Access Denied');
+    try {
+        const lastUser = await User.findOne({ employeeId: { $exists: true } }).sort({ _id: -1 });
+        let nextId = 'EMP001';
+        if (lastUser && lastUser.employeeId) {
+            const match = lastUser.employeeId.match(/^EMP(\d+)$/);
+            if (match) {
+                const nextNum = parseInt(match[1], 10) + 1;
+                nextId = `EMP${String(nextNum).padStart(3, '0')}`;
+            }
+        }
+        res.json({ nextEmployeeId: nextId });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // RESET USER PASSWORD
 router.put('/users/:id/reset-password', verify, async (req, res) => {
     if (req.user.role !== 'Admin') return res.status(403).send('Access Denied');
