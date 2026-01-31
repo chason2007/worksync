@@ -100,10 +100,31 @@ router.put('/:id', verify, async (req, res) => {
 });
 
 // Get Logs for a User
-router.get('/:userId', async (req, res) => {
+// Get Logs for a User (with Pagination)
+router.get('/user/:userId', async (req, res) => {
     try {
-        const logs = await Attendance.find({ userId: req.params.userId });
-        res.json(logs);
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 20;
+        const skip = (page - 1) * limit;
+
+        const query = { userId: req.params.userId };
+
+        const logs = await Attendance.find(query)
+            .sort({ date: -1 })
+            .skip(skip)
+            .limit(limit);
+
+        const total = await Attendance.countDocuments(query);
+
+        res.json({
+            data: logs,
+            pagination: {
+                total,
+                page,
+                limit,
+                pages: Math.ceil(total / limit)
+            }
+        });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

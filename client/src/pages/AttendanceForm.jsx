@@ -1,19 +1,19 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import Toast from '../components/Toast';
 import { useToast } from '../context/ToastContext';
+import { useAuth } from '../context/AuthContext';
 import StatusBadge from '../components/StatusBadge';
 
 function AttendanceForm() {
     const [status, setStatus] = useState('Present');
     const [loading, setLoading] = useState(false);
-    const [toast, setToast] = useState(null);
     const [currentTime, setCurrentTime] = useState(new Date());
     const [attendanceHistory, setAttendanceHistory] = useState([]);
     const [todayAttendance, setTodayAttendance] = useState(null);
     const [hasSubmittedToday, setHasSubmittedToday] = useState(false);
+
     const { showToast } = useToast();
-    const user = JSON.parse(localStorage.getItem('user'));
+    const { user } = useAuth();
 
     // Update current time every second
     useEffect(() => {
@@ -26,17 +26,20 @@ function AttendanceForm() {
 
     // Fetch attendance history and check today's status on mount
     useEffect(() => {
-        checkTodayAttendance();
-        fetchAttendanceHistory();
-    }, []);
+        if (user) {
+            checkTodayAttendance();
+            fetchAttendanceHistory();
+        }
+    }, [user]);
 
     const checkTodayAttendance = async () => {
-        if (!user || !user.id) return;
+        if (!user || user._id === undefined) return;
+        const userId = user._id || user.id;
 
         try {
-            const token = localStorage.getItem('auth-token');
+            const token = localStorage.getItem('auth-token') || sessionStorage.getItem('auth-token');
             const response = await axios.get(
-                `${import.meta.env.VITE_API_URL}/api/attendance/today/${user.id}`,
+                `${import.meta.env.VITE_API_URL}/api/attendance/today/${userId}`,
                 { headers: { 'auth-token': token } }
             );
 
@@ -50,10 +53,11 @@ function AttendanceForm() {
     };
 
     const fetchAttendanceHistory = async () => {
-        if (!user || !user.id) return;
+        if (!user || user._id === undefined) return;
+        const userId = user._id || user.id;
 
         try {
-            const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/attendance/user/${user.id}`);
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/attendance/user/${userId}`);
             const records = Array.isArray(response.data) ? response.data : [];
             setAttendanceHistory(records.slice(0, 7)); // Last 7 days
         } catch (error) {
@@ -62,7 +66,7 @@ function AttendanceForm() {
     };
 
     const markAttendance = async () => {
-        if (!user || !user.id) {
+        if (!user) {
             showToast('User not found. Please log in.', 'error');
             return;
         }
@@ -74,9 +78,11 @@ function AttendanceForm() {
 
         setLoading(true);
         try {
-            const token = localStorage.getItem('auth-token');
+            const token = localStorage.getItem('auth-token') || sessionStorage.getItem('auth-token');
+            const userId = user._id || user.id;
+
             await axios.post(`${import.meta.env.VITE_API_URL}/api/attendance/mark`, {
-                userId: user.id,
+                userId: userId,
                 status
             }, {
                 headers: { 'auth-token': token }
@@ -112,8 +118,6 @@ function AttendanceForm() {
         });
     };
 
-
-
     const statusOptions = [
         { value: 'Present', icon: '✓', label: 'Present', emoji: '✅' },
         { value: 'Half-day', icon: '◐', label: 'Half Day', emoji: '⏰' },
@@ -126,14 +130,6 @@ function AttendanceForm() {
 
     return (
         <div className="page-container">
-            {toast && (
-                <Toast
-                    message={toast.message}
-                    type={toast.type}
-                    onClose={() => setToast(null)}
-                />
-            )}
-
             {/* Header Section */}
             <div className="page-header">
                 <h1>Attendance Tracker</h1>
@@ -217,10 +213,10 @@ function AttendanceForm() {
                 <button
                     onClick={markAttendance}
                     className={`btn btn-primary ${loading ? 'loading' : ''}`}
-                    disabled={loading}
+                    disabled={loading || hasSubmittedToday}
                     style={{ width: '100%', marginTop: '1rem' }}
                 >
-                    {loading ? 'Marking...' : 'Mark Attendance'}
+                    {hasSubmittedToday ? 'Submitted' : (loading ? 'Marking...' : 'Mark Attendance')}
                 </button>
             </div>
 

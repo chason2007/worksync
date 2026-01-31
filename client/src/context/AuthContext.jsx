@@ -9,7 +9,7 @@ export const AuthProvider = ({ children }) => {
 
     useEffect(() => {
         const checkLoggedIn = async () => {
-            const token = localStorage.getItem('auth-token');
+            const token = localStorage.getItem('auth-token') || sessionStorage.getItem('auth-token');
 
             if (token) {
                 try {
@@ -17,13 +17,20 @@ export const AuthProvider = ({ children }) => {
                         headers: { 'auth-token': token }
                     });
                     setUser(userRes.data);
-                    // Update local storage user just in case
-                    localStorage.setItem('user', JSON.stringify(userRes.data));
+
+                    // Update whichever storage has the token
+                    if (localStorage.getItem('auth-token')) {
+                        localStorage.setItem('user', JSON.stringify(userRes.data));
+                    } else {
+                        sessionStorage.setItem('user', JSON.stringify(userRes.data));
+                    }
                 } catch (error) {
                     console.error("Failed to fetch user data", error);
-                    // If token is invalid, clear it
+                    // Invalid token, clear all
                     localStorage.removeItem('auth-token');
                     localStorage.removeItem('user');
+                    sessionStorage.removeItem('auth-token');
+                    sessionStorage.removeItem('user');
                     setUser(null);
                 }
             } else {
@@ -35,15 +42,24 @@ export const AuthProvider = ({ children }) => {
         checkLoggedIn();
     }, []);
 
-    const login = (token, userData) => {
-        localStorage.setItem('auth-token', token);
-        localStorage.setItem('user', JSON.stringify(userData));
+    const login = (token, userData, rememberMe = true) => {
+        // Clear potential old session in other storage
+        localStorage.removeItem('auth-token');
+        localStorage.removeItem('user');
+        sessionStorage.removeItem('auth-token');
+        sessionStorage.removeItem('user');
+
+        const storage = rememberMe ? localStorage : sessionStorage;
+        storage.setItem('auth-token', token);
+        storage.setItem('user', JSON.stringify(userData));
         setUser(userData);
     };
 
     const logout = () => {
         localStorage.removeItem('auth-token');
         localStorage.removeItem('user');
+        sessionStorage.removeItem('auth-token');
+        sessionStorage.removeItem('user');
         setUser(null);
     };
 

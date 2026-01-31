@@ -80,10 +80,11 @@ router.post('/login', async (req, res) => {
 
         // 3. Create and assign a token
         // The payload ({_id, role}) is what "verifyToken" will read later!
+        const expiresIn = req.body.rememberMe ? '7d' : '24h';
         const token = jwt.sign(
             { _id: user._id, role: user.role },
             process.env.JWT_SECRET,
-            { expiresIn: '24h' }
+            { expiresIn: expiresIn }
         );
 
         // 4. Return the token and user info to the frontend

@@ -8,6 +8,7 @@ function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
+    const [rememberMe, setRememberMe] = useState(true);
     const [loading, setLoading] = useState(false);
 
     const { login } = useAuth();
@@ -21,11 +22,12 @@ function Login() {
         try {
             const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
                 email,
-                password
+                password,
+                rememberMe
             });
 
             // Update context state
-            login(res.data.token, res.data.user);
+            login(res.data.token, res.data.user, rememberMe);
             showToast('Login successful! Welcome back.', 'success');
 
             // Redirect to dashboard
@@ -131,6 +133,20 @@ function Login() {
                         </div>
                     </div>
 
+
+                    {/* Remember Me */}
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', gap: '0.5rem', fontSize: '0.9rem', userSelect: 'none' }}>
+                            <input
+                                type="checkbox"
+                                checked={rememberMe}
+                                onChange={(e) => setRememberMe(e.target.checked)}
+                                style={{ width: '1rem', height: '1rem', accentColor: 'var(--pk-primary)' }}
+                            />
+                            Remember me
+                        </label>
+                    </div>
+
                     <button
                         type="submit"
                         className={`btn btn-primary ${loading ? 'loading' : ''}`}
@@ -142,10 +158,10 @@ function Login() {
                 </form>
 
 
-            </div>
+            </div >
 
 
-        </div>
+        </div >
     );
 }
 
