@@ -19,7 +19,9 @@ router.get('/user', verify, async (req, res) => {
 
 
 // REGISTER (Create a new user)
-router.post('/register', async (req, res) => {
+router.post('/register', verify, async (req, res) => {
+    if (req.user.role !== 'Admin') return res.status(403).send('Access Denied');
+
     console.log("Register endpoint hit with body:", req.body);
     try {
         const email = req.body.email.trim().toLowerCase();

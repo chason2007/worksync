@@ -8,7 +8,7 @@ const UserSchema = new mongoose.Schema({
     position: String,
     salary: Number, // Basic fixed salary for payroll module
     profileImage: String, // Filename of uploaded profile image
-    employeeId: String,
+    employeeId: { type: String, unique: true },
 });
 
 module.exports = mongoose.model('User', UserSchema);

@@ -102,13 +102,17 @@ function AddUser() {
         setLoading(true);
 
         try {
+            const token = localStorage.getItem('auth-token');
             const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/register`, {
                 name,
                 email,
                 password,
                 role,
                 position,
-
+            }, {
+                headers: {
+                    'auth-token': token
+                }
             });
 
             console.log('User created:', res.data);

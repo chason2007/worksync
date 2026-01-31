@@ -132,7 +132,10 @@ router.put('/users/:id', verify, async (req, res) => {
             { new: true }
         );
         if (!updatedUser) return res.status(404).send('User not found');
-        res.json(updatedUser);
+        // Return user without password
+        const userObj = updatedUser.toObject();
+        delete userObj.password;
+        res.json(userObj);
     } catch (err) {
         console.error("UPDATE USER ERROR:", err);
         res.status(500).json({ error: err.message });
@@ -152,7 +155,7 @@ router.delete('/users/:id', verify, async (req, res) => {
             const requester = await User.findById(req.user._id);
             console.log(`[DELETE ADMIN] Req: ${requester ? requester.email : 'Unknown'} vs Target: ${userToDelete.email}`);
 
-            if (!requester || requester.email !== 'admin@worksync.com') {
+            if (!requester || requester.email !== process.env.SUPER_ADMIN_EMAIL) {
                 return res.status(403).json({ error: 'Only Super Admin (admin@worksync.com) can delete other Admins.' });
             }
         }
@@ -168,7 +171,7 @@ router.delete('/users/:id', verify, async (req, res) => {
 router.delete('/users', verify, async (req, res) => {
     if (req.user.role !== 'Admin') return res.status(403).send('Access Denied');
     try {
-        const result = await User.deleteMany({ email: { $ne: 'admin@worksync.com' } });
+        const result = await User.deleteMany({ email: { $ne: process.env.SUPER_ADMIN_EMAIL } });
         res.json({ message: `Deleted ${result.deletedCount} users.` });
     } catch (err) {
         res.status(500).json({ error: err.message });

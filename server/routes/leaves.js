@@ -29,6 +29,11 @@ router.post('/', verify, async (req, res) => {
             startDate,
             endDate
         });
+
+        if (new Date(startDate) > new Date(endDate)) {
+            return res.status(400).json({ error: 'End date cannot be before start date' });
+        }
+
         const savedLeave = await newLeave.save();
         // Populate user details so frontend can display it immediately
         await savedLeave.populate('userId', 'name email profileImage');
