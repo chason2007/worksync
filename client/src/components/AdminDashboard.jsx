@@ -11,6 +11,9 @@ import StatusBadge from './StatusBadge';
 function AdminDashboard() {
     const { user: currentUser } = useAuth();
     const [attendanceLogs, setAttendanceLogs] = useState([]);
+    const [attendancePage, setAttendancePage] = useState(1);
+    const [attendanceMeta, setAttendanceMeta] = useState({ pages: 1, total: 0 });
+
     const [pageLoading, setPageLoading] = useState(true);
 
     // Initialize with LOCAL date string (YYYY-MM-DD)
@@ -28,6 +31,8 @@ function AdminDashboard() {
     const [editingUser, setEditingUser] = useState(null);
     const [editForm, setEditForm] = useState({ name: '', email: '', role: 'Employee', position: '', employeeId: '' });
     const [leaves, setLeaves] = useState([]);
+    const [leavePage, setLeavePage] = useState(1);
+    const [leaveMeta, setLeaveMeta] = useState({ pages: 1, total: 0 });
 
     const [editingAttendance, setEditingAttendance] = useState(null);
     const [editAttendanceStatus, setEditAttendanceStatus] = useState('');
@@ -84,9 +89,17 @@ function AdminDashboard() {
             const end = new Date(y, m - 1, d, 23, 59, 59, 999);
             attendanceUrl += `?from=${start.toISOString()}&to=${end.toISOString()}`;
         }
+        // Add Pagination
+        attendanceUrl += (attendanceUrl.includes('?') ? '&' : '?') + `page=${attendancePage}&limit=20`;
+
         try {
             const attendanceRes = await axios.get(attendanceUrl, { headers: { 'auth-token': token } });
-            setAttendanceLogs(Array.isArray(attendanceRes.data) ? attendanceRes.data : []);
+            if (attendanceRes.data.pagination) {
+                setAttendanceLogs(attendanceRes.data.data);
+                setAttendanceMeta(attendanceRes.data.pagination);
+            } else {
+                setAttendanceLogs(Array.isArray(attendanceRes.data) ? attendanceRes.data : []);
+            }
         } catch (err) {
             console.error("Failed to fetch attendance", err);
         }
@@ -111,8 +124,13 @@ function AdminDashboard() {
                 setFilteredUsers(sortedUsers);
 
                 // Fetch Leaves
-                const leavesRes = await axios.get(`${import.meta.env.VITE_API_URL}/api/leaves`, { headers: { 'auth-token': token } });
-                setLeaves(Array.isArray(leavesRes.data) ? leavesRes.data : []);
+                const leavesRes = await axios.get(`${import.meta.env.VITE_API_URL}/api/leaves?page=${leavePage}&limit=10`, { headers: { 'auth-token': token } });
+                if (leavesRes.data.pagination) {
+                    setLeaves(leavesRes.data.data);
+                    setLeaveMeta(leavesRes.data.pagination);
+                } else {
+                    setLeaves(Array.isArray(leavesRes.data) ? leavesRes.data : []);
+                }
 
 
 
@@ -125,7 +143,7 @@ function AdminDashboard() {
         };
 
         fetchAdminData();
-    }, [selectedDate]);
+    }, [selectedDate, attendancePage, leavePage]);
 
     // Search functionality
     useEffect(() => {
@@ -564,6 +582,28 @@ function AdminDashboard() {
                     </table>
                 </div>
             </div>
+            {/* Leave Pagination Controls */}
+            {leaveMeta.pages > 1 && (
+                <div className="flex justify-center gap-2 mt-4" style={{ padding: '1rem' }}>
+                    <button
+                        className="btn btn-ghost"
+                        disabled={leavePage === 1}
+                        onClick={() => setLeavePage(p => Math.max(1, p - 1))}
+                    >
+                        « Previous
+                    </button>
+                    <span className="flex items-center">
+                        Page {leavePage} of {leaveMeta.pages}
+                    </span>
+                    <button
+                        className="btn btn-ghost"
+                        disabled={leavePage === leaveMeta.pages}
+                        onClick={() => setLeavePage(p => Math.min(leaveMeta.pages, p + 1))}
+                    >
+                        Next »
+                    </button>
+                </div>
+            )}
 
 
 
@@ -647,6 +687,30 @@ function AdminDashboard() {
                     </table>
                 </div>
             </div>
+            {/* Attendance Pagination Controls */}
+            {
+                attendanceMeta.pages > 1 && (
+                    <div className="flex justify-center gap-2 mt-4" style={{ padding: '1rem' }}>
+                        <button
+                            className="btn btn-ghost"
+                            disabled={attendancePage === 1}
+                            onClick={() => setAttendancePage(p => Math.max(1, p - 1))}
+                        >
+                            « Previous
+                        </button>
+                        <span className="flex items-center">
+                            Page {attendancePage} of {attendanceMeta.pages}
+                        </span>
+                        <button
+                            className="btn btn-ghost"
+                            disabled={attendancePage === attendanceMeta.pages}
+                            onClick={() => setAttendancePage(p => Math.min(attendanceMeta.pages, p + 1))}
+                        >
+                            Next »
+                        </button>
+                    </div>
+                )
+            }
 
             <ConfirmModal
                 isOpen={modalConfig.isOpen}

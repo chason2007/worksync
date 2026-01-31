@@ -32,7 +32,7 @@ router.post('/register', verify, async (req, res) => {
 
         // Auto-generate Employee ID
         let newEmployeeId = 'EMP001';
-        const lastUser = await User.findOne({ employeeId: { $exists: true } }).sort({ _id: -1 });
+        const lastUser = await User.findOne({ employeeId: { $exists: true } }).sort({ employeeId: -1 });
         if (lastUser && lastUser.employeeId) {
             const match = lastUser.employeeId.match(/^EMP(\d+)$/);
             if (match) {
@@ -82,7 +82,8 @@ router.post('/login', async (req, res) => {
         // The payload ({_id, role}) is what "verifyToken" will read later!
         const token = jwt.sign(
             { _id: user._id, role: user.role },
-            process.env.JWT_SECRET
+            process.env.JWT_SECRET,
+            { expiresIn: '24h' }
         );
 
         // 4. Return the token and user info to the frontend

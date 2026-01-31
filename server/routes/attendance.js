@@ -137,10 +137,30 @@ router.get('/', verify, async (req, res) => {
             };
         }
 
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 50;
+        const skip = (page - 1) * limit;
+
         // Find records based on query
-        const logs = await Attendance.find(query).populate('userId', 'name email role profileImage');
-        console.log(`Found ${logs.length} logs.`);
-        res.json(logs);
+        const logs = await Attendance.find(query)
+            .populate('userId', 'name email role profileImage')
+            .sort({ date: -1 })
+            .skip(skip)
+            .limit(limit);
+
+        const total = await Attendance.countDocuments(query);
+
+        console.log(`Found ${logs.length} logs (Page ${page} of ${Math.ceil(total / limit)}).`);
+
+        res.json({
+            data: logs,
+            pagination: {
+                total,
+                page,
+                limit,
+                pages: Math.ceil(total / limit)
+            }
+        });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

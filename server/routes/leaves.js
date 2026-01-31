@@ -12,8 +12,27 @@ router.get('/', verify, async (req, res) => {
             query.userId = req.user._id;
         }
 
-        const leaves = await Leave.find(query).populate('userId', 'name email role profileImage').sort({ createdAt: -1 });
-        res.json(leaves);
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 20;
+        const skip = (page - 1) * limit;
+
+        const leaves = await Leave.find(query)
+            .populate('userId', 'name email role profileImage')
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit);
+
+        const total = await Leave.countDocuments(query);
+
+        res.json({
+            data: leaves,
+            pagination: {
+                total,
+                page,
+                limit,
+                pages: Math.ceil(total / limit)
+            }
+        });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -30,8 +49,22 @@ router.post('/', verify, async (req, res) => {
             endDate
         });
 
+        // Validation: Date logic
         if (new Date(startDate) > new Date(endDate)) {
             return res.status(400).json({ error: 'End date cannot be before start date' });
+        }
+
+        // Validation: Overlap check
+        const overlap = await Leave.findOne({
+            userId: req.user._id,
+            status: { $ne: 'Rejected' },
+            $or: [
+                { startDate: { $lte: endDate }, endDate: { $gte: startDate } }
+            ]
+        });
+
+        if (overlap) {
+            return res.status(400).json({ error: 'Leave request overlaps with an existing leave.' });
         }
 
         const savedLeave = await newLeave.save();
@@ -66,3 +99,26 @@ router.put('/:id', verify, async (req, res) => {
 });
 
 module.exports = router;
+
+// CANCEL LEAVE (User can cancel own Pending leaves)
+router.delete('/:id', verify, async (req, res) => {
+    try {
+        const leave = await Leave.findById(req.params.id);
+        if (!leave) return res.status(404).json({ error: 'Leave request not found' });
+
+        // Check ownership
+        if (leave.userId.toString() !== req.user._id) {
+            return res.status(403).json({ error: 'Access Denied' });
+        }
+
+        // Check status
+        if (leave.status !== 'Pending') {
+            return res.status(400).json({ error: 'Cannot cancel leave that is already processed' });
+        }
+
+        await Leave.findByIdAndDelete(req.params.id);
+        res.json({ message: 'Leave request cancelled successfully' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
