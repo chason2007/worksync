@@ -23,8 +23,8 @@
   /* Amber 500 */
 
   /* Backgrounds */
-  --pk-bg: #f8fafc;
-  /* Slate 50 - Cooler gray */
+  --pk-bg: #f0fdfa;
+  /* Teal 50 - Mint Mist */
   --pk-surface: #ffffff;
   --pk-surface-hover: #f1f5f9;
   /* Slate 100 */
@@ -40,9 +40,9 @@
   /* Slate 200 */
 
   /* Spacing & Radius */
-  --pk-radius: 12px;
-  /* Slightly tighter, more modern radius */
-  --pk-radius-sm: 8px;
+  --pk-radius: 6px;
+  /* Sharper, more professional radius */
+  --pk-radius-sm: 4px;
 
   /* Modern Shadows - Multi-layered for depth */
   --pk-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
