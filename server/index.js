@@ -23,6 +23,7 @@ console.log('Auth Route Loaded:', typeof authRoute);
 app.use('/api/attendance', attendanceRoutes);
 app.use('/api/admin', require('./routes/admin'));
 app.use('/api/leaves', require('./routes/leaves'));
+app.use('/api/notifications', require('./routes/notifications'));
 
 // Connect to MongoDB (Replace with your Atlas string later)
 // Connect to MongoDB

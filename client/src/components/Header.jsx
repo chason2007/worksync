@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import Avatar from './Avatar';
@@ -10,6 +11,75 @@ function Header() {
     const location = useLocation();
     const [showDropdown, setShowDropdown] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+    // Notifications State
+    const [notifications, setNotifications] = useState([]);
+    const [showNotifDropdown, setShowNotifDropdown] = useState(false);
+    const notifDropdownRef = useRef(null);
+
+    // Fetch Notifications
+    const fetchNotifications = async () => {
+        if (!user) return;
+        try {
+            const token = localStorage.getItem('auth-token') || sessionStorage.getItem('auth-token');
+            const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/notifications`, {
+                headers: { 'auth-token': token }
+            });
+            setNotifications(res.data);
+        } catch (err) {
+            console.error("Failed to fetch notifications", err);
+        }
+    };
+
+    // Poll for notifications
+    useEffect(() => {
+        fetchNotifications();
+        const interval = setInterval(fetchNotifications, 60000); // Poll every minute
+        return () => clearInterval(interval);
+    }, [user]);
+
+    // Close Notif Dropdown on click outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (notifDropdownRef.current && !notifDropdownRef.current.contains(event.target)) {
+                setShowNotifDropdown(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    const markAsRead = async (id, link) => {
+        try {
+            const token = localStorage.getItem('auth-token') || sessionStorage.getItem('auth-token');
+            await axios.put(`${import.meta.env.VITE_API_URL}/api/notifications/${id}/read`, {}, {
+                headers: { 'auth-token': token }
+            });
+            // Update local state
+            setNotifications(prev => prev.map(n => n._id === id ? { ...n, isRead: true } : n));
+
+            if (link) {
+                navigate(link);
+                setShowNotifDropdown(false);
+            }
+        } catch (err) {
+            console.error("Failed to mark as read", err);
+        }
+    };
+
+    const markAllRead = async () => {
+        try {
+            const token = localStorage.getItem('auth-token') || sessionStorage.getItem('auth-token');
+            await axios.put(`${import.meta.env.VITE_API_URL}/api/notifications/mark-all-read`, {}, {
+                headers: { 'auth-token': token }
+            });
+            setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+        } catch (err) {
+            console.error("Failed to mark all read", err);
+        }
+    };
+
+    const unreadCount = notifications.filter(n => !n.isRead).length;
 
 
     const handleLogout = () => {
@@ -125,9 +195,73 @@ function Header() {
                     {user ? (
                         <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
                             {/* Notification Bell */}
-                            <div style={{ position: 'relative', cursor: 'pointer' }}>
+                            <div
+                                style={{ position: 'relative', cursor: 'pointer' }}
+                                ref={notifDropdownRef}
+                                onClick={() => setShowNotifDropdown(!showNotifDropdown)}
+                            >
                                 <span style={{ fontSize: '1.3rem' }}>🔔</span>
-                                <span className="notification-badge">0</span>
+                                {unreadCount > 0 && (
+                                    <span className="notification-badge">{unreadCount}</span>
+                                )}
+
+                                {/* Notification Dropdown */}
+                                {showNotifDropdown && (
+                                    <div className="dropdown-menu" style={{
+                                        right: '-80px',
+                                        width: '320px',
+                                        maxHeight: '400px',
+                                        overflowY: 'auto'
+                                    }}>
+                                        <div style={{
+                                            padding: '0.75rem',
+                                            borderBottom: '1px solid var(--pk-border)',
+                                            display: 'flex',
+                                            justifyContent: 'space-between',
+                                            alignItems: 'center'
+                                        }}>
+                                            <h4 style={{ margin: 0, fontSize: '0.9rem' }}>Notifications</h4>
+                                            {unreadCount > 0 && (
+                                                <button
+                                                    style={{ background: 'none', border: 'none', color: 'var(--pk-primary)', fontSize: '0.75rem', cursor: 'pointer' }}
+                                                    onClick={(e) => { e.stopPropagation(); markAllRead(); }}
+                                                >
+                                                    Mark all read
+                                                </button>
+                                            )}
+                                        </div>
+
+                                        {notifications.length === 0 ? (
+                                            <div style={{ padding: '1.5rem', textAlign: 'center', color: 'var(--pk-text-muted)', fontSize: '0.85rem' }}>
+                                                No notifications
+                                            </div>
+                                        ) : (
+                                            notifications.map(notif => (
+                                                <div
+                                                    key={notif._id}
+                                                    className="dropdown-item"
+                                                    style={{
+                                                        display: 'block',
+                                                        background: notif.isRead ? 'transparent' : 'var(--pk-bg)',
+                                                        borderLeft: notif.isRead ? 'none' : '3px solid var(--pk-primary)',
+                                                        padding: '0.75rem',
+                                                        whiteSpace: 'normal',
+                                                        lineHeight: '1.4'
+                                                    }}
+                                                    onClick={() => markAsRead(notif._id, notif.link)}
+                                                >
+                                                    <div style={{ fontSize: '0.85rem', marginBottom: '0.25rem' }}>
+                                                        {notif.type === 'success' ? '✅ ' : notif.type === 'error' ? '❌ ' : notif.type === 'warning' ? '⚠️ ' : 'ℹ️ '}
+                                                        {notif.message}
+                                                    </div>
+                                                    <div style={{ fontSize: '0.7rem', color: 'var(--pk-text-muted)' }}>
+                                                        {new Date(notif.createdAt).toLocaleString()}
+                                                    </div>
+                                                </div>
+                                            ))
+                                        )}
+                                    </div>
+                                )}
                             </div>
 
                             {/* User Dropdown */}

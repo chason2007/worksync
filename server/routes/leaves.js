@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const Leave = require('../models/Leave');
+const Notification = require('../models/Notification');
+const User = require('../models/User'); // To find admins
 const verify = require('./verifyToken');
 
 // GET ALL LEAVES (or just user's)
@@ -68,6 +70,17 @@ router.post('/', verify, async (req, res) => {
         }
 
         const savedLeave = await newLeave.save();
+
+        // NOTIFICATION: Notify all Admins
+        const admins = await User.find({ role: 'Admin' });
+        const notifications = admins.map(admin => ({
+            userId: admin._id,
+            message: `New Leave Request from ${req.user.name}: ${req.body.reason}`,
+            type: 'info',
+            link: '/' // Admin Dashboard
+        }));
+        await Notification.insertMany(notifications);
+
         // Populate user details so frontend can display it immediately
         await savedLeave.populate('userId', 'name email profileImage');
         res.status(201).json(savedLeave);
@@ -91,6 +104,16 @@ router.put('/:id', verify, async (req, res) => {
             { status: status },
             { new: true }
         ).populate('userId', 'name email profileImage');
+
+        if (!updatedLeave) return res.status(404).json({ error: 'Leave not found' });
+
+        // NOTIFICATION: Notify Employee
+        await Notification.create({
+            userId: updatedLeave.userId._id,
+            message: `Your Leave Request for ${new Date(updatedLeave.startDate).toLocaleDateString()} has been ${status}.`,
+            type: status === 'Approved' ? 'success' : 'error',
+            link: '/' // Dashboard
+        });
 
         res.json(updatedLeave);
     } catch (err) {
