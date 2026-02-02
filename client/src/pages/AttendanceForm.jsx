@@ -71,26 +71,26 @@ function AttendanceForm() {
             return;
         }
 
-        if (hasSubmittedToday) {
-            showToast('You have already submitted attendance for today', 'error');
-            return;
-        }
-
         setLoading(true);
         try {
             const token = localStorage.getItem('auth-token') || sessionStorage.getItem('auth-token');
             const userId = user._id || user.id;
 
-            await axios.post(`${import.meta.env.VITE_API_URL}/api/attendance/mark`, {
+            const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/attendance/mark`, {
                 userId: userId,
-                status
+                status // Sent on Clock In. Ignored by backend on Clock Out.
             }, {
                 headers: { 'auth-token': token }
             });
 
-            showToast('Attendance marked successfully!', 'success');
+            if (res.data.clockedOut) {
+                showToast('Clocked Out Successfully! 👋', 'success');
+            } else {
+                showToast('Clocked In Successfully! 🌤️', 'success');
+            }
+
             setHasSubmittedToday(true);
-            checkTodayAttendance(); // Refresh today's status
+            setTodayAttendance(res.data.attendance); // Update local state with new record
             fetchAttendanceHistory(); // Refresh history
         } catch (error) {
             console.error('Mark attendance error:', error);
@@ -158,66 +158,80 @@ function AttendanceForm() {
             )}
 
             {/* Mark Attendance Section */}
+            {/* Mark Attendance Section */}
             <div className="card">
-                <h3 style={{ marginBottom: '1.5rem' }}>
-                    {hasSubmittedToday ? '✓ Attendance Already Submitted' : 'Mark Your Attendance'}
-                </h3>
-
-                {hasSubmittedToday && todayAttendance && (
-                    <div style={{
-                        padding: '1.5rem',
-                        background: 'var(--pk-bg)',
-                        borderRadius: 'var(--pk-radius)',
-                        marginBottom: '1.5rem',
-                        border: '2px solid var(--pk-primary-light)'
-                    }}>
-                        <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
-                            <p style={{ margin: '0 0 0.5rem 0', color: 'var(--pk-text-muted)', fontSize: '0.9rem' }}>
-                                Today's Status
-                            </p>
-                            <StatusBadge status={todayAttendance.status} className="text-lg" />
+                {/* STATE 1: ALREADY CLOCKED OUT (Day Complete) */}
+                {todayAttendance && todayAttendance.clockOutTime ? (
+                    <div className="text-center">
+                        <h3 className="mb-4 text-success">✓ Day Complete</h3>
+                        <div className="flex justify-center gap-8 mb-4">
+                            <div>
+                                <div className="text-sm text-gray-500">Clock In</div>
+                                <div className="text-xl font-bold">{new Date(todayAttendance.clockInTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                            </div>
+                            <div>
+                                <div className="text-sm text-gray-500">Clock Out</div>
+                                <div className="text-xl font-bold">{new Date(todayAttendance.clockOutTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                            </div>
                         </div>
-                        <div style={{ textAlign: 'center', fontSize: '0.85rem', color: 'var(--pk-text-muted)' }}>
-                            Submitted at {new Date(todayAttendance.date).toLocaleTimeString()}
-                        </div>
-                        <div style={{
-                            marginTop: '1rem',
-                            padding: '0.75rem',
-                            background: 'var(--pk-warning-light)',
-                            borderRadius: 'var(--pk-radius-sm)',
-                            textAlign: 'center',
-                            fontSize: '0.9rem'
-                        }}>
-                            ℹ️ You can only submit attendance once per day. Contact an administrator if changes are needed.
+                        <div className="p-3 bg-gray-50 rounded text-sm text-gray-600">
+                            Total Duration: {((new Date(todayAttendance.clockOutTime) - new Date(todayAttendance.clockInTime)) / (1000 * 60 * 60)).toFixed(2)} hrs
                         </div>
                     </div>
-                )}
+                ) : todayAttendance && todayAttendance.status === 'Absent' ? (
+                    <div className="text-center">
+                        <h3 className="mb-4 text-gray-500">Marked Absent</h3>
+                        <p>You have marked yourself as absent for today.</p>
+                    </div>
+                ) : todayAttendance ? (
+                    /* STATE 2: CLOCKED IN (Show Clock Out Button) */
+                    <div className="text-center">
+                        <h3 className="mb-2">Session Active</h3>
+                        <p className="text-gray-500 mb-6">You clocked in at <strong>{new Date(todayAttendance.clockInTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</strong></p>
 
-                <div className="status-grid">
-                    {statusOptions.map((option) => (
-                        <div
-                            key={option.value}
-                            className={`status-card ${status === option.value ? 'selected' : ''} ${hasSubmittedToday ? 'disabled' : ''}`}
-                            onClick={() => !hasSubmittedToday && setStatus(option.value)}
-                            style={{
-                                cursor: hasSubmittedToday ? 'not-allowed' : 'pointer',
-                                opacity: hasSubmittedToday ? 0.5 : 1
-                            }}
-                        >
-                            <span className="status-card-icon">{option.emoji}</span>
-                            <h4 className="status-card-title">{option.label}</h4>
+                        <div className="flex justify-center mb-6">
+                            <div className="animate-pulse flex items-center gap-2 text-primary font-bold">
+                                <span className="w-3 h-3 bg-primary rounded-full"></span>
+                                Tracking Time...
+                            </div>
                         </div>
-                    ))}
-                </div>
 
-                <button
-                    onClick={markAttendance}
-                    className={`btn btn-primary ${loading ? 'loading' : ''}`}
-                    disabled={loading || hasSubmittedToday}
-                    style={{ width: '100%', marginTop: '1rem' }}
-                >
-                    {hasSubmittedToday ? 'Submitted' : (loading ? 'Marking...' : 'Mark Attendance')}
-                </button>
+                        <button
+                            onClick={markAttendance}
+                            className="btn btn-danger w-full py-4 text-lg"
+                            disabled={loading}
+                        >
+                            {loading ? 'Processing...' : 'Clock Out 🛑'}
+                        </button>
+                    </div>
+                ) : (
+                    /* STATE 3: NOT CLOCKED IN (Show Clock In) */
+                    <>
+                        <h3 style={{ marginBottom: '1.5rem' }}>Are you working today?</h3>
+
+                        <div className="status-grid">
+                            {statusOptions.map((option) => (
+                                <div
+                                    key={option.value}
+                                    className={`status-card ${status === option.value ? 'selected' : ''}`}
+                                    onClick={() => setStatus(option.value)}
+                                >
+                                    <span className="status-card-icon">{option.emoji}</span>
+                                    <h4 className="status-card-title">{option.label}</h4>
+                                </div>
+                            ))}
+                        </div>
+
+                        <button
+                            onClick={markAttendance}
+                            className="btn btn-primary w-full py-3 text-lg"
+                            disabled={loading}
+                            style={{ marginTop: '1rem' }}
+                        >
+                            {loading ? 'Processing...' : (status === 'Absent' ? 'Mark Absent' : 'Clock In 🚀')}
+                        </button>
+                    </>
+                )}
             </div>
 
             {/* Attendance History */}

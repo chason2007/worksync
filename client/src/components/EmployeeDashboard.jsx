@@ -5,6 +5,7 @@ import Avatar from './Avatar';
 import Skeleton from './Skeleton';
 import EmptyState from './EmptyState';
 import StatusBadge from './StatusBadge';
+import ConfirmModal from './ConfirmModal';
 
 function EmployeeDashboard({ user }) {
     const [pageLoading, setPageLoading] = useState(true);
@@ -14,8 +15,16 @@ function EmployeeDashboard({ user }) {
 
     const [leaveReason, setLeaveReason] = useState('');
     const [leaveStartDate, setLeaveStartDate] = useState('');
-    const [leaveEndDate, setLeaveEndDate] = useState('');
     const [loading, setLoading] = useState(false);
+
+    // Modal State
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalConfig, setModalConfig] = useState({ title: '', message: '', action: null });
+
+    const openModal = (title, message, action) => {
+        setModalConfig({ title, message, action });
+        setIsModalOpen(true);
+    };
 
     const [attendanceRecords, setAttendanceRecords] = useState([]);
     const [attendancePage, setAttendancePage] = useState(1);
@@ -84,6 +93,19 @@ function EmployeeDashboard({ user }) {
             showToast("Failed to request leave", 'error');
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleCancelLeave = async (leaveId) => {
+        try {
+            const token = localStorage.getItem('auth-token');
+            await axios.delete(`${import.meta.env.VITE_API_URL}/api/leaves/${leaveId}`, {
+                headers: { 'auth-token': token }
+            });
+            showToast('Leave request cancelled successfully', 'success');
+            fetchData(); // Refresh list
+        } catch (err) {
+            showToast(err.response?.data?.error || 'Failed to cancel leave', 'error');
         }
     };
 
@@ -233,6 +255,7 @@ function EmployeeDashboard({ user }) {
                                     <th>Reason</th>
                                     <th>Dates</th>
                                     <th>Status</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -251,11 +274,26 @@ function EmployeeDashboard({ user }) {
                                                 <td>
                                                     <StatusBadge status={l.status} />
                                                 </td>
+                                                <td>
+                                                    {l.status === 'Pending' && (
+                                                        <button
+                                                            className="btn btn-ghost"
+                                                            style={{ color: 'var(--pk-danger)', padding: '0.25rem 0.5rem', fontSize: '0.85rem' }}
+                                                            onClick={() => openModal(
+                                                                'Cancel Leave Request',
+                                                                'Are you sure you want to cancel this pending leave request?',
+                                                                () => handleCancelLeave(l._id)
+                                                            )}
+                                                        >
+                                                            Cancel
+                                                        </button>
+                                                    )}
+                                                </td>
                                             </tr>
                                         ))}
                                         {leaves.length === 0 && (
                                             <tr>
-                                                <td colSpan="3">
+                                                <td colSpan="4">
                                                     <EmptyState
                                                         icon="📝"
                                                         title="No Leave History"
@@ -295,6 +333,15 @@ function EmployeeDashboard({ user }) {
                     )}
                 </div>
             </div>
+            <ConfirmModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onConfirm={modalConfig.action}
+                title={modalConfig.title}
+                message={modalConfig.message}
+                confirmText="Yes, Cancel"
+                danger={true}
+            />
         </div>
 
     );

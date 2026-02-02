@@ -54,14 +54,41 @@ router.post('/mark', verify, async (req, res) => {
         });
 
         if (existingAttendance) {
-            return res.status(400).json({
-                error: 'Attendance already submitted for today',
-                attendance: existingAttendance
+            // If already clocked out, stop them
+            if (existingAttendance.clockOutTime) {
+                return res.status(400).json({
+                    error: 'Attendance already completed for today',
+                    attendance: existingAttendance
+                });
+            }
+
+            // If status is Absent, they can't clock out (logic check)
+            if (existingAttendance.status === 'Absent') {
+                return res.status(400).json({
+                    error: 'You have marked yourself as Absent today',
+                    attendance: existingAttendance
+                });
+            }
+
+            // Perform Clock Out
+            existingAttendance.clockOutTime = new Date();
+            await existingAttendance.save();
+
+            return res.json({
+                message: 'Clocked Out Successfully',
+                attendance: existingAttendance,
+                clockedOut: true
             });
         }
 
-        // Create new attendance record
+        // Create new attendance record (Clock In)
         const newRecord = new Attendance({ userId, status });
+
+        // Only set clockInTime if not Absent
+        if (status !== 'Absent') {
+            newRecord.clockInTime = new Date();
+        }
+
         await newRecord.save();
         res.status(201).json(newRecord);
     } catch (err) {
