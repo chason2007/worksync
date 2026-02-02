@@ -187,7 +187,7 @@ function AttendanceForm() {
                     /* STATE 2: CLOCKED IN (Show Clock Out Button) */
                     <div className="text-center">
                         <h3 className="mb-2">Session Active</h3>
-                        <p className="text-gray-500 mb-6">You clocked in at <strong>{new Date(todayAttendance.clockInTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</strong></p>
+                        <p className="text-gray-500 mb-6">You clocked in at <strong>{todayAttendance.clockInTime ? new Date(todayAttendance.clockInTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Unknown Time'}</strong></p>
 
                         <div className="flex justify-center mb-6">
                             <div className="animate-pulse flex items-center gap-2 text-primary font-bold">
