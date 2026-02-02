@@ -215,8 +215,13 @@ router.post('/reset-system', verify, async (req, res) => {
 
         // 3. Delete all Users EXCEPT:
         //    a) The Super Admin (env var)
-        //    b) The current requester (just to be safe, though usually same as Super Admin)
         const superAdminEmail = process.env.SUPER_ADMIN_EMAIL || 'admin@worksync.com';
+
+        // Security Check: Only allow Super Admin to perform this action
+        const requester = await User.findById(req.user._id);
+        if (!requester || requester.email !== superAdminEmail) {
+            return res.status(403).json({ error: 'Access Denied: Only the Super Admin can reset the system.' });
+        }
 
         await User.deleteMany({
             _id: { $ne: req.user._id },

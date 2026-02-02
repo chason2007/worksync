@@ -7,6 +7,11 @@ const verify = require('./verifyToken');
 // Check if user has attendance for today
 router.get('/today/:userId', verify, async (req, res) => {
     try {
+        // Security Check: Only allow if it's the user themselves OR an Admin
+        if (req.user.role !== 'Admin' && req.user._id !== req.params.userId) {
+            return res.status(403).json({ error: 'Access Denied: You can only view your own attendance.' });
+        }
+
         const today = new Date();
         const startOfDay = new Date(today.setHours(0, 0, 0, 0));
         const endOfDay = new Date(today.setHours(23, 59, 59, 999));
@@ -31,7 +36,9 @@ router.get('/today/:userId', verify, async (req, res) => {
 // Mark Attendance (with duplicate prevention)
 router.post('/mark', verify, async (req, res) => {
     try {
-        const { userId, status } = req.body;
+        // Security Fix: Trust the token, NOT the body
+        const userId = req.user._id;
+        const { status } = req.body;
 
         // Check if user already has attendance for today
         const today = new Date();
