@@ -85,12 +85,13 @@ function AttendanceForm() {
 
             if (res.data.clockedOut) {
                 showToast('Clocked Out Successfully! 👋', 'success');
+                setTodayAttendance(res.data.attendance);
             } else {
                 showToast('Clocked In Successfully! 🌤️', 'success');
+                setTodayAttendance(res.data);
             }
 
             setHasSubmittedToday(true);
-            setTodayAttendance(res.data.attendance); // Update local state with new record
             fetchAttendanceHistory(); // Refresh history
         } catch (error) {
             console.error('Mark attendance error:', error);
