@@ -18,7 +18,7 @@ function Settings() {
 
     const handleDeleteUsers = async () => {
         try {
-            const token = localStorage.getItem('auth-token');
+            const token = localStorage.getItem('auth-token') || sessionStorage.getItem('auth-token');
             const res = await axios.delete(`${import.meta.env.VITE_API_URL}/api/admin/users`, {
                 headers: { 'auth-token': token }
             });
@@ -30,7 +30,7 @@ function Settings() {
 
     const handleDeleteAttendance = async () => {
         try {
-            const token = localStorage.getItem('auth-token');
+            const token = localStorage.getItem('auth-token') || sessionStorage.getItem('auth-token');
             const res = await axios.delete(`${import.meta.env.VITE_API_URL}/api/admin/attendance`, {
                 headers: { 'auth-token': token }
             });
@@ -42,7 +42,7 @@ function Settings() {
 
     const handleDeleteLeaves = async () => {
         try {
-            const token = localStorage.getItem('auth-token');
+            const token = localStorage.getItem('auth-token') || sessionStorage.getItem('auth-token');
             const res = await axios.delete(`${import.meta.env.VITE_API_URL}/api/admin/leaves`, {
                 headers: { 'auth-token': token }
             });
@@ -54,7 +54,7 @@ function Settings() {
 
     const handleSystemReset = async () => {
         try {
-            const token = localStorage.getItem('auth-token');
+            const token = localStorage.getItem('auth-token') || sessionStorage.getItem('auth-token');
             // Hard delete everything
             await axios.post(`${import.meta.env.VITE_API_URL}/api/admin/reset-system`, {}, {
                 headers: { 'auth-token': token }

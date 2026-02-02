@@ -68,7 +68,7 @@ function AdminDashboard() {
 
     const handleUpdateUser = async () => {
         try {
-            const token = localStorage.getItem('auth-token');
+            const token = localStorage.getItem('auth-token') || sessionStorage.getItem('auth-token');
             const res = await axios.put(`${import.meta.env.VITE_API_URL}/api/admin/users/${editingUser}`, editForm, {
                 headers: { 'auth-token': token }
             });
@@ -81,7 +81,7 @@ function AdminDashboard() {
     };
 
     const fetchAttendance = async () => {
-        const token = localStorage.getItem('auth-token');
+        const token = localStorage.getItem('auth-token') || sessionStorage.getItem('auth-token');
         let attendanceUrl = `${import.meta.env.VITE_API_URL}/api/attendance`;
         if (selectedDate) {
             const [y, m, d] = selectedDate.split('-').map(Number);
@@ -108,7 +108,7 @@ function AdminDashboard() {
     useEffect(() => {
         const fetchAdminData = async () => {
             setPageLoading(true);
-            const token = localStorage.getItem('auth-token');
+            const token = localStorage.getItem('auth-token') || sessionStorage.getItem('auth-token');
             try {
                 await fetchAttendance();
 
@@ -165,7 +165,7 @@ function AdminDashboard() {
         setIsSubmittingLeave(true);
 
         try {
-            const token = localStorage.getItem('auth-token');
+            const token = localStorage.getItem('auth-token') || sessionStorage.getItem('auth-token');
             const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/leaves`, {
                 reason: leaveReason,
                 startDate: leaveStartDate,
@@ -188,7 +188,7 @@ function AdminDashboard() {
 
     const updateLeaveStatus = async (id, status) => {
         try {
-            const token = localStorage.getItem('auth-token');
+            const token = localStorage.getItem('auth-token') || sessionStorage.getItem('auth-token');
             const res = await axios.put(`${import.meta.env.VITE_API_URL}/api/leaves/${id}`, { status }, { headers: { 'auth-token': token } });
             setLeaves(leaves.map(l => l._id === id ? res.data : l));
             showToast(`Leave ${status.toLowerCase()} successfully`, 'success');
@@ -199,7 +199,7 @@ function AdminDashboard() {
 
     const handleDeleteUser = async (id) => {
         try {
-            const token = localStorage.getItem('auth-token');
+            const token = localStorage.getItem('auth-token') || sessionStorage.getItem('auth-token');
             await axios.delete(`${import.meta.env.VITE_API_URL}/api/admin/users/${id}`, {
                 headers: { 'auth-token': token }
             });
@@ -269,7 +269,7 @@ function AdminDashboard() {
         if (!editingAttendance) return;
 
         try {
-            const token = localStorage.getItem('auth-token');
+            const token = localStorage.getItem('auth-token') || sessionStorage.getItem('auth-token');
             await axios.put(`${import.meta.env.VITE_API_URL}/api/attendance/${editingAttendance._id}`, {
                 status: editAttendanceStatus
             }, {

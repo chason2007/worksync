@@ -36,7 +36,7 @@ function EmployeeDashboard({ user }) {
     }, [user, leavePage, attendancePage]);
 
     const fetchData = async () => {
-        const token = localStorage.getItem('auth-token');
+        const token = localStorage.getItem('auth-token') || sessionStorage.getItem('auth-token');
         try {
             // Fetch leaves
             const leavesRes = await axios.get(`${import.meta.env.VITE_API_URL}/api/leaves?page=${leavePage}&limit=5`, {
@@ -74,7 +74,7 @@ function EmployeeDashboard({ user }) {
         setLoading(true);
 
         try {
-            const token = localStorage.getItem('auth-token');
+            const token = localStorage.getItem('auth-token') || sessionStorage.getItem('auth-token');
             const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/leaves`, {
                 reason: leaveReason,
                 startDate: leaveStartDate,
@@ -98,7 +98,7 @@ function EmployeeDashboard({ user }) {
 
     const handleCancelLeave = async (leaveId) => {
         try {
-            const token = localStorage.getItem('auth-token');
+            const token = localStorage.getItem('auth-token') || sessionStorage.getItem('auth-token');
             await axios.delete(`${import.meta.env.VITE_API_URL}/api/leaves/${leaveId}`, {
                 headers: { 'auth-token': token }
             });
