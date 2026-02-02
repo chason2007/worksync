@@ -8,47 +8,65 @@
 
 :root {
   /* Colors - Premium Modern Palette */
-  --pk-primary: #4f46e5;       /* Indigo 600 */
-  --pk-primary-hover: #4338ca; /* Indigo 700 */
-  --pk-accent: #8b5cf6;        /* Violet 500 */
-  
+  --pk-primary: #6366f1;
+  /* Indigo 500 - More vibrant */
+  --pk-primary-hover: #4f46e5;
+  /* Indigo 600 */
+  --pk-accent: #8b5cf6;
+  /* Violet 500 */
+
   --pk-danger: #ef4444;
   --pk-danger-hover: #dc2626;
-  --pk-success: #10b981;       /* Emerald 500 */
-  --pk-warning: #f59e0b;       /* Amber 500 */
+  --pk-success: #10b981;
+  /* Emerald 500 */
+  --pk-warning: #f59e0b;
+  /* Amber 500 */
 
   /* Backgrounds */
-  --pk-bg: #f9fafb;            /* Gray 50 */
+  --pk-bg: #f8fafc;
+  /* Slate 50 - Cooler gray */
   --pk-surface: #ffffff;
-  --pk-surface-hover: #f3f4f6;
-  
+  --pk-surface-hover: #f1f5f9;
+  /* Slate 100 */
+
   /* Text */
-  --pk-text-main: #111827;     /* Gray 900 */
-  --pk-text-muted: #6b7280;    /* Gray 500 */
-  
+  --pk-text-main: #0f172a;
+  /* Slate 900 - Deep, rich black */
+  --pk-text-muted: #64748b;
+  /* Slate 500 */
+
   /* Borders & Dividers */
-  --pk-border: #e5e7eb;        /* Gray 200 */
+  --pk-border: #e2e8f0;
+  /* Slate 200 */
 
   /* Spacing & Radius */
-  --pk-radius: 16px;
-  --pk-radius-sm: 10px;
-  
-  /* Modern Shadows */
-  --pk-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-  --pk-shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
-  --pk-shadow-color: 0 10px 15px -3px rgba(79, 70, 229, 0.2); /* Colored shadow for primary elements */
+  --pk-radius: 12px;
+  /* Slightly tighter, more modern radius */
+  --pk-radius-sm: 8px;
+
+  /* Modern Shadows - Multi-layered for depth */
+  --pk-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --pk-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --pk-shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --pk-shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --pk-shadow-color: 0 10px 15px -3px rgba(99, 102, 241, 0.25);
 }
 
 [data-theme="dark"] {
-  --pk-bg: #0f172a;            /* Slate 900 */
-  --pk-surface: #1e293b;       /* Slate 800 */
+  --pk-bg: #0f172a;
+  /* Slate 900 */
+  --pk-surface: #1e293b;
+  /* Slate 800 */
   --pk-surface-hover: #334155;
-  
-  --pk-text-main: #f8fafc;     /* Slate 50 */
-  --pk-text-muted: #94a3b8;    /* Slate 400 */
-  
-  --pk-border: #334155;        /* Slate 700 */
-  
+
+  --pk-text-main: #f8fafc;
+  /* Slate 50 */
+  --pk-text-muted: #94a3b8;
+  /* Slate 400 */
+
+  --pk-border: #334155;
+  /* Slate 700 */
+
   --pk-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
   --pk-shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
   --pk-shadow-color: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
@@ -66,11 +84,12 @@
 
 body {
   margin: 0;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   background-color: var(--pk-bg);
   color: var(--pk-text-main);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 h1,
@@ -112,7 +131,14 @@ a:hover {
   box-shadow: var(--pk-shadow);
   padding: 2rem;
   margin-bottom: 2rem;
-  border: 1px solid var(--pk-border);
+  border: 1px solid var(--pk-surface);
+  /* Subtle border for clean look */
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  box-shadow: var(--pk-shadow-md);
+  /* transformative lift is subtle or removed for containers to avoid motion sickness */
 }
 
 /* Buttons */
@@ -123,41 +149,62 @@ a:hover {
   padding: 0.75rem 1.5rem;
   font-weight: 600;
   border-radius: var(--pk-radius-sm);
-  border: none;
+  border: 1px solid transparent;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   font-size: 0.95rem;
   gap: 0.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn:active {
+  transform: scale(0.98);
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--pk-primary), var(--pk-primary-hover));
+  background: var(--pk-primary);
   color: white;
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+  box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.2);
 }
 
 .btn-primary:hover {
+  background: var(--pk-primary-hover);
+  box-shadow: 0 6px 12px -1px rgba(99, 102, 241, 0.3);
   transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
 }
 
 .btn-danger {
-  background: var(--pk-danger);
-  color: white;
+  background: var(--pk-surface);
+  color: var(--pk-danger);
+  border: 1px solid var(--pk-danger);
 }
 
 .btn-danger:hover {
+  background: #fef2f2;
+  color: var(--pk-danger-hover);
+  border-color: var(--pk-danger-hover);
+}
+
+/* Solid Danger Button (for confirm actions) */
+.btn-danger-solid {
+  background: var(--pk-danger);
+  color: white;
+  border: 1px solid transparent;
+}
+
+.btn-danger-solid:hover {
   background: var(--pk-danger-hover);
 }
 
 .btn-ghost {
   background: transparent;
   color: var(--pk-text-muted);
-  border: 1px solid var(--pk-border);
+  border: 1px solid transparent;
 }
 
 .btn-ghost:hover {
-  background: var(--pk-bg);
+  background: var(--pk-surface-hover);
   color: var(--pk-text-main);
 }
 
@@ -165,21 +212,31 @@ a:hover {
 input[type="text"],
 input[type="email"],
 input[type="password"],
-input[type="date"] {
+input[type="date"],
+select {
   width: 100%;
   padding: 0.75rem 1rem;
   border-radius: var(--pk-radius-sm);
   border: 1px solid var(--pk-border);
-  background: var(--pk-bg);
+  background: var(--pk-surface);
   color: var(--pk-text-main);
-  font-size: 1rem;
-  transition: all 0.2s;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+  box-shadow: var(--pk-shadow-sm);
 }
 
-input:focus {
+input:hover,
+select:hover {
+  border-color: #cbd5e1;
+  /* Slate 300 */
+}
+
+input:focus,
+select:focus {
   outline: none;
   border-color: var(--pk-primary);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+  /* Softer ring */
 }
 
 /* Tables */

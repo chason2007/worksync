@@ -52,6 +52,22 @@ function Settings() {
         }
     };
 
+    const handleSystemReset = async () => {
+        try {
+            const token = localStorage.getItem('auth-token');
+            // Hard delete everything
+            await axios.post(`${import.meta.env.VITE_API_URL}/api/admin/reset-system`, {}, {
+                headers: { 'auth-token': token }
+            });
+            showToast("System Reset Complete", 'success');
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        } catch (err) {
+            showToast("Reset Failed: " + (err.response?.data?.error || err.message), 'error');
+        }
+    };
+
     return (
         <div className="fade-in" style={{ maxWidth: '800px', margin: '0 auto', padding: '2rem' }}>
             <h1 className="mb-8">Admin Settings</h1>
@@ -163,6 +179,35 @@ function Settings() {
                             Delete Leaves
                         </button>
                     </div>
+
+                    {/* Reset System */}
+                    <div className="flex justify-between items-center" style={{
+                        padding: '1rem',
+                        background: '#fff5f5',
+                        borderRadius: '8px',
+                        border: '1px solid #fed7d7'
+                    }}>
+                        <div style={{ flex: 1 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
+                                <span>⚠️</span>
+                                <strong style={{ color: 'var(--pk-danger)' }}>RESET SYSTEM</strong>
+                            </div>
+                            <div style={{ fontSize: '0.9rem', color: '#718096' }}>
+                                Deletes ALL data (Users, Attendance, Leaves). Only Super Admin remains.
+                            </div>
+                        </div>
+                        <button
+                            onClick={() => openModal(
+                                'RESET ENTIRE SYSTEM',
+                                'WARNING: This will delete ALL attendance records, ALL leaves, and ALL users (except you). This cannot be undone. Are you absolutely sure?',
+                                handleSystemReset
+                            )}
+                            className="btn btn-danger"
+                            style={{ fontWeight: 'bold' }}
+                        >
+                            RESET SYSTEM
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -187,7 +232,7 @@ function Settings() {
             }}>
                 <p style={{ margin: 0 }}>WorkSync - developed by Chason Hurtis</p>
             </footer>
-        </div>
+        </div >
     );
 }
 

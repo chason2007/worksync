@@ -59,7 +59,7 @@ function ConfirmModal({ isOpen, onClose, onConfirm, title, message, confirmText 
                     </button>
                     <button
                         onClick={handleConfirm}
-                        className={`btn ${danger ? 'btn-danger' : 'btn-primary'} ${loading ? 'loading' : ''}`}
+                        className={`btn ${danger ? 'btn-danger-solid' : 'btn-primary'} ${loading ? 'loading' : ''}`}
                         disabled={loading}
                     >
                         {loading ? 'Processing...' : confirmText}
