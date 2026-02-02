@@ -34,9 +34,9 @@ router.get('/today/:userId', verify, async (req, res) => {
 });
 
 // Mark Attendance (with duplicate prevention)
+// Mark Attendance (Simple Daily Status)
 router.post('/mark', verify, async (req, res) => {
     try {
-        // Security Fix: Trust the token, NOT the body
         const userId = req.user._id;
         const { status } = req.body;
 
@@ -54,40 +54,18 @@ router.post('/mark', verify, async (req, res) => {
         });
 
         if (existingAttendance) {
-            // If already clocked out, stop them
-            if (existingAttendance.clockOutTime) {
-                return res.status(400).json({
-                    error: 'Attendance already completed for today',
-                    attendance: existingAttendance
-                });
-            }
-
-            // If status is Absent, they can't clock out (logic check)
-            if (existingAttendance.status === 'Absent') {
-                return res.status(400).json({
-                    error: 'You have marked yourself as Absent today',
-                    attendance: existingAttendance
-                });
-            }
-
-            // Perform Clock Out
-            existingAttendance.clockOutTime = new Date();
-            await existingAttendance.save();
-
-            return res.json({
-                message: 'Clocked Out Successfully',
-                attendance: existingAttendance,
-                clockedOut: true
+            return res.status(400).json({
+                error: 'Attendance already marked for today',
+                attendance: existingAttendance
             });
         }
 
-        // Create new attendance record (Clock In)
-        const newRecord = new Attendance({ userId, status });
-
-        // Only set clockInTime if not Absent
-        if (status !== 'Absent') {
-            newRecord.clockInTime = new Date();
-        }
+        // Create new attendance record
+        const newRecord = new Attendance({
+            userId,
+            status,
+            date: new Date()
+        });
 
         await newRecord.save();
         res.status(201).json(newRecord);
