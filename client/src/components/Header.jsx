@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import Avatar from './Avatar';
+import { formatDateTime } from '../utils/dateUtils';
 
 
 function Header() {
@@ -255,7 +256,7 @@ function Header() {
                                                         {notif.message}
                                                     </div>
                                                     <div style={{ fontSize: '0.7rem', color: 'var(--pk-text-muted)' }}>
-                                                        {new Date(notif.createdAt).toLocaleString()}
+                                                        {formatDateTime(notif.createdAt)}
                                                     </div>
                                                 </div>
                                             ))
