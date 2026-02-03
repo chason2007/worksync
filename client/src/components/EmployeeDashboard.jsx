@@ -15,6 +15,7 @@ function EmployeeDashboard({ user }) {
 
     const [leaveReason, setLeaveReason] = useState('');
     const [leaveStartDate, setLeaveStartDate] = useState('');
+    const [leaveEndDate, setLeaveEndDate] = useState('');
     const [loading, setLoading] = useState(false);
 
     // Modal State

@@ -13,9 +13,12 @@ export const AuthProvider = ({ children }) => {
 
             if (token) {
                 try {
+                    console.log("Checking user against:", import.meta.env.VITE_API_URL);
                     const userRes = await axios.get(`${import.meta.env.VITE_API_URL}/api/auth/user`, {
-                        headers: { 'auth-token': token }
+                        headers: { 'auth-token': token },
+                        timeout: 10000 // 10 second timeout
                     });
+                    console.log("User found:", userRes.data);
                     setUser(userRes.data);
 
                     // Update whichever storage has the token
@@ -26,6 +29,9 @@ export const AuthProvider = ({ children }) => {
                     }
                 } catch (error) {
                     console.error("Failed to fetch user data", error);
+                    if (error.code === 'ECONNABORTED') {
+                        console.error("Request timed out");
+                    }
                     // Invalid token, clear all
                     localStorage.removeItem('auth-token');
                     localStorage.removeItem('user');
@@ -34,6 +40,7 @@ export const AuthProvider = ({ children }) => {
                     setUser(null);
                 }
             } else {
+                console.log("No token found");
                 setUser(null);
             }
             setLoading(false);
