@@ -65,7 +65,23 @@ export const AuthProvider = ({ children }) => {
 
     return (
         <AuthContext.Provider value={{ user, login, logout, loading }}>
-            {!loading && children}
+            {loading ? (
+                <div style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    height: '100vh',
+                    backgroundColor: 'var(--pk-bg)',
+                    color: 'var(--pk-primary)',
+                    flexDirection: 'column',
+                    gap: '1rem'
+                }}>
+                    <div className="btn loading" style={{ width: '40px', height: '40px', background: 'transparent' }}></div>
+                    <p style={{ fontWeight: 500 }}>Loading WorkSync...</p>
+                </div>
+            ) : (
+                children
+            )}
         </AuthContext.Provider>
     );
 };
