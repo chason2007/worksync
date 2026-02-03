@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useToast } from '../context/ToastContext';
 import { useAuth } from '../context/AuthContext';
 import StatusBadge from '../components/StatusBadge';
+import { formatDate } from '../utils/dateUtils';
 
 function AttendanceForm() {
     const [status, setStatus] = useState('Present');
@@ -87,7 +88,7 @@ function AttendanceForm() {
         }
     };
 
-    const formatDate = (date) => new Date(date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    // const formatDate = (date) => new Date(date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
     const formatTime = (date) => date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 
     const statusOptions = [
@@ -178,7 +179,7 @@ function AttendanceForm() {
                             <tbody>
                                 {attendanceHistory.map((record, index) => (
                                     <tr key={index}>
-                                        <td>{new Date(record.date).toLocaleDateString()}</td>
+                                        <td>{formatDate(record.date)}</td>
                                         <td>{new Date(record.date).toLocaleDateString('en-US', { weekday: 'long' })}</td>
                                         <td><StatusBadge status={record.status} /></td>
                                     </tr>

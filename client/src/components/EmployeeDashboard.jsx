@@ -6,6 +6,7 @@ import Skeleton from './Skeleton';
 import EmptyState from './EmptyState';
 import StatusBadge from './StatusBadge';
 import ConfirmModal from './ConfirmModal';
+import { formatDate } from '../utils/dateUtils';
 
 function EmployeeDashboard({ user }) {
     const [pageLoading, setPageLoading] = useState(true);
@@ -151,7 +152,7 @@ function EmployeeDashboard({ user }) {
                 </div>
                 <div style={{ textAlign: 'right' }}>
                     <p style={{ fontSize: '0.9rem', opacity: 0.8, margin: 0 }}>
-                        {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                        {formatDate(new Date())}
                     </p>
                 </div>
             </div>
@@ -271,7 +272,7 @@ function EmployeeDashboard({ user }) {
                                         {leaves.map(l => (
                                             <tr key={l._id}>
                                                 <td>{l.reason}</td>
-                                                <td>{new Date(l.startDate).toLocaleDateString()} - {new Date(l.endDate).toLocaleDateString()}</td>
+                                                <td>{formatDate(l.startDate)} - {formatDate(l.endDate)}</td>
                                                 <td>
                                                     <StatusBadge status={l.status} />
                                                 </td>

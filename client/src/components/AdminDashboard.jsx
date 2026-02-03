@@ -7,6 +7,7 @@ import Avatar from './Avatar';
 import Skeleton from './Skeleton';
 import EmptyState from './EmptyState';
 import StatusBadge from './StatusBadge';
+import { formatDate, formatDateTime } from '../utils/dateUtils';
 
 function AdminDashboard() {
     const { user: currentUser } = useAuth();
@@ -228,7 +229,7 @@ function AdminDashboard() {
             return [
                 log.userId?.name || 'Unknown',
                 log.userId?.email || 'N/A',
-                date.toLocaleDateString(),
+                formatDate(date),
                 date.toLocaleTimeString(),
                 log.status
             ];
@@ -293,9 +294,8 @@ function AdminDashboard() {
     // Count all visible users (Employees + Regular Admins) as "Total Employees" (excluding Super Admin who is already filtered out of 'users')
     // const totalEmployees = users.length; // Removed as per request
     const todayAttendance = attendanceLogs.filter(log => {
-        const logDate = new Date(log.date).toDateString();
-        const today = new Date().toDateString();
-        return logDate === today;
+        // Compare just the date parts dd/mm/yyyy
+        return formatDate(log.date) === formatDate(new Date());
     }).length;
     const pendingLeaves = leaves.filter(l => l.status === 'Pending').length;
 
@@ -555,7 +555,7 @@ function AdminDashboard() {
                                         </div>
                                     </td>
                                     <td>{l.reason}</td>
-                                    <td>{new Date(l.startDate).toLocaleDateString()} - {new Date(l.endDate).toLocaleDateString()}</td>
+                                    <td>{formatDate(l.startDate)} - {formatDate(l.endDate)}</td>
                                     <td>
                                         <StatusBadge status={l.status} />
                                     </td>
@@ -653,10 +653,10 @@ function AdminDashboard() {
                                     </td>
                                     <td>{log.userId?.email || 'N/A'}</td>
                                     <td>
-                                        <div>{new Date(log.date).toLocaleString()}</div>
+                                        <div>{formatDateTime(log.date)}</div>
                                         {(log.modifiedBy || log.modifiedAt) && (
                                             <div style={{ fontSize: '0.75rem', color: 'var(--pk-text-muted)', marginTop: '2px' }}>
-                                                Edited {log.modifiedAt && new Date(log.modifiedAt).toLocaleDateString()}
+                                                Edited {log.modifiedAt && formatDate(log.modifiedAt)}
                                             </div>
                                         )}
                                     </td>
@@ -680,7 +680,7 @@ function AdminDashboard() {
                                         <EmptyState
                                             icon="📅"
                                             title="No Attendance Found"
-                                            description={`We couldn't find any attendance records for ${new Date(selectedDate).toLocaleDateString()}.`}
+                                            description={`We couldn't find any attendance records for ${formatDate(selectedDate)}.`}
                                         />
                                     </td>
                                 </tr>
@@ -750,7 +750,7 @@ function AdminDashboard() {
                                     Updating attendance for <strong>{editingAttendance.userId?.name}</strong>
                                     <br />
                                     <span style={{ fontSize: '0.9rem' }}>
-                                        Original Date: {new Date(editingAttendance.date).toLocaleString()}
+                                        Original Date: {formatDateTime(editingAttendance.date)}
                                     </span>
                                 </p>
                                 <div>
