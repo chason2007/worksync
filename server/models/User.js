@@ -6,7 +6,6 @@ const UserSchema = new mongoose.Schema({
     password: String, // In production, hash this with bcrypt!
     role: { type: String, enum: ['Admin', 'Employee'], default: 'Employee' },
     position: String,
-    salary: Number, // Basic fixed salary for payroll module
     profileImage: String, // Filename of uploaded profile image
     employeeId: { type: String, unique: true },
 });

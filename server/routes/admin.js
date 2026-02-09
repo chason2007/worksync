@@ -125,7 +125,6 @@ router.put('/users/:id', verify, async (req, res) => {
                     email: req.body.email,
                     role: req.body.role,
                     position: req.body.position,
-                    salary: req.body.salary,
                     employeeId: req.body.employeeId
                 }
             },

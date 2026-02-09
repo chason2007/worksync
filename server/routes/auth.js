@@ -52,7 +52,6 @@ router.post('/register', verify, async (req, res) => {
             password: hashedPassword,
             role: req.body.role || 'Employee', // Default to Employee
             position: req.body.position,
-            salary: req.body.salary,
             employeeId: newEmployeeId
         });
 
