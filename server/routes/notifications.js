@@ -2,6 +2,19 @@ const router = require('express').Router();
 const Notification = require('../models/Notification');
 const verify = require('./verifyToken');
 
+// Clear All Notifications
+router.delete('/clear-all', verify, async (req, res) => {
+    console.log("Attempting to clearing all notifications for user:", req.user._id);
+    try {
+        await Notification.deleteMany({ userId: req.user._id });
+        console.log("Successfully cleared notifications");
+        res.json({ message: 'All notifications cleared' });
+    } catch (err) {
+        console.error("Error clearing notifications:", err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // Get Notifications for User
 router.get('/', verify, async (req, res) => {
     try {
@@ -37,19 +50,6 @@ router.put('/mark-all-read', verify, async (req, res) => {
         );
         res.json({ message: 'All marked as read' });
     } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// Clear All Notifications
-router.delete('/clear-all', verify, async (req, res) => {
-    console.log("Attempting to clearing all notifications for user:", req.user._id);
-    try {
-        await Notification.deleteMany({ userId: req.user._id });
-        console.log("Successfully cleared notifications");
-        res.json({ message: 'All notifications cleared' });
-    } catch (err) {
-        console.error("Error clearing notifications:", err);
         res.status(500).json({ error: err.message });
     }
 });
