@@ -80,6 +80,18 @@ function Header() {
         }
     };
 
+    const clearAllNotifications = async () => {
+        try {
+            const token = localStorage.getItem('auth-token') || sessionStorage.getItem('auth-token');
+            await axios.delete(`${import.meta.env.VITE_API_URL}/api/notifications/clear-all`, {
+                headers: { 'auth-token': token }
+            });
+            setNotifications([]);
+        } catch (err) {
+            console.error("Failed to clear notifications", err);
+        }
+    };
+
     const unreadCount = notifications.filter(n => !n.isRead).length;
 
 
@@ -222,14 +234,24 @@ function Header() {
                                             alignItems: 'center'
                                         }}>
                                             <h4 style={{ margin: 0, fontSize: '0.9rem' }}>Notifications</h4>
-                                            {unreadCount > 0 && (
-                                                <button
-                                                    style={{ background: 'none', border: 'none', color: 'var(--pk-primary)', fontSize: '0.75rem', cursor: 'pointer' }}
-                                                    onClick={(e) => { e.stopPropagation(); markAllRead(); }}
-                                                >
-                                                    Mark all read
-                                                </button>
-                                            )}
+                                            <div style={{ display: 'flex', gap: '1rem' }}>
+                                                {unreadCount > 0 && (
+                                                    <button
+                                                        style={{ background: 'none', border: 'none', color: 'var(--pk-primary)', fontSize: '0.75rem', cursor: 'pointer' }}
+                                                        onClick={(e) => { e.stopPropagation(); markAllRead(); }}
+                                                    >
+                                                        Mark all read
+                                                    </button>
+                                                )}
+                                                {notifications.length > 0 && (
+                                                    <button
+                                                        style={{ background: 'none', border: 'none', color: 'var(--pk-danger)', fontSize: '0.75rem', cursor: 'pointer' }}
+                                                        onClick={(e) => { e.stopPropagation(); clearAllNotifications(); }}
+                                                    >
+                                                        Clear all
+                                                    </button>
+                                                )}
+                                            </div>
                                         </div>
 
                                         {notifications.length === 0 ? (

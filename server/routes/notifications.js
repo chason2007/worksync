@@ -41,6 +41,16 @@ router.put('/mark-all-read', verify, async (req, res) => {
     }
 });
 
+// Clear All Notifications
+router.delete('/clear-all', verify, async (req, res) => {
+    try {
+        await Notification.deleteMany({ userId: req.user._id });
+        res.json({ message: 'All notifications cleared' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // Internal Helper: Create Notification (Not exposed as route, used by other routes)
 // But to keep it simple, we will import the model directly in other files.
 
