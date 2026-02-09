@@ -81,14 +81,17 @@ function Header() {
     };
 
     const clearAllNotifications = async () => {
+        if (!window.confirm("Are you sure you want to clear all notifications?")) return;
         try {
             const token = localStorage.getItem('auth-token') || sessionStorage.getItem('auth-token');
             await axios.delete(`${import.meta.env.VITE_API_URL}/api/notifications/clear-all`, {
                 headers: { 'auth-token': token }
             });
             setNotifications([]);
+            // Optional: toast.success("Notifications cleared"); 
         } catch (err) {
             console.error("Failed to clear notifications", err);
+            alert("Failed to clear notifications. Please try again or check the console.");
         }
     };
 
