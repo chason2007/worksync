@@ -40,62 +40,49 @@ function Login() {
         }
     };
 
-
-
     return (
         <div className="fade-in" style={{
+            minHeight: '100vh',
             display: 'flex',
-            justifyContent: 'center',
             alignItems: 'center',
-            minHeight: 'calc(100vh - 80px)',
-            padding: '1rem',
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            position: 'relative',
-            overflow: 'hidden'
+            justifyContent: 'center',
+            background: 'linear-gradient(135deg, #4f46e5 0%, #0f172a 100%)',
+            padding: '1rem'
         }}>
-            {/* Animated Background Pattern */}
-            <div style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                opacity: 0.1,
-                backgroundImage: 'radial-gradient(circle at 20% 50%, white 1px, transparent 1px), radial-gradient(circle at 80% 80%, white 1px, transparent 1px)',
-                backgroundSize: '50px 50px',
-                animation: 'pulse 4s ease-in-out infinite'
-            }}></div>
-
             <div className="card" style={{
+                maxWidth: '400px',
                 width: '100%',
-                maxWidth: '420px',
-                margin: '0',
-                position: 'relative',
-                zIndex: 1
+                padding: '2.5rem',
+                border: 'none',
+                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
             }}>
-                {/* Logo */}
-                <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-                    <img
-                        src="/worksync-logo.png"
-                        alt="WorkSync Logo"
-                        style={{
-                            width: '80px',
-                            height: '80px',
-                            marginBottom: '1rem'
-                        }}
-                    />
-                    <h2 style={{ marginBottom: '0.5rem' }}>Welcome Back</h2>
-
+                <div className="text-center mb-8">
+                    <div style={{
+                        width: '64px',
+                        height: '64px',
+                        background: 'linear-gradient(135deg, #4f46e5, #818cf8)',
+                        borderRadius: '16px',
+                        margin: '0 auto 1.5rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: 'white',
+                        fontSize: '32px',
+                        boxShadow: '0 10px 15px -3px rgba(79, 70, 229, 0.3)'
+                    }}>
+                        ⚡
+                    </div>
+                    <h2 className="mb-2" style={{ fontSize: '1.75rem', fontWeight: '800' }}>Welcome Back</h2>
+                    <p className="text-muted">Sign in to your WorkSync account</p>
                 </div>
 
                 <form onSubmit={handleLogin} className="flex flex-col gap-4">
-                    {/* Email Input */}
                     <div>
-                        <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
+                        <label className="mb-2" style={{ display: 'block', fontSize: '0.875rem', fontWeight: '600', color: 'var(--slate-700)' }}>
                             Email Address
                         </label>
                         <div className="input-group">
-                            <span className="input-icon">📧</span>
+                            <span className="input-icon">✉️</span>
                             <input
                                 type="email"
                                 placeholder="name@company.com"
@@ -107,11 +94,13 @@ function Login() {
                         </div>
                     </div>
 
-                    {/* Password Input */}
                     <div>
-                        <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
-                            Password
-                        </label>
+                        <div className="flex justify-between items-center mb-2">
+                            <label style={{ fontSize: '0.875rem', fontWeight: '600', color: 'var(--slate-700)' }}>
+                                Password
+                            </label>
+                            <a href="#" style={{ fontSize: '0.8rem' }}>Forgot password?</a>
+                        </div>
                         <div className="input-group">
                             <span className="input-icon">🔒</span>
                             <input
@@ -121,7 +110,6 @@ function Login() {
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
                                 disabled={loading}
-                                style={{ paddingRight: '2.5rem' }}
                             />
                             <span
                                 className="input-icon-right"
@@ -133,35 +121,34 @@ function Login() {
                         </div>
                     </div>
 
-
-                    {/* Remember Me */}
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', gap: '0.5rem', fontSize: '0.9rem', userSelect: 'none' }}>
-                            <input
-                                type="checkbox"
-                                checked={rememberMe}
-                                onChange={(e) => setRememberMe(e.target.checked)}
-                                style={{ width: '1rem', height: '1rem', accentColor: 'var(--pk-primary)' }}
-                            />
-                            Remember me
+                    <div className="flex items-center gap-2 mt-2">
+                        <input
+                            type="checkbox"
+                            checked={rememberMe}
+                            onChange={(e) => setRememberMe(e.target.checked)}
+                            id="remember"
+                            style={{ width: '1rem', height: '1rem' }}
+                        />
+                        <label htmlFor="remember" style={{ fontSize: '0.9rem', color: 'var(--slate-600)', cursor: 'pointer' }}>
+                            Remember me for 30 days
                         </label>
                     </div>
 
                     <button
                         type="submit"
-                        className={`btn btn-primary ${loading ? 'loading' : ''}`}
+                        className="btn btn-primary w-full mt-4"
                         disabled={loading}
-                        style={{ marginTop: '0.5rem', width: '100%' }}
+                        style={{ height: '48px', fontSize: '1rem' }}
                     >
                         {loading ? 'Signing in...' : 'Sign In'}
                     </button>
                 </form>
 
-
-            </div >
-
-
-        </div >
+                <div className="mt-8 text-center text-sm text-muted">
+                    Don't have an account? <a href="#" className="font-bold">Contact Admin</a>
+                </div>
+            </div>
+        </div>
     );
 }
 

@@ -133,8 +133,6 @@ function AdminDashboard() {
                     setLeaves(Array.isArray(leavesRes.data) ? leavesRes.data : []);
                 }
 
-
-
             } catch (err) {
                 console.error("Failed to fetch admin data", err);
                 showToast("Failed to load dashboard data", 'error');
@@ -211,8 +209,6 @@ function AdminDashboard() {
         }
     };
 
-
-
     // Export attendance to CSV
     const exportToCSV = () => {
         if (attendanceLogs.length === 0) {
@@ -257,8 +253,6 @@ function AdminDashboard() {
         showToast(`Exported ${attendanceLogs.length} attendance records`, 'success');
     };
 
-
-
     // Edit Attendance Handlers
     const openEditAttendanceModal = (log) => {
         setEditingAttendance(log);
@@ -291,8 +285,6 @@ function AdminDashboard() {
     };
 
     // Calculate stats
-    // Count all visible users (Employees + Regular Admins) as "Total Employees" (excluding Super Admin who is already filtered out of 'users')
-    // const totalEmployees = users.length; // Removed as per request
     const todayAttendance = attendanceLogs.filter(log => {
         // Compare just the date parts dd/mm/yyyy
         return formatDate(log.date) === formatDate(new Date());
@@ -301,10 +293,23 @@ function AdminDashboard() {
 
     return (
         <div className="fade-in" style={{ maxWidth: '1400px', margin: '0 auto', padding: '2rem' }}>
-            <h1 className="mb-8">Admin Dashboard</h1>
+            <div className="flex justify-between items-center mb-8">
+                <div>
+                    <h1 className="mb-2">Admin Dashboard</h1>
+                    <p className="text-muted">Manage users, attendance, and leave requests</p>
+                </div>
+                <div className="flex gap-2">
+                    <button className="btn btn-secondary">
+                        📊 Reports
+                    </button>
+                    <button className="btn btn-primary">
+                        + Add Employee
+                    </button>
+                </div>
+            </div>
 
             {/* Overview Stats */}
-            <div className="stats-grid" style={{ marginBottom: '2rem' }}>
+            <div className="stats-grid">
                 {pageLoading ? (
                     <>
                         <Skeleton type="card" height="120px" />
@@ -313,176 +318,125 @@ function AdminDashboard() {
                     </>
                 ) : (
                     <>
-                        <div className="stat-card" style={{ background: 'linear-gradient(135deg, #22c55e, #16a34a)' }}>
-                            <h4>✓ Today's Attendance</h4>
-                            <p className="stat-value">{todayAttendance}</p>
+                        <div className="stat-card">
+                            <h4 className="stat-label">Today's Attendance</h4>
+                            <p className="stat-value" style={{ color: 'var(--success-text)' }}>{todayAttendance}</p>
                         </div>
-                        <div className="stat-card" style={{ background: 'linear-gradient(135deg, #f59e0b, #d97706)' }}>
-                            <h4>⏳ Pending Leaves</h4>
-                            <p className="stat-value">{pendingLeaves}</p>
+                        <div className="stat-card">
+                            <h4 className="stat-label">Pending Leaves</h4>
+                            <p className="stat-value" style={{ color: 'var(--warning-text)' }}>{pendingLeaves}</p>
                         </div>
-                        <div className="stat-card" style={{ background: 'linear-gradient(135deg, #8b5cf6, #7c3aed)' }}>
-                            <h4>📊 Total Users</h4>
-                            <p className="stat-value">{users.length}</p>
+                        <div className="stat-card">
+                            <h4 className="stat-label">Total Users</h4>
+                            <p className="stat-value" style={{ color: 'var(--primary-600)' }}>{users.length}</p>
                         </div>
                     </>
                 )}
             </div>
 
-            {/* User Management */}
-            <div className="card">
-                <div className="flex justify-between items-center mb-4">
-                    <h3>User Management</h3>
-                    <div className="search-input">
-                        <span className="search-icon">🔍</span>
-                        <input
-                            type="text"
-                            placeholder="Search users..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                        {searchTerm && (
-                            <span className="search-clear" onClick={() => setSearchTerm('')}>✕</span>
-                        )}
+            <div className="grid" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '2rem', marginBottom: '2rem' }}>
+                {/* User Management */}
+                <div className="card">
+                    <div className="flex justify-between items-center mb-6">
+                        <h3>User Management</h3>
+                        <div className="input-group" style={{ width: '250px' }}>
+                            <span className="input-icon">🔍</span>
+                            <input
+                                type="text"
+                                placeholder="Search users..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                        </div>
+                    </div>
+                    <div className="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>User</th>
+                                    <th>Role</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {pageLoading ? (
+                                    <tr><td colSpan="3"><Skeleton /></td></tr>
+                                ) : (
+                                    <>
+                                        {filteredUsers.map(u => (
+                                            <tr key={u._id}>
+                                                {editingUser === u._id ? (
+                                                    <>
+                                                        <td colSpan="2">
+                                                            <div className="flex-col gap-2">
+                                                                <input
+                                                                    type="text"
+                                                                    value={editForm.name}
+                                                                    onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                                                                    placeholder="Name"
+                                                                />
+                                                                <input
+                                                                    type="email"
+                                                                    value={editForm.email}
+                                                                    onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+                                                                    placeholder="Email"
+                                                                />
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div className="flex gap-2">
+                                                                <button onClick={handleUpdateUser} className="btn btn-primary btn-sm">Save</button>
+                                                                <button onClick={() => setEditingUser(null)} className="btn btn-ghost btn-sm">Cancel</button>
+                                                            </div>
+                                                        </td>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <td>
+                                                            <div className="flex items-center gap-3">
+                                                                <Avatar user={u} size="sm" />
+                                                                <div>
+                                                                    <div className="font-bold">{u.name}</div>
+                                                                    <div className="text-sm text-muted">{u.email}</div>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td><StatusBadge status={u.role} /></td>
+                                                        <td>
+                                                            {(u.role !== 'Admin' || (currentUser && currentUser.email === 'admin@worksync.com')) && (
+                                                                <div className="flex gap-2">
+                                                                    <button onClick={() => handleEditClick(u)} className="btn btn-ghost" style={{ padding: '0.4rem' }}>✏️</button>
+                                                                    <button
+                                                                        onClick={() => openModal(
+                                                                            'Delete User',
+                                                                            `Are you sure you want to delete ${u.name}?`,
+                                                                            () => handleDeleteUser(u._id)
+                                                                        )}
+                                                                        className="btn btn-ghost"
+                                                                        style={{ padding: '0.4rem', color: 'var(--danger-text)' }}
+                                                                    >
+                                                                        🗑️
+                                                                    </button>
+                                                                </div>
+                                                            )}
+                                                        </td>
+                                                    </>
+                                                )}
+                                            </tr>
+                                        ))}
+                                    </>
+                                )}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-                <div className="table-responsive">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>User</th>
-                                <th>Email</th>
-                                <th>Role</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {pageLoading ? (
-                                <>
-                                    <tr><td colSpan="4"><Skeleton /></td></tr>
-                                    <tr><td colSpan="4"><Skeleton /></td></tr>
-                                    <tr><td colSpan="4"><Skeleton /></td></tr>
-                                    <tr><td colSpan="4"><Skeleton /></td></tr>
-                                </>
-                            ) : (
-                                <>
-                                    {filteredUsers.map(u => (
-                                        <tr key={u._id}>
-                                            {editingUser === u._id ? (
-                                                <>
-                                                    <td>
-                                                        <div className="flex-col gap-2">
-                                                            <input
-                                                                type="text"
-                                                                value={editForm.name}
-                                                                onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                                                                style={{ width: '100%', padding: '0.4rem', marginBottom: '4px' }}
-                                                                placeholder="Name"
-                                                            />
-                                                            <input
-                                                                type="text"
-                                                                value={editForm.employeeId}
-                                                                onChange={(e) => setEditForm({ ...editForm, employeeId: e.target.value })}
-                                                                style={{ width: '100%', padding: '0.4rem', fontSize: '0.8rem' }}
-                                                                placeholder="ID (e.g. EMP001)"
-                                                            />
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        <input
-                                                            type="email"
-                                                            value={editForm.email}
-                                                            onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
-                                                            style={{ width: '100%', padding: '0.4rem' }}
-                                                        />
-                                                    </td>
-                                                    <td>
-                                                        <select
-                                                            value={editForm.role}
-                                                            onChange={(e) => setEditForm({ ...editForm, role: e.target.value })}
-                                                            style={{ padding: '0.4rem', borderRadius: '4px' }}
-                                                        >
-                                                            <option value="Employee">Employee</option>
-                                                            <option value="Admin">Admin</option>
-                                                        </select>
-                                                    </td>
-                                                    <td>
-                                                        <div className="flex gap-2">
-                                                            <button onClick={handleUpdateUser} className="btn btn-primary" style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem' }}>Save</button>
-                                                            <button onClick={() => setEditingUser(null)} className="btn btn-ghost" style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem' }}>Cancel</button>
-                                                        </div>
-                                                    </td>
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <td>
-                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                                                            <Avatar user={u} size="sm" />
-                                                            <div>
-                                                                <div style={{ fontSize: '0.75rem', color: 'var(--pk-text-muted)', marginBottom: '2px' }}>
-                                                                    {u.employeeId || 'No ID'}
-                                                                </div>
-                                                                <div style={{ fontWeight: '600', fontSize: '1rem', marginBottom: '2px' }}>{u.name}</div>
-                                                                <div style={{ fontSize: '0.75rem', color: 'var(--pk-text-muted)' }}>
-                                                                    {u.position || 'No Pos'}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                    <td>{u.email}</td>
-                                                    <td><StatusBadge status={u.role} /></td>
-                                                    <td>
-                                                        {/* Show actions if user is Employee OR if current user is Super Admin covering an Admin */}
-                                                        {(u.role !== 'Admin' || (currentUser && currentUser.email === 'admin@worksync.com')) && (
-                                                            <div className="flex gap-2">
-                                                                <button onClick={() => handleEditClick(u)} className="btn btn-ghost" style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem', color: 'var(--pk-primary)', borderColor: 'var(--pk-primary)' }}>Edit</button>
-                                                                <button
-                                                                    onClick={() => openModal(
-                                                                        'Delete User',
-                                                                        `Are you sure you want to delete ${u.name}? This action cannot be undone.`,
-                                                                        () => handleDeleteUser(u._id)
-                                                                    )}
-                                                                    className="btn btn-danger"
-                                                                    style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem' }}
-                                                                >
-                                                                    Delete
-                                                                </button>
-                                                            </div>
-                                                        )}
-                                                    </td>
-                                                </>
-                                            )}
-                                        </tr>
-                                    ))}
-                                    {filteredUsers.length === 0 && (
-                                        <tr>
-                                            <td colSpan="4">
-                                                <EmptyState
-                                                    icon="👥"
-                                                    title="No Users Found"
-                                                    description={searchTerm ? `No users match "${searchTerm}"` : "Get started by adding your first employee."}
-                                                />
-                                            </td>
-                                        </tr>
-                                    )}
-                                </>
-                            )}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
 
-            {/* Request Leave Section for Admin */}
-            <div className="card mb-8">
-                <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    🏖️ Request Leave (Admin)
-                </h3>
-                <form onSubmit={submitLeaveRequest} className="flex flex-col gap-4">
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr auto', gap: '1rem', alignItems: 'end' }}>
+                {/* Request Leave Section for Admin */}
+                <div className="card h-fit">
+                    <h3 className="mb-4">Request Leave</h3>
+                    <form onSubmit={submitLeaveRequest} className="flex flex-col gap-4">
                         <div>
-                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', fontSize: '0.9rem' }}>
-                                Reason
-                            </label>
+                            <label className="mb-2 block text-sm font-bold text-muted">Reason</label>
                             <input
                                 type="text"
                                 placeholder="Meeting, Personal..."
@@ -490,51 +444,45 @@ function AdminDashboard() {
                                 onChange={e => setLeaveReason(e.target.value)}
                                 required
                                 disabled={isSubmittingLeave}
-                                style={{ width: '100%' }}
                             />
                         </div>
-                        <div>
-                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', fontSize: '0.9rem' }}>
-                                Start Date
-                            </label>
-                            <input
-                                type="date"
-                                value={leaveStartDate}
-                                onChange={e => setLeaveStartDate(e.target.value)}
-                                required
-                                disabled={isSubmittingLeave}
-                                style={{ width: '100%' }}
-                            />
-                        </div>
-                        <div>
-                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', fontSize: '0.9rem' }}>
-                                End Date
-                            </label>
-                            <input
-                                type="date"
-                                value={leaveEndDate}
-                                onChange={e => setLeaveEndDate(e.target.value)}
-                                required
-                                disabled={isSubmittingLeave}
-                                style={{ width: '100%' }}
-                            />
+                        <div className="flex gap-2">
+                            <div className="w-full">
+                                <label className="mb-2 block text-sm font-bold text-muted">Start Date</label>
+                                <input
+                                    type="date"
+                                    value={leaveStartDate}
+                                    onChange={e => setLeaveStartDate(e.target.value)}
+                                    required
+                                    disabled={isSubmittingLeave}
+                                />
+                            </div>
+                            <div className="w-full">
+                                <label className="mb-2 block text-sm font-bold text-muted">End Date</label>
+                                <input
+                                    type="date"
+                                    value={leaveEndDate}
+                                    onChange={e => setLeaveEndDate(e.target.value)}
+                                    required
+                                    disabled={isSubmittingLeave}
+                                />
+                            </div>
                         </div>
                         <button
                             type="submit"
-                            className={`btn btn-primary ${isSubmittingLeave ? 'loading' : ''}`}
+                            className="btn btn-primary w-full mt-2"
                             disabled={isSubmittingLeave}
-                            style={{ height: '42px' }}
                         >
-                            {isSubmittingLeave ? '...' : 'Submit'}
+                            {isSubmittingLeave ? 'Submitting...' : 'Submit Request'}
                         </button>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
 
             {/* Leave Requests */}
-            <div className="card">
-                <h3>Leave Requests</h3>
-                <div className="table-responsive">
+            <div className="card mb-8">
+                <h3 className="mb-4">Leave Requests</h3>
+                <div className="table-container">
                     <table>
                         <thead>
                             <tr>
@@ -549,21 +497,19 @@ function AdminDashboard() {
                             {leaves.map(l => (
                                 <tr key={l._id}>
                                     <td>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                        <div className="flex items-center gap-3">
                                             <Avatar user={l.userId} size="sm" />
-                                            {l.userId?.name}
+                                            <span className="font-bold">{l.userId?.name}</span>
                                         </div>
                                     </td>
                                     <td>{l.reason}</td>
                                     <td>{formatDate(l.startDate)} - {formatDate(l.endDate)}</td>
-                                    <td>
-                                        <StatusBadge status={l.status} />
-                                    </td>
+                                    <td><StatusBadge status={l.status} /></td>
                                     <td>
                                         {l.status === 'Pending' && (
-                                            <div className="flex gap-4">
-                                                <button onClick={() => updateLeaveStatus(l._id, 'Approved')} className="btn btn-primary" style={{ background: 'var(--pk-success)', padding: '0.4rem 0.8rem', fontSize: '0.8rem' }}>Approve</button>
-                                                <button onClick={() => updateLeaveStatus(l._id, 'Rejected')} className="btn btn-danger" style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem' }}>Reject</button>
+                                            <div className="flex gap-2">
+                                                <button onClick={() => updateLeaveStatus(l._id, 'Approved')} className="btn btn-primary" style={{ padding: '0.4rem 0.8rem' }}>Approve</button>
+                                                <button onClick={() => updateLeaveStatus(l._id, 'Rejected')} className="btn btn-danger" style={{ padding: '0.4rem 0.8rem' }}>Reject</button>
                                             </div>
                                         )}
                                     </td>
@@ -583,46 +529,42 @@ function AdminDashboard() {
                         </tbody>
                     </table>
                 </div>
+                {/* Leave Pagination Controls */}
+                {leaveMeta.pages > 1 && (
+                    <div className="flex justify-center gap-2 mt-4">
+                        <button
+                            className="btn btn-ghost"
+                            disabled={leavePage === 1}
+                            onClick={() => setLeavePage(p => Math.max(1, p - 1))}
+                        >
+                            « Previous
+                        </button>
+                        <span className="flex items-center text-sm text-muted">
+                            Page {leavePage} of {leaveMeta.pages}
+                        </span>
+                        <button
+                            className="btn btn-ghost"
+                            disabled={leavePage === leaveMeta.pages}
+                            onClick={() => setLeavePage(p => Math.min(leaveMeta.pages, p + 1))}
+                        >
+                            Next »
+                        </button>
+                    </div>
+                )}
             </div>
-            {/* Leave Pagination Controls */}
-            {leaveMeta.pages > 1 && (
-                <div className="flex justify-center gap-2 mt-4" style={{ padding: '1rem' }}>
-                    <button
-                        className="btn btn-ghost"
-                        disabled={leavePage === 1}
-                        onClick={() => setLeavePage(p => Math.max(1, p - 1))}
-                    >
-                        « Previous
-                    </button>
-                    <span className="flex items-center">
-                        Page {leavePage} of {leaveMeta.pages}
-                    </span>
-                    <button
-                        className="btn btn-ghost"
-                        disabled={leavePage === leaveMeta.pages}
-                        onClick={() => setLeavePage(p => Math.min(leaveMeta.pages, p + 1))}
-                    >
-                        Next »
-                    </button>
-                </div>
-            )}
-
-
 
             {/* Attendance Logs */}
             <div className="card">
-                <div className="flex justify-between items-center mb-4">
+                <div className="flex justify-between items-center mb-6">
                     <h3>Attendance Logs</h3>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <div className="flex items-center gap-4">
                         <button
                             onClick={exportToCSV}
-                            className="btn btn-primary"
-                            style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}
+                            className="btn btn-secondary"
                             disabled={attendanceLogs.length === 0}
                         >
-                            📥 Export to CSV
+                            📥 Export CSV
                         </button>
-                        <label>Filter Date:</label>
                         <input
                             type="date"
                             value={selectedDate}
@@ -631,12 +573,11 @@ function AdminDashboard() {
                         />
                     </div>
                 </div>
-                <div className="table-responsive">
+                <div className="table-container">
                     <table>
                         <thead>
                             <tr>
                                 <th>Employee</th>
-                                <th>Email</th>
                                 <th>Date/Time</th>
                                 <th>Status</th>
                                 <th>Action</th>
@@ -646,28 +587,27 @@ function AdminDashboard() {
                             {attendanceLogs.map(log => (
                                 <tr key={log._id}>
                                     <td>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                        <div className="flex items-center gap-3">
                                             <Avatar user={log.userId} size="sm" />
-                                            {log.userId?.name || 'Unknown'}
+                                            <div>
+                                                <div className="font-bold">{log.userId?.name || 'Unknown'}</div>
+                                                <div className="text-sm text-muted">{log.userId?.email || 'N/A'}</div>
+                                            </div>
                                         </div>
                                     </td>
-                                    <td>{log.userId?.email || 'N/A'}</td>
                                     <td>
                                         <div>{formatDateTime(log.date)}</div>
                                         {(log.modifiedBy || log.modifiedAt) && (
-                                            <div style={{ fontSize: '0.75rem', color: 'var(--pk-text-muted)', marginTop: '2px' }}>
+                                            <div className="text-sm text-muted">
                                                 Edited {log.modifiedAt && formatDate(log.modifiedAt)}
                                             </div>
                                         )}
                                     </td>
-                                    <td>
-                                        <StatusBadge status={log.status} />
-                                    </td>
+                                    <td><StatusBadge status={log.status} /></td>
                                     <td>
                                         <button
                                             onClick={() => openEditAttendanceModal(log)}
                                             className="btn btn-ghost"
-                                            style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem', color: 'var(--pk-primary)', borderColor: 'var(--pk-primary)' }}
                                         >
                                             Edit
                                         </button>
@@ -676,11 +616,11 @@ function AdminDashboard() {
                             ))}
                             {attendanceLogs.length === 0 && (
                                 <tr>
-                                    <td colSpan="5">
+                                    <td colSpan="4">
                                         <EmptyState
                                             icon="📅"
-                                            title="No Attendance Found"
-                                            description={`We couldn't find any attendance records for ${formatDate(selectedDate)}.`}
+                                            title="No Attendance"
+                                            description={`No records for ${formatDate(selectedDate)}.`}
                                         />
                                     </td>
                                 </tr>
@@ -688,11 +628,10 @@ function AdminDashboard() {
                         </tbody>
                     </table>
                 </div>
-            </div>
-            {/* Attendance Pagination Controls */}
-            {
-                attendanceMeta.pages > 1 && (
-                    <div className="flex justify-center gap-2 mt-4" style={{ padding: '1rem' }}>
+
+                {/* Attendance Pagination Controls */}
+                {attendanceMeta.pages > 1 && (
+                    <div className="flex justify-center gap-2 mt-4">
                         <button
                             className="btn btn-ghost"
                             disabled={attendancePage === 1}
@@ -700,7 +639,7 @@ function AdminDashboard() {
                         >
                             « Previous
                         </button>
-                        <span className="flex items-center">
+                        <span className="flex items-center text-sm text-muted">
                             Page {attendancePage} of {attendanceMeta.pages}
                         </span>
                         <button
@@ -711,10 +650,8 @@ function AdminDashboard() {
                             Next »
                         </button>
                     </div>
-                )
-            }
-
-
+                )}
+            </div>
 
             <ConfirmModal
                 isOpen={modalConfig.isOpen}
@@ -725,74 +662,65 @@ function AdminDashboard() {
                 danger={true}
             />
 
-
-
             {/* Edit Attendance Modal */}
-            {
-                showEditAttendanceModal && editingAttendance && (
-                    <>
-                        <div
-                            className="modal-backdrop"
-                            onClick={() => setShowEditAttendanceModal(false)}
-                        />
-                        <div className="modal">
-                            <div className="modal-header">
-                                <h3>Edit Attendance</h3>
-                                <button
-                                    className="modal-close"
-                                    onClick={() => setShowEditAttendanceModal(false)}
-                                >
-                                    ✕
-                                </button>
-                            </div>
-                            <div className="modal-body">
-                                <p style={{ marginBottom: '1rem', color: 'var(--pk-text-muted)' }}>
-                                    Updating attendance for <strong>{editingAttendance.userId?.name}</strong>
-                                    <br />
-                                    <span style={{ fontSize: '0.9rem' }}>
-                                        Original Date: {formatDateTime(editingAttendance.date)}
-                                    </span>
-                                </p>
-                                <div>
-                                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
-                                        Status
-                                    </label>
-                                    <div className="status-grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem' }}>
-                                        {['Present', 'Half-day', 'Absent'].map((status) => (
-                                            <div
-                                                key={status}
-                                                className={`status-card ${editAttendanceStatus === status ? 'selected' : ''}`}
-                                                onClick={() => setEditAttendanceStatus(status)}
-                                                style={{ padding: '0.75rem', fontSize: '0.9rem', minHeight: 'auto' }}
-                                            >
-                                                <div style={{ textAlign: 'center' }}>
-                                                    {status === 'Present' ? '✅' : status === 'Half-day' ? '⏰' : '❌'} {status}
-                                                </div>
+            {showEditAttendanceModal && editingAttendance && (
+                <>
+                    <div className="modal-backdrop" onClick={() => setShowEditAttendanceModal(false)} />
+                    <div className="modal">
+                        <div className="modal-header">
+                            <h3>Edit Attendance</h3>
+                            <button
+                                className="btn btn-ghost"
+                                onClick={() => setShowEditAttendanceModal(false)}
+                                style={{ padding: '0.4rem' }}
+                            >
+                                ✕
+                            </button>
+                        </div>
+                        <div className="modal-body">
+                            <p className="text-muted mb-4">
+                                Updating attendance for <strong>{editingAttendance.userId?.name}</strong>
+                                <br />
+                                <span className="text-sm">
+                                    Original Date: {formatDateTime(editingAttendance.date)}
+                                </span>
+                            </p>
+                            <div>
+                                <label className="block mb-2 font-bold text-sm">Status</label>
+                                <div className="stats-grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem', marginBottom: 0 }}>
+                                    {['Present', 'Half-day', 'Absent'].map((status) => (
+                                        <div
+                                            key={status}
+                                            className={`stat-card ${editAttendanceStatus === status ? 'ring-2 ring-primary-500' : ''}`}
+                                            onClick={() => setEditAttendanceStatus(status)}
+                                            style={{
+                                                cursor: 'pointer',
+                                                padding: '1rem',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                background: editAttendanceStatus === status ? 'var(--primary-50)' : 'var(--bg-surface)'
+                                            }}
+                                        >
+                                            <div style={{ fontSize: '0.9rem', fontWeight: '600', textAlign: 'center' }}>
+                                                {status === 'Present' ? '✅' : status === 'Half-day' ? '⏰' : '❌'}
+                                                <div style={{ marginTop: '0.25rem' }}>{status}</div>
                                             </div>
-                                        ))}
-                                    </div>
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
-                            <div className="modal-footer">
-                                <button
-                                    type="button"
-                                    onClick={() => setShowEditAttendanceModal(false)}
-                                    className="btn btn-ghost"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={handleUpdateAttendance}
-                                    className="btn btn-primary"
-                                >
-                                    Update Attendance
-                                </button>
-                            </div>
                         </div>
-                    </>
-                )
-            }
+                        <div className="modal-footer">
+                            <button type="button" onClick={() => setShowEditAttendanceModal(false)} className="btn btn-ghost">
+                                Cancel
+                            </button>
+                            <button type="button" onClick={handleUpdateAttendance} className="btn btn-primary">
+                                Update
+                            </button>
+                        </div>
+                    </div>
+                </>
+            )}
         </div >
     );
 }
