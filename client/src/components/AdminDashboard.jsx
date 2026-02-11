@@ -14,6 +14,7 @@ function AdminDashboard() {
     const [attendanceLogs, setAttendanceLogs] = useState([]);
     const [attendancePage, setAttendancePage] = useState(1);
     const [attendanceMeta, setAttendanceMeta] = useState({ pages: 1, total: 0 });
+    const [stats, setStats] = useState({ todayAttendance: 0, pendingLeaves: 0, totalUsers: 0 });
 
     const [pageLoading, setPageLoading] = useState(true);
 
@@ -141,7 +142,18 @@ function AdminDashboard() {
             }
         };
 
+        const fetchStats = async () => {
+            const token = localStorage.getItem('auth-token') || sessionStorage.getItem('auth-token');
+            try {
+                const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/stats`, { headers: { 'auth-token': token } });
+                setStats(res.data);
+            } catch (err) {
+                console.error("Failed to fetch stats", err);
+            }
+        };
+
         fetchAdminData();
+        fetchStats();
     }, [selectedDate, attendancePage, leavePage]);
 
     // Search functionality
@@ -320,15 +332,15 @@ function AdminDashboard() {
                     <>
                         <div className="stat-card">
                             <h4 className="stat-label">Today's Attendance</h4>
-                            <p className="stat-value" style={{ color: 'var(--success-text)' }}>{todayAttendance}</p>
+                            <p className="stat-value" style={{ color: 'var(--success-text)' }}>{stats.todayAttendance}</p>
                         </div>
                         <div className="stat-card">
                             <h4 className="stat-label">Pending Leaves</h4>
-                            <p className="stat-value" style={{ color: 'var(--warning-text)' }}>{pendingLeaves}</p>
+                            <p className="stat-value" style={{ color: 'var(--warning-text)' }}>{stats.pendingLeaves}</p>
                         </div>
                         <div className="stat-card">
                             <h4 className="stat-label">Total Users</h4>
-                            <p className="stat-value" style={{ color: 'var(--primary-600)' }}>{users.length}</p>
+                            <p className="stat-value" style={{ color: 'var(--primary-600)' }}>{stats.totalUsers}</p>
                         </div>
                     </>
                 )}

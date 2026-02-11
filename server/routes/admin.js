@@ -11,6 +11,31 @@ const fs = require('fs');
 
 
 
+// SYSTEM STATS
+router.get('/stats', verify, async (req, res) => {
+    if (req.user.role !== 'Admin') return res.status(403).send('Access Denied');
+    try {
+        const today = new Date();
+        const startOfDay = new Date(today.setHours(0, 0, 0, 0));
+        const endOfDay = new Date(today.setHours(23, 59, 59, 999));
+
+        const todayAttendance = await Attendance.countDocuments({
+            date: { $gte: startOfDay, $lte: endOfDay }
+        });
+
+        const pendingLeaves = await Leave.countDocuments({ status: 'Pending' });
+        const totalUsers = await User.countDocuments({});
+
+        res.json({
+            todayAttendance,
+            pendingLeaves,
+            totalUsers
+        });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // RESET USER PASSWORD
 router.put('/users/:id/reset-password', verify, async (req, res) => {
     if (req.user.role !== 'Admin') return res.status(403).send('Access Denied');

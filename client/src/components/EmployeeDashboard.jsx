@@ -13,6 +13,7 @@ function EmployeeDashboard({ user }) {
     const [leaves, setLeaves] = useState([]);
     const [leavePage, setLeavePage] = useState(1);
     const [leaveMeta, setLeaveMeta] = useState({ pages: 1, total: 0 });
+    const [stats, setStats] = useState({ totalPresent: 0, totalHalfDays: 0, thisMonthPresent: 0 });
 
     const [leaveReason, setLeaveReason] = useState('');
     const [leaveStartDate, setLeaveStartDate] = useState('');
@@ -64,6 +65,14 @@ function EmployeeDashboard({ user }) {
                     setAttendanceRecords(Array.isArray(attendanceRes.data) ? attendanceRes.data : []);
                 }
             }
+            // Fetch stats
+            if (user?._id || user?.id) {
+                const userId = user._id || user.id;
+                const statsRes = await axios.get(`${import.meta.env.VITE_API_URL}/api/attendance/stats/${userId}`, {
+                    headers: { 'auth-token': token }
+                });
+                setStats(statsRes.data);
+            }
         } catch (err) {
             console.error("Failed to fetch data", err);
         } finally {
@@ -111,30 +120,6 @@ function EmployeeDashboard({ user }) {
         }
     };
 
-    // Calculate stats
-    const pendingLeaves = leaves.filter(l => l.status === 'Pending').length;
-    const approvedLeaves = leaves.filter(l => l.status === 'Approved').length;
-    const presentDays = attendanceRecords.filter(r => r.status === 'Present').length;
-    const thisMonthAttendance = attendanceRecords.filter(r => {
-        const recordDate = new Date(r.date);
-        const now = new Date();
-        return recordDate.getMonth() === now.getMonth() &&
-            recordDate.getFullYear() === now.getFullYear() &&
-            r.status === 'Present';
-    }).length;
-    // Note: Stats now only reflect CURRENT PAGE data which is incorrect.
-    // Ideally stats should be fetched from a dedicated 'stats' endpoint.
-    // However, for this update, we will acknowledge that these stats might only show recent history
-    // unless we create a new stats endpoint. For now, let's leave as is, but be aware.
-    // To fix this without Backend changes, we shouldn't rely on 'leaves' and 'attendanceRecords' (which are now paginated) for totals.
-    // The pagination metadata 'attendanceMeta.total' gives us total present? No, just total records.
-    // We will use attendanceMeta.total for Total Records, but we lose 'Present Days' count accuracy.
-    // I will hide exact counts if they are potentially inaccurate or just show what's visible.
-    // BETTER FIX: The backend /user/:id route could return extra stats.
-    // For now, I'll update the "Total Present" card to say "Recent Present" or remove it to avoid confusion, 
-    // OR we fix the backend to return stats. Let's stick to what we have but be safe.
-    // Actually, let's just use the 'total' from metadata for "Total Applications" etc.
-
     return (
         <div className="fade-in" style={{ maxWidth: '1200px', margin: '0 auto', padding: '2rem' }}>
             {/* Welcome Card */}
@@ -170,19 +155,19 @@ function EmployeeDashboard({ user }) {
                     <>
                         <div className="stat-card">
                             <h4>Pending Requests</h4>
-                            <p className="stat-value">{pendingLeaves}</p>
+                            <p className="stat-value">{leaves.filter(l => l.status === 'Pending').length}</p>
                         </div>
                         <div className="stat-card" style={{ background: 'linear-gradient(135deg, #22c55e, #16a34a)' }}>
                             <h4>Approved Leaves</h4>
-                            <p className="stat-value">{approvedLeaves}</p>
+                            <p className="stat-value">{leaves.filter(l => l.status === 'Approved').length}</p>
                         </div>
                         <div className="stat-card" style={{ background: 'linear-gradient(135deg, #f59e0b, #d97706)' }}>
                             <h4>This Month</h4>
-                            <p className="stat-value">{thisMonthAttendance} days</p>
+                            <p className="stat-value">{stats.thisMonthPresent} days</p>
                         </div>
                         <div className="stat-card" style={{ background: 'linear-gradient(135deg, #8b5cf6, #7c3aed)' }}>
                             <h4>Total Present</h4>
-                            <p className="stat-value">{presentDays}</p>
+                            <p className="stat-value">{stats.totalPresent}</p>
                         </div>
                     </>
                 )}

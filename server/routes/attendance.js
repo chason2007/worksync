@@ -33,6 +33,44 @@ router.get('/today/:userId', verify, async (req, res) => {
     }
 });
 
+// Get User Stats
+router.get('/stats/:userId', verify, async (req, res) => {
+    try {
+        // Security Check
+        if (req.user.role !== 'Admin' && req.user._id !== req.params.userId) {
+            return res.status(403).json({ error: 'Access Denied' });
+        }
+
+        const now = new Date();
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+
+        const totalPresent = await Attendance.countDocuments({
+            userId: req.params.userId,
+            status: 'Present'
+        });
+
+        const totalHalfDays = await Attendance.countDocuments({
+            userId: req.params.userId,
+            status: 'Half-day'
+        });
+
+        const thisMonthPresent = await Attendance.countDocuments({
+            userId: req.params.userId,
+            status: 'Present',
+            date: { $gte: startOfMonth, $lte: endOfMonth }
+        });
+
+        res.json({
+            totalPresent,
+            totalHalfDays,
+            thisMonthPresent
+        });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // Mark Attendance (with duplicate prevention)
 // Mark Attendance (Simple Daily Status)
 router.post('/mark', verify, async (req, res) => {

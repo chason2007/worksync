@@ -27,7 +27,6 @@ function EmptyState({ icon, title = 'No Data Found', description = 'There is not
                 justifyContent: 'center',
                 boxShadow: 'var(--pk-shadow)'
             }}>
-            }}>
                 {icon || 'N/A'}
             </div>
             <h4 style={{
