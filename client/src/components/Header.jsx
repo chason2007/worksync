@@ -343,76 +343,73 @@ function Header() {
                                 </div>
                             </div>
                         </div>
-                    ) : (
-                        <div style={{ display: 'flex', gap: '1rem' }}>
-                            <Link to="/login" className="btn btn-primary" style={{ textDecoration: 'none' }}>Login</Link>
-                        </div>
                     )}
                 </div>
+            </div>
 
 
 
-                {/* Click outside to close dropdown */}
-                {showDropdown && (
-                    <div
-                        onClick={() => setShowDropdown(false)}
-                        style={{
-                            position: 'fixed',
-                            top: 0,
-                            left: 0,
-                            right: 0,
-                            bottom: 0,
-                            zIndex: 39
-                        }}
-                    />
-                )}
-                {/* Mobile Menu Overlay */}
-                {mobileMenuOpen && user && (
-                    <div className="mobile-menu-overlay" style={{
+            {/* Click outside to close dropdown */}
+            {showDropdown && (
+                <div
+                    onClick={() => setShowDropdown(false)}
+                    style={{
                         position: 'fixed',
-                        top: '73px',
+                        top: 0,
                         left: 0,
                         right: 0,
                         bottom: 0,
-                        background: 'var(--pk-surface)',
-                        zIndex: 35,
-                        padding: '1rem',
-                        borderTop: '1px solid var(--pk-border)'
-                    }}>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                            <Link to="/" className="btn" onClick={() => setMobileMenuOpen(false)} style={{ justifyContent: 'flex-start', background: 'transparent', color: 'var(--pk-text-main)', border: 'none' }}>
-                                Dashboard
+                        zIndex: 39
+                    }}
+                />
+            )}
+            {/* Mobile Menu Overlay */}
+            {mobileMenuOpen && user && (
+                <div className="mobile-menu-overlay" style={{
+                    position: 'fixed',
+                    top: '73px',
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    background: 'var(--pk-surface)',
+                    zIndex: 35,
+                    padding: '1rem',
+                    borderTop: '1px solid var(--pk-border)'
+                }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                        <Link to="/" className="btn" onClick={() => setMobileMenuOpen(false)} style={{ justifyContent: 'flex-start', background: 'transparent', color: 'var(--pk-text-main)', border: 'none' }}>
+                            Dashboard
+                        </Link>
+                        {user.email !== 'admin@worksync.com' && (
+                            <Link to="/attendance" className="btn" onClick={() => setMobileMenuOpen(false)} style={{ justifyContent: 'flex-start', background: 'transparent', color: 'var(--pk-text-main)', border: 'none' }}>
+                                Attendance
                             </Link>
-                            {user.email !== 'admin@worksync.com' && (
-                                <Link to="/attendance" className="btn" onClick={() => setMobileMenuOpen(false)} style={{ justifyContent: 'flex-start', background: 'transparent', color: 'var(--pk-text-main)', border: 'none' }}>
-                                    Attendance
+                        )}
+                        {user.role === 'Admin' && (
+                            <>
+                                <Link to="/add-user" className="btn" onClick={() => setMobileMenuOpen(false)} style={{ justifyContent: 'flex-start', background: 'transparent', color: 'var(--pk-text-main)', border: 'none' }}>
+                                    Add User
                                 </Link>
-                            )}
-                            {user.role === 'Admin' && (
-                                <>
-                                    <Link to="/add-user" className="btn" onClick={() => setMobileMenuOpen(false)} style={{ justifyContent: 'flex-start', background: 'transparent', color: 'var(--pk-text-main)', border: 'none' }}>
-                                        Add User
-                                    </Link>
-                                    <Link to="/settings" className="btn" onClick={() => setMobileMenuOpen(false)} style={{ justifyContent: 'flex-start', background: 'transparent', color: 'var(--pk-text-main)', border: 'none' }}>
-                                        Settings
-                                    </Link>
-                                </>
-                            )}
-                            <div style={{ padding: '0.5rem', marginTop: '1rem', borderTop: '1px solid var(--pk-border)' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
-                                    <Avatar user={user} size="sm" />
-                                    <div>
-                                        <div style={{ fontWeight: '600' }}>{user.name}</div>
-                                        <div style={{ fontSize: '0.8rem', color: 'var(--pk-text-muted)' }}>{user.email}</div>
-                                    </div>
+                                <Link to="/settings" className="btn" onClick={() => setMobileMenuOpen(false)} style={{ justifyContent: 'flex-start', background: 'transparent', color: 'var(--pk-text-main)', border: 'none' }}>
+                                    Settings
+                                </Link>
+                            </>
+                        )}
+                        <div style={{ padding: '0.5rem', marginTop: '1rem', borderTop: '1px solid var(--pk-border)' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
+                                <Avatar user={user} size="sm" />
+                                <div>
+                                    <div style={{ fontWeight: '600' }}>{user.name}</div>
+                                    <div style={{ fontSize: '0.8rem', color: 'var(--pk-text-muted)' }}>{user.email}</div>
                                 </div>
-                                <button onClick={handleLogout} className="btn btn-danger" style={{ width: '100%' }}>
-                                    Sign Out
-                                </button>
                             </div>
+                            <button onClick={handleLogout} className="btn btn-danger" style={{ width: '100%' }}>
+                                Sign Out
+                            </button>
                         </div>
                     </div>
-                )}
+                </div>
+            )}
         </header>
     );
 }
