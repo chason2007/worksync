@@ -343,6 +343,10 @@ function Header() {
                                 </div>
                             </div>
                         </div>
+                    ) : (
+                        <div style={{ display: 'flex', gap: '1rem' }}>
+                            <Link to="/login" className="btn btn-primary" style={{ textDecoration: 'none' }}>Login</Link>
+                        </div>
                     )}
                 </div>
             </div>
