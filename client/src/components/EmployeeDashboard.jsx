@@ -169,19 +169,19 @@ function EmployeeDashboard({ user }) {
                 ) : (
                     <>
                         <div className="stat-card">
-                            <h4>📅 Pending Requests</h4>
+                            <h4>Pending Requests</h4>
                             <p className="stat-value">{pendingLeaves}</p>
                         </div>
                         <div className="stat-card" style={{ background: 'linear-gradient(135deg, #22c55e, #16a34a)' }}>
-                            <h4>✓ Approved Leaves</h4>
+                            <h4>Approved Leaves</h4>
                             <p className="stat-value">{approvedLeaves}</p>
                         </div>
                         <div className="stat-card" style={{ background: 'linear-gradient(135deg, #f59e0b, #d97706)' }}>
-                            <h4>📊 This Month</h4>
+                            <h4>This Month</h4>
                             <p className="stat-value">{thisMonthAttendance} days</p>
                         </div>
                         <div className="stat-card" style={{ background: 'linear-gradient(135deg, #8b5cf6, #7c3aed)' }}>
-                            <h4>🎯 Total Present</h4>
+                            <h4>Total Present</h4>
                             <p className="stat-value">{presentDays}</p>
                         </div>
                     </>
@@ -192,7 +192,7 @@ function EmployeeDashboard({ user }) {
                 {/* Request Form */}
                 <div className="card">
                     <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        🏖️ Request Leave
+                        Request Leave
                     </h3>
                     <form onSubmit={submitLeaveRequest} className="flex flex-col gap-4">
                         <div>
@@ -248,7 +248,7 @@ function EmployeeDashboard({ user }) {
                 {/* Leave History */}
                 <div className="card">
                     <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        📋 My Leave History
+                        My Leave History
                     </h3>
                     <div className="table-responsive">
                         <table>
@@ -297,7 +297,6 @@ function EmployeeDashboard({ user }) {
                                             <tr>
                                                 <td colSpan="4">
                                                     <EmptyState
-                                                        icon="📝"
                                                         title="No Leave History"
                                                         description="You haven't applied for any leaves yet."
                                                     />

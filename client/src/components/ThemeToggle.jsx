@@ -5,10 +5,10 @@ function ThemeToggle() {
 
     const getIcon = () => {
         switch (theme) {
-            case 'light': return '☀️';
-            case 'dark': return '🌙';
-            case 'system': return '💻';
-            default: return '☀️';
+            case 'light': return 'Light';
+            case 'dark': return 'Dark';
+            case 'system': return 'System';
+            default: return 'Light';
         }
     };
 

@@ -76,7 +76,7 @@ function AttendanceForm() {
                 status
             }, { headers: { 'auth-token': token } });
 
-            showToast(`Attendance marked as ${status}! ✅`, 'success');
+            showToast(`Attendance marked as ${status}!`, 'success');
             setHasSubmittedToday(true);
             setTodayAttendance(res.data);
             fetchAttendanceHistory();
@@ -92,9 +92,9 @@ function AttendanceForm() {
     const formatTime = (date) => date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 
     const statusOptions = [
-        { value: 'Present', icon: '✓', label: 'Present', emoji: '✅' },
-        { value: 'Half-day', icon: '◐', label: 'Half Day', emoji: '⏰' },
-        { value: 'Absent', icon: '✕', label: 'Absent', emoji: '❌' }
+        { value: 'Present', icon: '✓', label: 'Present' },
+        { value: 'Half-day', icon: '◐', label: 'Half Day' },
+        { value: 'Absent', icon: '✕', label: 'Absent' }
     ];
 
     const presentDays = attendanceHistory.filter(r => r.status === 'Present').length;
@@ -130,7 +130,7 @@ function AttendanceForm() {
                 {hasSubmittedToday ? (
                     <div className="py-8">
                         <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>
-                            {todayAttendance?.status === 'Absent' ? '❌' : todayAttendance?.status === 'Half-day' ? '⏰' : '✅'}
+                            {todayAttendance?.status === 'Absent' ? 'Unmarked' : todayAttendance?.status === 'Half-day' ? 'Half-day' : 'Present'}
                         </div>
                         <h2 className="mb-2">Attendance Marked</h2>
                         <p className="text-muted">
@@ -147,7 +147,7 @@ function AttendanceForm() {
                                     className={`status-card ${status === option.value ? 'selected' : ''}`}
                                     onClick={() => setStatus(option.value)}
                                 >
-                                    <span className="status-card-icon">{option.emoji}</span>
+                                    <span className="status-card-icon">{option.icon}</span>
                                     <h4 className="status-card-title">{option.label}</h4>
                                 </div>
                             ))}
@@ -157,7 +157,7 @@ function AttendanceForm() {
                             className="btn btn-primary w-full py-3 mt-4 text-lg"
                             disabled={loading}
                         >
-                            {loading ? 'Submitting...' : 'Submit Attendance 🚀'}
+                            {loading ? 'Submitting...' : 'Submit Attendance'}
                         </button>
                     </>
                 )}

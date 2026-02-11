@@ -58,7 +58,6 @@ function Toast({ message, type = 'success', onClose }) {
         <div style={styles.container}>
             <div style={styles.toast}>
                 <span style={styles.icon}>
-                    {type === 'success' ? '✓' : '✕'}
                 </span>
                 <div style={styles.content}>
                     <p style={styles.message}>{message}</p>

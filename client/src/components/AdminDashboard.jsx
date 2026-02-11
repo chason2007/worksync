@@ -300,7 +300,7 @@ function AdminDashboard() {
                 </div>
                 <div className="flex gap-2">
                     <button className="btn btn-secondary">
-                        📊 Reports
+                        Reports
                     </button>
                     <button className="btn btn-primary">
                         + Add Employee
@@ -340,7 +340,7 @@ function AdminDashboard() {
                     <div className="flex justify-between items-center mb-6">
                         <h3>User Management</h3>
                         <div className="input-group" style={{ width: '250px' }}>
-                            <span className="input-icon">🔍</span>
+                            <span className="input-icon"></span>
                             <input
                                 type="text"
                                 placeholder="Search users..."
@@ -405,7 +405,7 @@ function AdminDashboard() {
                                                         <td>
                                                             {(u.role !== 'Admin' || (currentUser && currentUser.email === 'admin@worksync.com')) && (
                                                                 <div className="flex gap-2">
-                                                                    <button onClick={() => handleEditClick(u)} className="btn btn-ghost" style={{ padding: '0.4rem' }}>✏️</button>
+                                                                    <button onClick={() => handleEditClick(u)} className="btn btn-ghost" style={{ padding: '0.4rem' }}>Edit</button>
                                                                     <button
                                                                         onClick={() => openModal(
                                                                             'Delete User',
@@ -415,7 +415,7 @@ function AdminDashboard() {
                                                                         className="btn btn-ghost"
                                                                         style={{ padding: '0.4rem', color: 'var(--danger-text)' }}
                                                                     >
-                                                                        🗑️
+                                                                        Delete
                                                                     </button>
                                                                 </div>
                                                             )}
@@ -519,7 +519,6 @@ function AdminDashboard() {
                                 <tr>
                                     <td colSpan="5">
                                         <EmptyState
-                                            icon="🏖️"
                                             title="No Leave Requests"
                                             description="There are no pending leave requests at the moment."
                                         />
@@ -618,7 +617,6 @@ function AdminDashboard() {
                                 <tr>
                                     <td colSpan="4">
                                         <EmptyState
-                                            icon="📅"
                                             title="No Attendance"
                                             description={`No records for ${formatDate(selectedDate)}.`}
                                         />
@@ -702,8 +700,7 @@ function AdminDashboard() {
                                             }}
                                         >
                                             <div style={{ fontSize: '0.9rem', fontWeight: '600', textAlign: 'center' }}>
-                                                {status === 'Present' ? '✅' : status === 'Half-day' ? '⏰' : '❌'}
-                                                <div style={{ marginTop: '0.25rem' }}>{status}</div>
+                                                {status}
                                             </div>
                                         </div>
                                     ))}

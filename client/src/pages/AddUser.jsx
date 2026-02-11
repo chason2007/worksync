@@ -156,7 +156,7 @@ function AddUser() {
                             Full Name *
                         </label>
                         <div className="input-group">
-                            <span className="input-icon">👤</span>
+                            <span className="input-icon"></span>
                             <input
                                 type="text"
                                 placeholder="John Doe"
@@ -205,7 +205,7 @@ function AddUser() {
                                     className="btn btn-ghost"
                                     style={{ cursor: 'pointer', display: 'inline-block' }}
                                 >
-                                    📷 {imagePreview ? 'Change Image' : 'Upload Image'}
+                                    {imagePreview ? 'Change Image' : 'Upload Image'}
                                 </label>
                                 {imagePreview && (
                                     <button
@@ -233,7 +233,7 @@ function AddUser() {
                             Email Address *
                         </label>
                         <div className="input-group">
-                            <span className="input-icon">📧</span>
+                            <span className="input-icon"></span>
                             <input
                                 type="email"
                                 placeholder="john@company.com"
@@ -252,7 +252,7 @@ function AddUser() {
                                 Position
                             </label>
                             <div className="input-group">
-                                <span className="input-icon">💼</span>
+                                <span className="input-icon"></span>
                                 <input
                                     type="text"
                                     placeholder="Manager, Lead..."
@@ -302,7 +302,7 @@ function AddUser() {
                         </label>
                         <div style={{ display: 'flex', gap: '0.5rem' }}>
                             <div className="input-group" style={{ flex: 1 }}>
-                                <span className="input-icon">🔒</span>
+                                <span className="input-icon"></span>
                                 <input
                                     type="text"
                                     placeholder="Secret123"
@@ -319,7 +319,7 @@ function AddUser() {
                                 disabled={loading}
                                 style={{ whiteSpace: 'nowrap' }}
                             >
-                                🎲 Generate
+                                Generate
                             </button>
                         </div>
 
@@ -346,7 +346,7 @@ function AddUser() {
                         disabled={loading}
                         style={{ marginTop: '1rem', width: '100%' }}
                     >
-                        {loading ? 'Creating Account...' : '✓ Create Account'}
+                        {loading ? 'Creating Account...' : 'Create Account'}
                     </button>
                 </form>
             </div>

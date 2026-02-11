@@ -1,6 +1,6 @@
 import React from 'react';
 
-function EmptyState({ icon = '📭', title = 'No Data Found', description = 'There is nothing to show here yet.', actionLabel, onAction }) {
+function EmptyState({ icon, title = 'No Data Found', description = 'There is nothing to show here yet.', actionLabel, onAction }) {
     return (
         <div style={{
             display: 'flex',
@@ -27,7 +27,8 @@ function EmptyState({ icon = '📭', title = 'No Data Found', description = 'The
                 justifyContent: 'center',
                 boxShadow: 'var(--pk-shadow)'
             }}>
-                {icon}
+            }}>
+                {icon || 'N/A'}
             </div>
             <h4 style={{
                 margin: '0 0 0.5rem 0',

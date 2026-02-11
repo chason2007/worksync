@@ -75,7 +75,7 @@ function Settings() {
             {/* Appearance Settings */}
             <div className="card mb-8">
                 <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    🎨 Appearance
+                    Appearance
                 </h3>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
@@ -90,7 +90,7 @@ function Settings() {
 
             <div className="card" style={{ borderColor: 'var(--pk-danger)' }}>
                 <h3 style={{ color: 'var(--pk-danger)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    ⚠️ Danger Zone
+                    Danger Zone
                 </h3>
                 <p style={{ color: 'var(--pk-text-muted)', marginBottom: '1.5rem' }}>
                     These actions are destructive and cannot be undone. Please be certain.
@@ -105,7 +105,6 @@ function Settings() {
                     }}>
                         <div style={{ flex: 1 }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-                                <span>👥</span>
                                 <strong style={{ color: 'var(--pk-danger)' }}>Delete All Users</strong>
                             </div>
                             <div style={{ fontSize: '0.9rem', color: '#718096' }}>
@@ -133,7 +132,6 @@ function Settings() {
                     }}>
                         <div style={{ flex: 1 }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-                                <span>📊</span>
                                 <strong style={{ color: 'var(--pk-danger)' }}>Delete All Attendance</strong>
                             </div>
                             <div style={{ fontSize: '0.9rem', color: '#718096' }}>
@@ -161,7 +159,6 @@ function Settings() {
                     }}>
                         <div style={{ flex: 1 }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-                                <span>🏖️</span>
                                 <strong style={{ color: 'var(--pk-danger)' }}>Delete All Leaves</strong>
                             </div>
                             <div style={{ fontSize: '0.9rem', color: '#718096' }}>
@@ -189,7 +186,6 @@ function Settings() {
                     }}>
                         <div style={{ flex: 1 }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-                                <span>⚠️</span>
                                 <strong style={{ color: 'var(--pk-danger)' }}>RESET SYSTEM</strong>
                             </div>
                             <div style={{ fontSize: '0.9rem', color: '#718096' }}>

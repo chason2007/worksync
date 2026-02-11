@@ -133,7 +133,7 @@ function Header() {
                 alignItems: 'center'
             }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                    {/* Mobile Menu Button - Visible only on mobile via CSS (we'll add class) */}
+                    {/* Mobile Menu Button - Visible only on mobile via CSS */}
                     {user && (
                         <button
                             className="mobile-menu-btn"
@@ -145,10 +145,10 @@ function Header() {
                                 cursor: 'pointer',
                                 padding: '0.25rem',
                                 marginRight: '0.5rem',
-                                display: 'none' // Hidden by default, shown in mobile.css
+                                display: 'none'
                             }}
                         >
-                            ☰
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
                         </button>
                     )}
 
@@ -216,7 +216,9 @@ function Header() {
                                 ref={notifDropdownRef}
                                 onClick={() => setShowNotifDropdown(!showNotifDropdown)}
                             >
-                                <span style={{ fontSize: '1.3rem' }}>🔔</span>
+                                <span style={{ fontSize: '1.3rem' }}>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                                </span>
                                 {unreadCount > 0 && (
                                     <span className="notification-badge">{unreadCount}</span>
                                 )}
@@ -240,7 +242,7 @@ function Header() {
                                             <div style={{ display: 'flex', gap: '1rem' }}>
                                                 {unreadCount > 0 && (
                                                     <button
-                                                        style={{ background: 'none', border: 'none', color: 'var(--pk-primary)', fontSize: '0.75rem', cursor: 'pointer' }}
+                                                        style={{ background: 'none', border: 'none', color: 'var(--pk-primary)', fontSize: '0.75rem', cursor: 'pointer', textDecoration: 'underline' }}
                                                         onClick={(e) => { e.stopPropagation(); markAllRead(); }}
                                                     >
                                                         Mark all read
@@ -248,7 +250,7 @@ function Header() {
                                                 )}
                                                 {notifications.length > 0 && (
                                                     <button
-                                                        style={{ background: 'none', border: 'none', color: 'var(--pk-danger)', fontSize: '0.75rem', cursor: 'pointer' }}
+                                                        style={{ background: 'none', border: 'none', color: 'var(--pk-danger)', fontSize: '0.75rem', cursor: 'pointer', textDecoration: 'underline' }}
                                                         onClick={(e) => { e.stopPropagation(); clearAllNotifications(); }}
                                                     >
                                                         Clear all
@@ -276,8 +278,8 @@ function Header() {
                                                     }}
                                                     onClick={() => markAsRead(notif._id, notif.link)}
                                                 >
-                                                    <div style={{ fontSize: '0.85rem', marginBottom: '0.25rem' }}>
-                                                        {notif.type === 'success' ? '✅ ' : notif.type === 'error' ? '❌ ' : notif.type === 'warning' ? '⚠️ ' : 'ℹ️ '}
+                                                    <div style={{ fontSize: '0.85rem', marginBottom: '0.25rem', fontWeight: '500' }}>
+                                                        {notif.type === 'success' ? 'Success: ' : notif.type === 'error' ? 'Error: ' : notif.type === 'warning' ? 'Warning: ' : 'Info: '}
                                                         {notif.message}
                                                     </div>
                                                     <div style={{ fontSize: '0.7rem', color: 'var(--pk-text-muted)' }}>
@@ -305,26 +307,40 @@ function Header() {
                                     }}
                                 >
                                     <Avatar user={user} size="sm" />
-                                    <div className="desktop-only" style={{ textAlign: 'left' }}>
-                                        <div style={{ fontWeight: '600', fontSize: '0.9rem' }}>{user.name}</div>
-                                        <div style={{ fontSize: '0.8rem', color: 'var(--pk-text-muted)' }}>{user.role}</div>
-                                    </div>
-                                    <span style={{ fontSize: '0.8rem', color: 'var(--pk-text-muted)' }}>▼</span>
-                                </div>
-
-                                {showDropdown && (
-                                    <div className="dropdown-menu">
-                                        <Link to="/settings" className="dropdown-item" onClick={() => setShowDropdown(false)}>
-                                            <span>⚙️</span>
-                                            <span>Settings</span>
-                                        </Link>
-                                        <div className="dropdown-divider"></div>
-                                        <div className="dropdown-item" onClick={handleLogout}>
-                                            <span>🚪</span>
-                                            <span>Sign Out</span>
+                                    <div
+                                        onClick={() => setShowDropdown(!showDropdown)}
+                                        style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '0.75rem',
+                                            cursor: 'pointer',
+                                            padding: '0.5rem',
+                                            borderRadius: 'var(--pk-radius-sm)',
+                                            transition: 'background 0.2s'
+                                        }}
+                                    >
+                                        <Avatar user={user} size="sm" />
+                                        <div className="desktop-only" style={{ textAlign: 'left' }}>
+                                            <div style={{ fontWeight: '600', fontSize: '0.9rem' }}>{user.name}</div>
+                                            <div style={{ fontSize: '0.8rem', color: 'var(--pk-text-muted)' }}>{user.role}</div>
                                         </div>
+                                        <span style={{ fontSize: '0.8rem', color: 'var(--pk-text-muted)' }}>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                        </span>
                                     </div>
-                                )}
+
+                                    {showDropdown && (
+                                        <div className="dropdown-menu">
+                                            <Link to="/settings" className="dropdown-item" onClick={() => setShowDropdown(false)}>
+                                                <span>Settings</span>
+                                            </Link>
+                                            <div className="dropdown-divider"></div>
+                                            <div className="dropdown-item" onClick={handleLogout}>
+                                                <span>Sign Out</span>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     ) : (
@@ -333,71 +349,70 @@ function Header() {
                         </div>
                     )}
                 </div>
-            </div>
 
 
 
-            {/* Click outside to close dropdown */}
-            {showDropdown && (
-                <div
-                    onClick={() => setShowDropdown(false)}
-                    style={{
+                {/* Click outside to close dropdown */}
+                {showDropdown && (
+                    <div
+                        onClick={() => setShowDropdown(false)}
+                        style={{
+                            position: 'fixed',
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            zIndex: 39
+                        }}
+                    />
+                )}
+                {/* Mobile Menu Overlay */}
+                {mobileMenuOpen && user && (
+                    <div className="mobile-menu-overlay" style={{
                         position: 'fixed',
-                        top: 0,
+                        top: '73px',
                         left: 0,
                         right: 0,
                         bottom: 0,
-                        zIndex: 39
-                    }}
-                />
-            )}
-            {/* Mobile Menu Overlay */}
-            {mobileMenuOpen && user && (
-                <div className="mobile-menu-overlay" style={{
-                    position: 'fixed',
-                    top: '73px',
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    background: 'var(--pk-surface)',
-                    zIndex: 35,
-                    padding: '1rem',
-                    borderTop: '1px solid var(--pk-border)'
-                }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                        <Link to="/" className="btn" onClick={() => setMobileMenuOpen(false)} style={{ justifyContent: 'flex-start', background: 'transparent', color: 'var(--pk-text-main)', border: 'none' }}>
-                            📊 Dashboard
-                        </Link>
-                        {user.email !== 'admin@worksync.com' && (
-                            <Link to="/attendance" className="btn" onClick={() => setMobileMenuOpen(false)} style={{ justifyContent: 'flex-start', background: 'transparent', color: 'var(--pk-text-main)', border: 'none' }}>
-                                📅 Attendance
+                        background: 'var(--pk-surface)',
+                        zIndex: 35,
+                        padding: '1rem',
+                        borderTop: '1px solid var(--pk-border)'
+                    }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                            <Link to="/" className="btn" onClick={() => setMobileMenuOpen(false)} style={{ justifyContent: 'flex-start', background: 'transparent', color: 'var(--pk-text-main)', border: 'none' }}>
+                                Dashboard
                             </Link>
-                        )}
-                        {user.role === 'Admin' && (
-                            <>
-                                <Link to="/add-user" className="btn" onClick={() => setMobileMenuOpen(false)} style={{ justifyContent: 'flex-start', background: 'transparent', color: 'var(--pk-text-main)', border: 'none' }}>
-                                    ➕ Add User
+                            {user.email !== 'admin@worksync.com' && (
+                                <Link to="/attendance" className="btn" onClick={() => setMobileMenuOpen(false)} style={{ justifyContent: 'flex-start', background: 'transparent', color: 'var(--pk-text-main)', border: 'none' }}>
+                                    Attendance
                                 </Link>
-                                <Link to="/settings" className="btn" onClick={() => setMobileMenuOpen(false)} style={{ justifyContent: 'flex-start', background: 'transparent', color: 'var(--pk-text-main)', border: 'none' }}>
-                                    ⚙️ Settings
-                                </Link>
-                            </>
-                        )}
-                        <div style={{ padding: '0.5rem', marginTop: '1rem', borderTop: '1px solid var(--pk-border)' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
-                                <Avatar user={user} size="sm" />
-                                <div>
-                                    <div style={{ fontWeight: '600' }}>{user.name}</div>
-                                    <div style={{ fontSize: '0.8rem', color: 'var(--pk-text-muted)' }}>{user.email}</div>
+                            )}
+                            {user.role === 'Admin' && (
+                                <>
+                                    <Link to="/add-user" className="btn" onClick={() => setMobileMenuOpen(false)} style={{ justifyContent: 'flex-start', background: 'transparent', color: 'var(--pk-text-main)', border: 'none' }}>
+                                        Add User
+                                    </Link>
+                                    <Link to="/settings" className="btn" onClick={() => setMobileMenuOpen(false)} style={{ justifyContent: 'flex-start', background: 'transparent', color: 'var(--pk-text-main)', border: 'none' }}>
+                                        Settings
+                                    </Link>
+                                </>
+                            )}
+                            <div style={{ padding: '0.5rem', marginTop: '1rem', borderTop: '1px solid var(--pk-border)' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
+                                    <Avatar user={user} size="sm" />
+                                    <div>
+                                        <div style={{ fontWeight: '600' }}>{user.name}</div>
+                                        <div style={{ fontSize: '0.8rem', color: 'var(--pk-text-muted)' }}>{user.email}</div>
+                                    </div>
                                 </div>
+                                <button onClick={handleLogout} className="btn btn-danger" style={{ width: '100%' }}>
+                                    Sign Out
+                                </button>
                             </div>
-                            <button onClick={handleLogout} className="btn btn-danger" style={{ width: '100%' }}>
-                                Sign Out
-                            </button>
                         </div>
                     </div>
-                </div>
-            )}
+                )}
         </header>
     );
 }
