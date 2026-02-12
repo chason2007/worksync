@@ -121,28 +121,25 @@ function EmployeeDashboard({ user }) {
     };
 
     return (
-        <div className="fade-in" style={{ maxWidth: '1200px', margin: '0 auto', padding: '2rem' }}>
+        <div className="fade-in max-w-screen-xl mx-auto p-4 md:p-8">
             {/* Welcome Card */}
-            <div className="card flex justify-between items-center bg-gradient-primary" style={{
-                color: 'white',
-                marginBottom: '2rem'
-            }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <div className="card flex justify-between items-center bg-gradient-primary text-white mb-8">
+                <div className="flex items-center gap-4">
                     <Avatar user={user} size="lg" />
                     <div>
-                        <h2 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>Welcome, {user?.name}!</h2>
-                        <p style={{ opacity: 0.9, margin: 0 }}>Role: {user?.role} {user?.position && `• ${user.position}`}</p>
+                        <h2 className="text-2xl font-bold mb-2">Welcome, {user?.name}!</h2>
+                        <p className="opacity-90">Role: {user?.role} {user?.position && `• ${user.position}`}</p>
                     </div>
                 </div>
-                <div style={{ textAlign: 'right' }}>
-                    <p style={{ fontSize: '0.9rem', opacity: 0.8, margin: 0 }}>
+                <div className="text-right">
+                    <p className="text-sm opacity-80">
                         {formatDate(new Date())}
                     </p>
                 </div>
             </div>
 
             {/* Stats Cards */}
-            <div className="stats-grid" style={{ marginBottom: '2rem' }}>
+            <div className="stats-grid mb-8">
                 {pageLoading ? (
                     <>
                         <Skeleton type="card" height="120px" />
@@ -172,15 +169,15 @@ function EmployeeDashboard({ user }) {
                 )}
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.5fr', gap: '2rem' }}>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
                 {/* Request Form */}
-                <div className="card">
-                    <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <div className="card lg:col-span-2 h-fit">
+                    <h3 className="flex items-center gap-2 mb-4">
                         Request Leave
                     </h3>
                     <form onSubmit={submitLeaveRequest} className="flex flex-col gap-4">
                         <div>
-                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
+                            <label className="block mb-2 font-medium">
                                 Reason
                             </label>
                             <input
@@ -194,7 +191,7 @@ function EmployeeDashboard({ user }) {
                         </div>
                         <div className="flex gap-4">
                             <div className="w-full">
-                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
+                                <label className="block mb-2 font-medium">
                                     Start Date
                                 </label>
                                 <input
@@ -206,7 +203,7 @@ function EmployeeDashboard({ user }) {
                                 />
                             </div>
                             <div className="w-full">
-                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
+                                <label className="block mb-2 font-medium">
                                     End Date
                                 </label>
                                 <input
@@ -220,9 +217,8 @@ function EmployeeDashboard({ user }) {
                         </div>
                         <button
                             type="submit"
-                            className={`btn btn-primary ${loading ? 'loading' : ''}`}
+                            className={`btn btn-primary mt-4 ${loading ? 'loading' : ''}`}
                             disabled={loading}
-                            style={{ marginTop: '1rem' }}
                         >
                             {loading ? 'Submitting...' : 'Submit Request'}
                         </button>
@@ -230,11 +226,11 @@ function EmployeeDashboard({ user }) {
                 </div>
 
                 {/* Leave History */}
-                <div className="card">
-                    <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <div className="card lg:col-span-3">
+                    <h3 className="flex items-center gap-2 mb-4">
                         My Leave History
                     </h3>
-                    <div className="table-responsive">
+                    <div className="table-container">
                         <table>
                             <thead>
                                 <tr>
@@ -263,8 +259,7 @@ function EmployeeDashboard({ user }) {
                                                 <td>
                                                     {l.status === 'Pending' && (
                                                         <button
-                                                            className="btn btn-ghost"
-                                                            style={{ color: 'var(--pk-danger)', padding: '0.25rem 0.5rem', fontSize: '0.85rem' }}
+                                                            className="btn btn-ghost p-2 text-sm text-danger"
                                                             onClick={() => openModal(
                                                                 'Cancel Leave Request',
                                                                 'Are you sure you want to cancel this pending leave request?',
@@ -294,23 +289,21 @@ function EmployeeDashboard({ user }) {
                     </div>
                     {/* Leave Pagination Controls */}
                     {leaveMeta.pages > 1 && (
-                        <div className="flex justify-center gap-2 mt-4" style={{ padding: '0.5rem' }}>
+                        <div className="flex justify-center gap-2 mt-4 p-2">
                             <button
-                                className="btn btn-ghost"
+                                className="btn btn-ghost p-2 text-sm"
                                 disabled={leavePage === 1}
                                 onClick={() => setLeavePage(p => Math.max(1, p - 1))}
-                                style={{ padding: '0.25rem 0.5rem', fontSize: '0.8rem' }}
                             >
                                 «
                             </button>
-                            <span className="flex items-center" style={{ fontSize: '0.8rem' }}>
+                            <span className="flex items-center text-sm">
                                 Page {leavePage}
                             </span>
                             <button
-                                className="btn btn-ghost"
+                                className="btn btn-ghost p-2 text-sm"
                                 disabled={leavePage === leaveMeta.pages}
                                 onClick={() => setLeavePage(p => Math.min(leaveMeta.pages, p + 1))}
-                                style={{ padding: '0.25rem 0.5rem', fontSize: '0.8rem' }}
                             >
                                 »
                             </button>
@@ -328,7 +321,6 @@ function EmployeeDashboard({ user }) {
                 danger={true}
             />
         </div>
-
     );
 }
 

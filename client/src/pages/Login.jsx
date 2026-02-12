@@ -41,42 +41,19 @@ function Login() {
     };
 
     return (
-        <div className="fade-in bg-gradient-primary" style={{
-            minHeight: '100vh',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '1rem'
-        }}>
-            <div className="card" style={{
-                maxWidth: '400px',
-                width: '100%',
-                padding: '2.5rem',
-                border: 'none',
-                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
-            }}>
+        <div className="fade-in bg-gradient-primary flex items-center justify-center p-4" style={{ minHeight: '100vh' }}>
+            <div className="card w-full max-w-sm p-8 shadow-xl border-none">
                 <div className="text-center mb-8">
-                    <div className="bg-gradient-primary-light" style={{
-                        width: '64px',
-                        height: '64px',
-                        borderRadius: '16px',
-                        margin: '0 auto 1.5rem',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: 'white',
-                        fontSize: '32px',
-                        boxShadow: '0 10px 15px -3px rgba(79, 70, 229, 0.3)'
-                    }}>
+                    <div className="bg-gradient-primary-light w-16 h-16 rounded-2xl mx-auto mb-6 flex items-center justify-center text-white text-3xl shadow-lg">
                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>
                     </div>
-                    <h2 className="mb-2" style={{ fontSize: '1.75rem', fontWeight: '800' }}>Welcome Back</h2>
+                    <h2 className="mb-2 text-2xl font-extrabold">Welcome Back</h2>
                     <p className="text-muted">Sign in to your WorkSync account</p>
                 </div>
 
                 <form onSubmit={handleLogin} className="flex flex-col gap-4">
                     <div>
-                        <label className="mb-2" style={{ display: 'block', fontSize: '0.875rem', fontWeight: '600', color: 'var(--slate-700)' }}>
+                        <label className="mb-2 block text-sm font-semibold text-color-main">
                             Email Address
                         </label>
                         <div className="input-group">
@@ -96,10 +73,9 @@ function Login() {
 
                     <div>
                         <div className="flex justify-between items-center mb-2">
-                            <label style={{ fontSize: '0.875rem', fontWeight: '600', color: 'var(--slate-700)' }}>
+                            <label className="text-sm font-semibold text-color-main">
                                 Password
                             </label>
-                            <a href="#" style={{ fontSize: '0.8rem' }}>Forgot password?</a>
                         </div>
                         <div className="input-group">
                             <span className="input-icon">
@@ -133,26 +109,21 @@ function Login() {
                             checked={rememberMe}
                             onChange={(e) => setRememberMe(e.target.checked)}
                             id="remember"
-                            style={{ width: '1rem', height: '1rem' }}
+                            className="w-4 h-4"
                         />
-                        <label htmlFor="remember" style={{ fontSize: '0.9rem', color: 'var(--slate-600)', cursor: 'pointer' }}>
+                        <label htmlFor="remember" className="text-sm cursor-pointer text-muted">
                             Remember me for 30 days
                         </label>
                     </div>
 
                     <button
                         type="submit"
-                        className="btn btn-primary w-full mt-4"
+                        className="btn btn-primary w-full mt-4 h-12 text-base"
                         disabled={loading}
-                        style={{ height: '48px', fontSize: '1rem' }}
                     >
                         {loading ? 'Signing in...' : 'Sign In'}
                     </button>
                 </form>
-
-                <div className="mt-8 text-center text-sm text-muted">
-                    Don't have an account? <a href="#" className="font-bold">Contact Admin</a>
-                </div>
             </div>
         </div>
     );

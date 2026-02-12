@@ -304,7 +304,7 @@ function AdminDashboard() {
     const pendingLeaves = leaves.filter(l => l.status === 'Pending').length;
 
     return (
-        <div className="fade-in" style={{ maxWidth: '1400px', margin: '0 auto', padding: '2rem' }}>
+        <div className="fade-in max-w-screen-xl mx-auto p-4 md:p-8">
             <div className="flex justify-between items-center mb-8">
                 <div>
                     <h1 className="mb-2">Admin Dashboard</h1>
@@ -346,12 +346,12 @@ function AdminDashboard() {
                 )}
             </div>
 
-            <div className="grid" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '2rem', marginBottom: '2rem' }}>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
                 {/* User Management */}
-                <div className="card">
+                <div className="card md:col-span-2">
                     <div className="flex justify-between items-center mb-6">
                         <h3>User Management</h3>
-                        <div className="input-group" style={{ width: '250px' }}>
+                        <div className="input-group w-64">
                             <span className="input-icon"></span>
                             <input
                                 type="text"
@@ -417,15 +417,14 @@ function AdminDashboard() {
                                                         <td>
                                                             {(u.role !== 'Admin' || (currentUser && currentUser.email === 'admin@worksync.com')) && (
                                                                 <div className="flex gap-2">
-                                                                    <button onClick={() => handleEditClick(u)} className="btn btn-ghost" style={{ padding: '0.4rem' }}>Edit</button>
+                                                                    <button onClick={() => handleEditClick(u)} className="btn btn-ghost p-2">Edit</button>
                                                                     <button
                                                                         onClick={() => openModal(
                                                                             'Delete User',
                                                                             `Are you sure you want to delete ${u.name}?`,
                                                                             () => handleDeleteUser(u._id)
                                                                         )}
-                                                                        className="btn btn-ghost"
-                                                                        style={{ padding: '0.4rem', color: 'var(--danger-text)' }}
+                                                                        className="btn btn-ghost p-2 text-danger"
                                                                     >
                                                                         Delete
                                                                     </button>
@@ -520,8 +519,8 @@ function AdminDashboard() {
                                     <td>
                                         {l.status === 'Pending' && (
                                             <div className="flex gap-2">
-                                                <button onClick={() => updateLeaveStatus(l._id, 'Approved')} className="btn btn-primary" style={{ padding: '0.4rem 0.8rem' }}>Approve</button>
-                                                <button onClick={() => updateLeaveStatus(l._id, 'Rejected')} className="btn btn-danger" style={{ padding: '0.4rem 0.8rem' }}>Reject</button>
+                                                <button onClick={() => updateLeaveStatus(l._id, 'Approved')} className="btn btn-primary py-1 px-3">Approve</button>
+                                                <button onClick={() => updateLeaveStatus(l._id, 'Rejected')} className="btn btn-danger py-1 px-3">Reject</button>
                                             </div>
                                         )}
                                     </td>
@@ -580,7 +579,7 @@ function AdminDashboard() {
                             type="date"
                             value={selectedDate}
                             onChange={(e) => setSelectedDate(e.target.value)}
-                            style={{ width: 'auto' }}
+                            className="w-auto"
                         />
                     </div>
                 </div>
@@ -680,9 +679,8 @@ function AdminDashboard() {
                         <div className="modal-header">
                             <h3>Edit Attendance</h3>
                             <button
-                                className="btn btn-ghost"
+                                className="btn btn-ghost p-2"
                                 onClick={() => setShowEditAttendanceModal(false)}
-                                style={{ padding: '0.4rem' }}
                             >
                                 ✕
                             </button>
@@ -697,21 +695,14 @@ function AdminDashboard() {
                             </p>
                             <div>
                                 <label className="block mb-2 font-bold text-sm">Status</label>
-                                <div className="stats-grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem', marginBottom: 0 }}>
+                                <div className="grid grid-cols-3 gap-2">
                                     {['Present', 'Half-day', 'Absent'].map((status) => (
                                         <div
                                             key={status}
-                                            className={`stat-card ${editAttendanceStatus === status ? 'ring-2 ring-primary-500' : ''}`}
+                                            className={`stat-card cursor-pointer p-4 items-center justify-center ${editAttendanceStatus === status ? 'bg-primary-50 ring-2 ring-primary-500' : 'bg-surface'}`}
                                             onClick={() => setEditAttendanceStatus(status)}
-                                            style={{
-                                                cursor: 'pointer',
-                                                padding: '1rem',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                background: editAttendanceStatus === status ? 'var(--primary-50)' : 'var(--bg-surface)'
-                                            }}
                                         >
-                                            <div style={{ fontSize: '0.9rem', fontWeight: '600', textAlign: 'center' }}>
+                                            <div className="text-sm font-semibold text-center">
                                                 {status}
                                             </div>
                                         </div>
@@ -730,7 +721,7 @@ function AdminDashboard() {
                     </div>
                 </>
             )}
-        </div >
+        </div>
     );
 }
 

@@ -145,11 +145,11 @@ function AddUser() {
     };
 
     return (
-        <div className="fade-in" style={{ maxWidth: '600px', margin: '0 auto', padding: '2rem' }}>
-            <h1 className="mb-8">Add Employee</h1>
+        <div className="fade-in max-w-2xl mx-auto p-4 md:p-8">
+            <h1 className="mb-8 font-bold text-2xl">Add Employee</h1>
             <div className="card">
-                <h3 className="mb-4">New User Details</h3>
-                <form onSubmit={handleRegister} className="flex flex-col gap-4">
+                <h3 className="mb-6 text-xl font-semibold">New User Details</h3>
+                <form onSubmit={handleRegister} className="flex flex-col gap-6">
                     {/* Full Name */}
                     <div>
                         <label className="block mb-2 font-medium">
@@ -168,42 +168,33 @@ function AddUser() {
                         </div>
                     </div>
 
-
-
                     {/* Profile Image */}
                     <div>
                         <label className="block mb-2 font-medium">
                             Profile Image
                         </label>
-                        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                        <div className="flex gap-4 items-center">
                             {imagePreview && (
-                                <div style={{
-                                    width: '80px',
-                                    height: '80px',
-                                    borderRadius: '50%',
-                                    overflow: 'hidden',
-                                    border: '3px solid var(--pk-primary)'
-                                }}>
+                                <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-primary-500 flex-shrink-0">
                                     <img
                                         src={imagePreview}
                                         alt="Preview"
-                                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                        className="w-full h-full object-cover"
                                     />
                                 </div>
                             )}
-                            <div style={{ flex: 1 }}>
+                            <div className="flex-1">
                                 <input
                                     type="file"
                                     accept="image/*"
                                     onChange={handleImageChange}
                                     disabled={loading}
-                                    style={{ display: 'none' }}
+                                    className="hidden"
                                     id="profile-image-input"
                                 />
                                 <label
                                     htmlFor="profile-image-input"
-                                    className="btn btn-ghost"
-                                    style={{ cursor: 'pointer', display: 'inline-block' }}
+                                    className="btn btn-ghost cursor-pointer inline-block"
                                 >
                                     {imagePreview ? 'Change Image' : 'Upload Image'}
                                 </label>
@@ -214,13 +205,12 @@ function AddUser() {
                                             setProfileImage(null);
                                             setImagePreview(null);
                                         }}
-                                        className="btn btn-ghost"
-                                        style={{ marginLeft: '0.5rem', color: 'var(--pk-danger)' }}
+                                        className="btn btn-ghost text-danger ml-2"
                                     >
                                         ✕ Remove
                                     </button>
                                 )}
-                                <div style={{ fontSize: '0.8rem', color: 'var(--pk-text-muted)', marginTop: '0.5rem' }}>
+                                <div className="text-sm text-muted mt-2">
                                     Max size: 5MB. Formats: JPG, PNG, GIF
                                 </div>
                             </div>
@@ -246,7 +236,7 @@ function AddUser() {
                     </div>
 
                     {/* Position and Role */}
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label className="block mb-2 font-medium">
                                 Position
@@ -266,8 +256,8 @@ function AddUser() {
                             <label className="block mb-2 font-medium">
                                 Role *
                             </label>
-                            <div style={{ display: 'flex', gap: '1rem', height: '46px', alignItems: 'center' }}>
-                                <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+                            <div className="flex gap-4 h-12 items-center">
+                                <label className="flex items-center gap-2 cursor-pointer">
                                     <input
                                         type="radio"
                                         name="role"
@@ -275,11 +265,11 @@ function AddUser() {
                                         checked={role === 'Employee'}
                                         onChange={(e) => setRole(e.target.value)}
                                         disabled={loading}
-                                        style={{ width: '1.2rem', height: '1.2rem', margin: 0 }}
+                                        className="w-5 h-5 m-0"
                                     />
                                     Employee
                                 </label>
-                                <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+                                <label className="flex items-center gap-2 cursor-pointer">
                                     <input
                                         type="radio"
                                         name="role"
@@ -287,9 +277,9 @@ function AddUser() {
                                         checked={role === 'Admin'}
                                         onChange={(e) => setRole(e.target.value)}
                                         disabled={loading}
-                                        style={{ width: '1.2rem', height: '1.2rem', margin: 0 }}
+                                        className="w-5 h-5 m-0"
                                     />
-                                    <span style={{ color: 'var(--pk-primary)', fontWeight: '500' }}>Admin</span>
+                                    <span className="text-primary font-medium">Admin</span>
                                 </label>
                             </div>
                         </div>
@@ -300,8 +290,8 @@ function AddUser() {
                         <label className="block mb-2 font-medium">
                             Default Password *
                         </label>
-                        <div style={{ display: 'flex', gap: '0.5rem' }}>
-                            <div className="input-group" style={{ flex: 1 }}>
+                        <div className="flex gap-2">
+                            <div className="input-group flex-1">
                                 <span className="input-icon"></span>
                                 <input
                                     type="text"
@@ -315,9 +305,8 @@ function AddUser() {
                             <button
                                 type="button"
                                 onClick={generatePassword}
-                                className="btn btn-ghost"
+                                className="btn btn-ghost whitespace-nowrap"
                                 disabled={loading}
-                                style={{ whiteSpace: 'nowrap' }}
                             >
                                 Generate
                             </button>
@@ -326,14 +315,10 @@ function AddUser() {
                         {/* Password Strength Indicator */}
                         {password && (
                             <div>
-                                <div className="password-strength">
+                                <div className="password-strength mt-2">
                                     <div className={`password-strength-bar password-strength-${passwordStrength}`}></div>
                                 </div>
-                                <p className="password-strength-text" style={{
-                                    color: passwordStrength === 'weak' ? 'var(--pk-danger)' :
-                                        passwordStrength === 'medium' ? 'var(--pk-warning)' :
-                                            'var(--pk-success)'
-                                }}>
+                                <p className={`mt-1 text-sm ${passwordStrength === 'weak' ? 'text-danger' : passwordStrength === 'medium' ? 'text-warning' : 'text-success'}`}>
                                     Password strength: {passwordStrength?.toUpperCase()}
                                 </p>
                             </div>
@@ -342,9 +327,8 @@ function AddUser() {
 
                     <button
                         type="submit"
-                        className={`btn btn-primary ${loading ? 'loading' : ''}`}
+                        className={`btn btn-primary w-full mt-2 ${loading ? 'loading' : ''}`}
                         disabled={loading}
-                        style={{ marginTop: '1rem', width: '100%' }}
                     >
                         {loading ? 'Creating Account...' : 'Create Account'}
                     </button>
