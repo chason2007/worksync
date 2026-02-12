@@ -41,12 +41,11 @@ function Login() {
     };
 
     return (
-        <div className="fade-in" style={{
+        <div className="fade-in bg-gradient-primary" style={{
             minHeight: '100vh',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            background: 'linear-gradient(135deg, #4f46e5 0%, #0f172a 100%)',
             padding: '1rem'
         }}>
             <div className="card" style={{
@@ -57,10 +56,9 @@ function Login() {
                 boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
             }}>
                 <div className="text-center mb-8">
-                    <div style={{
+                    <div className="bg-gradient-primary-light" style={{
                         width: '64px',
                         height: '64px',
-                        background: 'linear-gradient(135deg, #4f46e5, #818cf8)',
                         borderRadius: '16px',
                         margin: '0 auto 1.5rem',
                         display: 'flex',

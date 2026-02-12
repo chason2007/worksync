@@ -332,15 +332,15 @@ function AdminDashboard() {
                     <>
                         <div className="stat-card">
                             <h4 className="stat-label">Today's Attendance</h4>
-                            <p className="stat-value" style={{ color: 'var(--success-text)' }}>{stats.todayAttendance}</p>
+                            <p className="stat-value text-success">{stats.todayAttendance}</p>
                         </div>
                         <div className="stat-card">
                             <h4 className="stat-label">Pending Leaves</h4>
-                            <p className="stat-value" style={{ color: 'var(--warning-text)' }}>{stats.pendingLeaves}</p>
+                            <p className="stat-value text-warning">{stats.pendingLeaves}</p>
                         </div>
                         <div className="stat-card">
                             <h4 className="stat-label">Total Users</h4>
-                            <p className="stat-value" style={{ color: 'var(--primary-600)' }}>{stats.totalUsers}</p>
+                            <p className="stat-value text-primary">{stats.totalUsers}</p>
                         </div>
                     </>
                 )}

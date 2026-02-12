@@ -88,8 +88,8 @@ function Settings() {
                 </div>
             </div>
 
-            <div className="card" style={{ borderColor: 'var(--pk-danger)' }}>
-                <h3 style={{ color: 'var(--pk-danger)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <div className="card border-danger">
+                <h3 className="flex items-center gap-2 text-danger">
                     Danger Zone
                 </h3>
                 <p style={{ color: 'var(--pk-text-muted)', marginBottom: '1.5rem' }}>
@@ -97,15 +97,10 @@ function Settings() {
                 </p>
                 <div className="flex flex-col gap-4">
                     {/* Delete Users */}
-                    <div className="flex justify-between items-center" style={{
-                        padding: '1rem',
-                        background: 'var(--danger-bg)',
-                        borderRadius: 'var(--radius)',
-                        border: '1px solid var(--danger-text)'
-                    }}>
+                    <div className="flex justify-between items-center p-4 bg-danger rounded border-danger">
                         <div style={{ flex: 1 }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-                                <strong style={{ color: 'var(--danger-text)' }}>Delete All Users</strong>
+                            <div className="flex items-center gap-2 mb-1">
+                                <strong className="text-danger">Delete All Users</strong>
                             </div>
                             <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
                                 Removes all employee accounts. Admin remains.
@@ -124,15 +119,10 @@ function Settings() {
                     </div>
 
                     {/* Delete Attendance */}
-                    <div className="flex justify-between items-center" style={{
-                        padding: '1rem',
-                        background: 'var(--danger-bg)',
-                        borderRadius: 'var(--radius)',
-                        border: '1px solid var(--danger-text)'
-                    }}>
+                    <div className="flex justify-between items-center p-4 bg-danger rounded border-danger">
                         <div style={{ flex: 1 }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-                                <strong style={{ color: 'var(--danger-text)' }}>Delete All Attendance</strong>
+                            <div className="flex items-center gap-2 mb-1">
+                                <strong className="text-danger">Delete All Attendance</strong>
                             </div>
                             <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
                                 Clears the entire attendance history log.
@@ -151,15 +141,10 @@ function Settings() {
                     </div>
 
                     {/* Delete Leaves */}
-                    <div className="flex justify-between items-center" style={{
-                        padding: '1rem',
-                        background: 'var(--danger-bg)',
-                        borderRadius: 'var(--radius)',
-                        border: '1px solid var(--danger-text)'
-                    }}>
+                    <div className="flex justify-between items-center p-4 bg-danger rounded border-danger">
                         <div style={{ flex: 1 }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-                                <strong style={{ color: 'var(--danger-text)' }}>Delete All Leaves</strong>
+                            <div className="flex items-center gap-2 mb-1">
+                                <strong className="text-danger">Delete All Leaves</strong>
                             </div>
                             <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
                                 Removes all leave requests (Pending/Approved/Rejected).
@@ -178,15 +163,10 @@ function Settings() {
                     </div>
 
                     {/* Reset System */}
-                    <div className="flex justify-between items-center" style={{
-                        padding: '1rem',
-                        background: 'var(--danger-bg)',
-                        borderRadius: 'var(--radius)',
-                        border: '1px solid var(--danger-text)'
-                    }}>
+                    <div className="flex justify-between items-center p-4 bg-danger rounded border-danger">
                         <div style={{ flex: 1 }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-                                <strong style={{ color: 'var(--danger-text)' }}>RESET SYSTEM</strong>
+                            <div className="flex items-center gap-2 mb-1">
+                                <strong className="text-danger">RESET SYSTEM</strong>
                             </div>
                             <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
                                 Deletes ALL data (Users, Attendance, Leaves). Only Super Admin remains.

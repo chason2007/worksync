@@ -123,8 +123,7 @@ function EmployeeDashboard({ user }) {
     return (
         <div className="fade-in" style={{ maxWidth: '1200px', margin: '0 auto', padding: '2rem' }}>
             {/* Welcome Card */}
-            <div className="card flex justify-between items-center" style={{
-                background: 'linear-gradient(135deg, var(--pk-primary), var(--pk-primary-hover))',
+            <div className="card flex justify-between items-center bg-gradient-primary" style={{
                 color: 'white',
                 marginBottom: '2rem'
             }}>
@@ -157,15 +156,15 @@ function EmployeeDashboard({ user }) {
                             <h4>Pending Requests</h4>
                             <p className="stat-value">{leaves.filter(l => l.status === 'Pending').length}</p>
                         </div>
-                        <div className="stat-card" style={{ background: 'linear-gradient(135deg, #22c55e, #16a34a)' }}>
+                        <div className="stat-card bg-gradient-success">
                             <h4>Approved Leaves</h4>
                             <p className="stat-value">{leaves.filter(l => l.status === 'Approved').length}</p>
                         </div>
-                        <div className="stat-card" style={{ background: 'linear-gradient(135deg, #f59e0b, #d97706)' }}>
+                        <div className="stat-card bg-gradient-warning">
                             <h4>This Month</h4>
                             <p className="stat-value">{stats.thisMonthPresent} days</p>
                         </div>
-                        <div className="stat-card" style={{ background: 'linear-gradient(135deg, #8b5cf6, #7c3aed)' }}>
+                        <div className="stat-card bg-gradient-violet">
                             <h4>Total Present</h4>
                             <p className="stat-value">{stats.totalPresent}</p>
                         </div>

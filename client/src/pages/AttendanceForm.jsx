@@ -132,7 +132,7 @@ function AttendanceForm() {
             <div className="page-header">
                 <h1>Attendance Tracker</h1>
                 <p className="subtitle">{formatDate(currentTime)}</p>
-                <p className="subtitle" style={{ color: 'var(--pk-primary)', fontWeight: '600' }}>
+                <p className="subtitle text-primary font-semibold">
                     {formatTime(currentTime)}
                 </p>
             </div>
@@ -144,7 +144,7 @@ function AttendanceForm() {
                         <h4>Present Days</h4>
                         <p className="stat-value">{presentDays}</p>
                     </div>
-                    <div className="stat-card" style={{ background: 'linear-gradient(135deg, #f59e0b, #d97706)' }}>
+                    <div className="stat-card bg-gradient-warning">
                         <h4>Half Days</h4>
                         <p className="stat-value">{halfDays}</p>
                     </div>

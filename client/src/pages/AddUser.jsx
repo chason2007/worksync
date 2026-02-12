@@ -152,7 +152,7 @@ function AddUser() {
                 <form onSubmit={handleRegister} className="flex flex-col gap-4">
                     {/* Full Name */}
                     <div>
-                        <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
+                        <label className="block mb-2 font-medium">
                             Full Name *
                         </label>
                         <div className="input-group">
@@ -172,7 +172,7 @@ function AddUser() {
 
                     {/* Profile Image */}
                     <div>
-                        <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
+                        <label className="block mb-2 font-medium">
                             Profile Image
                         </label>
                         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
@@ -229,7 +229,7 @@ function AddUser() {
 
                     {/* Email */}
                     <div>
-                        <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
+                        <label className="block mb-2 font-medium">
                             Email Address *
                         </label>
                         <div className="input-group">
@@ -248,7 +248,7 @@ function AddUser() {
                     {/* Position and Role */}
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                         <div>
-                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
+                            <label className="block mb-2 font-medium">
                                 Position
                             </label>
                             <div className="input-group">
@@ -263,7 +263,7 @@ function AddUser() {
                             </div>
                         </div>
                         <div>
-                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
+                            <label className="block mb-2 font-medium">
                                 Role *
                             </label>
                             <div style={{ display: 'flex', gap: '1rem', height: '46px', alignItems: 'center' }}>
@@ -297,7 +297,7 @@ function AddUser() {
 
                     {/* Password */}
                     <div>
-                        <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
+                        <label className="block mb-2 font-medium">
                             Default Password *
                         </label>
                         <div style={{ display: 'flex', gap: '0.5rem' }}>
