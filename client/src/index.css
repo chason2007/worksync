@@ -806,3 +806,61 @@ tbody tr:hover {
 .bg-gradient-violet {
   background: linear-gradient(135deg, #8b5cf6, #7c3aed);
 }
+/* Layout Utilities for Redesign */
+.min-h-screen {
+  min-height: 100vh;
+}
+
+.hidden {
+  display: none;
+}
+
+.relative {
+  position: relative;
+}
+
+.absolute {
+  position: absolute;
+}
+
+.inset-0 {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.z-10 {
+  z-index: 10;
+}
+
+/* Glassmorphism */
+.backdrop-blur-sm {
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.bg-white-20 {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Responsive */
+@media (min-width: 768px) {
+  .md-flex {
+    display: flex;
+  }
+  
+  .md-w-half {
+    width: 50%;
+  }
+
+  .md-p-12 {
+     padding: 3rem;
+  }
+}
+
+@media (min-width: 1024px) {
+    .lg-max-w-md {
+        max-width: 28rem;
+    }
+}

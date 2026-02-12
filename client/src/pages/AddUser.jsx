@@ -2,6 +2,40 @@ import { useState } from 'react';
 import axios from 'axios';
 import { useToast } from '../context/ToastContext';
 
+// Helper functions outside component to avoid initialization issues
+const generatePasswordHelper = () => {
+    const length = 12;
+    const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*';
+    let newPassword = '';
+    const randomValues = new Uint32Array(length);
+    globalThis.crypto.getRandomValues(randomValues);
+
+    for (let i = 0; i < length; i++) {
+        newPassword += charset.charAt(randomValues[i] % charset.length);
+    }
+    return newPassword;
+};
+
+const getPasswordStrength = (pwd) => {
+    if (!pwd) return null;
+    let strength = 0;
+    if (pwd.length >= 8) strength++;
+    if (pwd.length >= 12) strength++;
+    if (/[a-z]/.test(pwd) && /[A-Z]/.test(pwd)) strength++;
+    if (/\d/.test(pwd)) strength++;
+    if (/[!@#$%^&*]/.test(pwd)) strength++;
+
+    if (strength <= 2) return 'weak';
+    if (strength <= 4) return 'medium';
+    return 'strong';
+};
+
+const getStrengthColor = (level) => {
+    if (level === 'weak') return 'text-danger';
+    if (level === 'medium') return 'text-warning';
+    return 'text-success';
+};
+
 function AddUser() {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
@@ -15,31 +49,9 @@ function AddUser() {
     const { showToast } = useToast();
 
     const generatePassword = () => {
-        const length = 12;
-        const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*';
-        let newPassword = '';
-        const randomValues = new Uint32Array(length);
-        globalThis.crypto.getRandomValues(randomValues);
-
-        for (let i = 0; i < length; i++) {
-            newPassword += charset.charAt(randomValues[i] % charset.length);
-        }
+        const newPassword = generatePasswordHelper();
         setPassword(newPassword);
         showToast('Strong password generated!', 'success');
-    };
-
-    const getPasswordStrength = (pwd) => {
-        if (!pwd) return null;
-        let strength = 0;
-        if (pwd.length >= 8) strength++;
-        if (pwd.length >= 12) strength++;
-        if (/[a-z]/.test(pwd) && /[A-Z]/.test(pwd)) strength++;
-        if (/\d/.test(pwd)) strength++;
-        if (/[!@#$%^&*]/.test(pwd)) strength++;
-
-        if (strength <= 2) return 'weak';
-        if (strength <= 4) return 'medium';
-        return 'strong';
     };
 
     const handleImageChange = (e) => {
@@ -99,11 +111,6 @@ function AddUser() {
     };
 
     const passwordStrength = getPasswordStrength(password);
-    const getStrengthColor = (level) => {
-        if (level === 'weak') return 'text-danger';
-        if (level === 'medium') return 'text-warning';
-        return 'text-success';
-    };
 
     const handleRegister = async (e) => {
         e.preventDefault();
@@ -200,6 +207,7 @@ function AddUser() {
                                     disabled={loading}
                                     className="hidden"
                                     id="profile-image-input"
+                                    style={{ display: 'none' }}
                                 />
                                 <label
                                     htmlFor="profile-image-input"
@@ -311,6 +319,7 @@ function AddUser() {
                                     onChange={(e) => setPassword(e.target.value)}
                                     required
                                     disabled={loading}
+                                    className="p-2 w-full border rounded"
                                 />
                             </div>
                             <button
