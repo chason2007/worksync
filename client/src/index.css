@@ -769,36 +769,8 @@ tbody tr:hover {
   border: 2px solid var(--bg-surface);
 }
 
-/* Backgrounds */
-.bg-danger {
-  background-color: var(--danger-bg);
-}
 
-/* Borders */
-.border-danger {
-  border-color: var(--danger-text);
-}
-
-/* Text Colors */
-.text-primary {
-  color: var(--primary-600);
-}
-
-.text-success {
-  color: var(--success-text);
-}
-
-.text-warning {
-  color: var(--warning-text);
-}
-
-.text-danger {
-  color: var(--danger-text);
-}
-
-.text-surface {
-  color: var(--bg-surface);
-}
+/* Backgrounds, Borders, Text Colors - Duplicate Definitions Removed */
 
 /* Font Weights */
 .font-medium {

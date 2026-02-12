@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
@@ -19,7 +19,7 @@ function Header() {
     const notifDropdownRef = useRef(null);
 
     // Fetch Notifications
-    const fetchNotifications = async () => {
+    const fetchNotifications = useCallback(async () => {
         if (!user) return;
         try {
             const token = localStorage.getItem('auth-token') || sessionStorage.getItem('auth-token');
@@ -30,14 +30,16 @@ function Header() {
         } catch (err) {
             console.error("Failed to fetch notifications", err);
         }
-    };
+    }, [user]);
 
     // Poll for notifications
+    // Poll for notifications
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         fetchNotifications();
         const interval = setInterval(fetchNotifications, 60000); // Poll every minute
         return () => clearInterval(interval);
-    }, [user]);
+    }, [user, fetchNotifications]);
 
     // Close Notif Dropdown on click outside
     useEffect(() => {

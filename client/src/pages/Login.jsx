@@ -53,7 +53,7 @@ function Login() {
 
                 <form onSubmit={handleLogin} className="flex flex-col gap-4">
                     <div>
-                        <label className="mb-2 block text-sm font-semibold text-color-main">
+                        <label htmlFor="email" className="mb-2 block text-sm font-semibold text-color-main">
                             Email Address
                         </label>
                         <div className="input-group">
@@ -61,6 +61,7 @@ function Login() {
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
                             </span>
                             <input
+                                id="email"
                                 type="email"
                                 placeholder="name@company.com"
                                 value={email}
@@ -73,7 +74,7 @@ function Login() {
 
                     <div>
                         <div className="flex justify-between items-center mb-2">
-                            <label className="text-sm font-semibold text-color-main">
+                            <label htmlFor="password" className="text-sm font-semibold text-color-main">
                                 Password
                             </label>
                         </div>
@@ -82,6 +83,7 @@ function Login() {
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
                             </span>
                             <input
+                                id="password"
                                 type={showPassword ? 'text' : 'password'}
                                 placeholder="••••••••"
                                 value={password}

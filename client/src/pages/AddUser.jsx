@@ -19,7 +19,7 @@ function AddUser() {
         const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*';
         let newPassword = '';
         const randomValues = new Uint32Array(length);
-        window.crypto.getRandomValues(randomValues);
+        globalThis.crypto.getRandomValues(randomValues);
 
         for (let i = 0; i < length; i++) {
             newPassword += charset.charAt(randomValues[i] % charset.length);
@@ -99,6 +99,11 @@ function AddUser() {
     };
 
     const passwordStrength = getPasswordStrength(password);
+    const getStrengthColor = (level) => {
+        if (level === 'weak') return 'text-danger';
+        if (level === 'medium') return 'text-warning';
+        return 'text-success';
+    };
 
     const handleRegister = async (e) => {
         e.preventDefault();
@@ -155,12 +160,13 @@ function AddUser() {
                 <form onSubmit={handleRegister} className="flex flex-col gap-6">
                     {/* Full Name */}
                     <div>
-                        <label className="block mb-2 font-medium">
+                        <label htmlFor="name" className="block mb-2 font-medium">
                             Full Name *
                         </label>
                         <div className="input-group">
                             <span className="input-icon"></span>
                             <input
+                                id="name"
                                 type="text"
                                 placeholder="John Doe"
                                 value={name}
@@ -222,12 +228,13 @@ function AddUser() {
 
                     {/* Email */}
                     <div>
-                        <label className="block mb-2 font-medium">
+                        <label htmlFor="email" className="block mb-2 font-medium">
                             Email Address *
                         </label>
                         <div className="input-group">
                             <span className="input-icon"></span>
                             <input
+                                id="email"
                                 type="email"
                                 placeholder="john@company.com"
                                 value={email}
@@ -290,13 +297,14 @@ function AddUser() {
 
                     {/* Password */}
                     <div>
-                        <label className="block mb-2 font-medium">
+                        <label htmlFor="password" className="block mb-2 font-medium">
                             Default Password *
                         </label>
                         <div className="flex gap-2">
                             <div className="input-group flex-1">
                                 <span className="input-icon"></span>
                                 <input
+                                    id="password"
                                     type="text"
                                     placeholder="Secret123"
                                     value={password}
@@ -321,7 +329,7 @@ function AddUser() {
                                 <div className="password-strength mt-2">
                                     <div className={`password-strength-bar password-strength-${passwordStrength}`}></div>
                                 </div>
-                                <p className={`mt-1 text-sm ${passwordStrength === 'weak' ? 'text-danger' : passwordStrength === 'medium' ? 'text-warning' : 'text-success'}`}>
+                                <p className={`mt-1 text-sm ${getStrengthColor(passwordStrength)}`}>
                                     Password strength: {passwordStrength?.toUpperCase()}
                                 </p>
                             </div>

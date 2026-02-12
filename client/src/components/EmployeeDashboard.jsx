@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import { useToast } from '../context/ToastContext';
@@ -30,16 +30,14 @@ function EmployeeDashboard({ user }) {
         setIsModalOpen(true);
     };
 
-    const [attendanceRecords, setAttendanceRecords] = useState([]);
-    const [attendancePage, setAttendancePage] = useState(1);
-    const [attendanceMeta, setAttendanceMeta] = useState({ pages: 1, total: 0 });
+    // Unused state removed: attendanceRecords, attendancePage, attendanceMeta
     const { showToast } = useToast();
 
     useEffect(() => {
         fetchData();
-    }, [user, leavePage, attendancePage]);
+    }, [user, leavePage, fetchData]);
 
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
         const token = localStorage.getItem('auth-token') || sessionStorage.getItem('auth-token');
         try {
             // Fetch leaves
@@ -53,19 +51,8 @@ function EmployeeDashboard({ user }) {
                 setLeaves(Array.isArray(leavesRes.data) ? leavesRes.data : []);
             }
 
-            // Fetch attendance
-            if (user?._id || user?.id) {
-                const userId = user._id || user.id;
-                // Correct endpoint now /api/attendance/user/:id with pagination
-                const attendanceRes = await axios.get(`${import.meta.env.VITE_API_URL}/api/attendance/user/${userId}?page=${attendancePage}&limit=10`);
+            // Attendance fetch removed as unused state was removed
 
-                if (attendanceRes.data.pagination) {
-                    setAttendanceRecords(attendanceRes.data.data);
-                    setAttendanceMeta(attendanceRes.data.pagination);
-                } else {
-                    setAttendanceRecords(Array.isArray(attendanceRes.data) ? attendanceRes.data : []);
-                }
-            }
             // Fetch stats
             if (user?._id || user?.id) {
                 const userId = user._id || user.id;
@@ -79,7 +66,7 @@ function EmployeeDashboard({ user }) {
         } finally {
             setPageLoading(false);
         }
-    };
+    }, [user, leavePage]);
 
     const submitLeaveRequest = async (e) => {
         e.preventDefault();
@@ -87,7 +74,7 @@ function EmployeeDashboard({ user }) {
 
         try {
             const token = localStorage.getItem('auth-token') || sessionStorage.getItem('auth-token');
-            const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/leaves`, {
+            await axios.post(`${import.meta.env.VITE_API_URL}/api/leaves`, {
                 reason: leaveReason,
                 startDate: leaveStartDate,
                 endDate: leaveEndDate
@@ -101,7 +88,7 @@ function EmployeeDashboard({ user }) {
             setLeaveReason('');
             setLeaveStartDate('');
             setLeaveEndDate('');
-        } catch (err) {
+        } catch {
             showToast("Failed to request leave", 'error');
         } finally {
             setLoading(false);
@@ -178,10 +165,11 @@ function EmployeeDashboard({ user }) {
                     </h3>
                     <form onSubmit={submitLeaveRequest} className="flex flex-col gap-4">
                         <div>
-                            <label className="block mb-2 font-medium">
+                            <label htmlFor="leave-reason" className="block mb-2 font-medium">
                                 Reason
                             </label>
                             <input
+                                id="leave-reason"
                                 type="text"
                                 placeholder="Sick leave, Vacation..."
                                 value={leaveReason}
@@ -192,10 +180,11 @@ function EmployeeDashboard({ user }) {
                         </div>
                         <div className="flex gap-4">
                             <div className="w-full">
-                                <label className="block mb-2 font-medium">
+                                <label htmlFor="leave-start" className="block mb-2 font-medium">
                                     Start Date
                                 </label>
                                 <input
+                                    id="leave-start"
                                     type="date"
                                     value={leaveStartDate}
                                     onChange={e => setLeaveStartDate(e.target.value)}
@@ -204,10 +193,11 @@ function EmployeeDashboard({ user }) {
                                 />
                             </div>
                             <div className="w-full">
-                                <label className="block mb-2 font-medium">
+                                <label htmlFor="leave-end" className="block mb-2 font-medium">
                                     End Date
                                 </label>
                                 <input
+                                    id="leave-end"
                                     type="date"
                                     value={leaveEndDate}
                                     onChange={e => setLeaveEndDate(e.target.value)}

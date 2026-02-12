@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { useToast } from '../context/ToastContext';
 import { useAuth } from '../context/AuthContext';
@@ -30,9 +30,9 @@ function AttendanceForm() {
             checkTodayAttendance();
             fetchAttendanceHistory();
         }
-    }, [user]);
+    }, [user, checkTodayAttendance, fetchAttendanceHistory]);
 
-    const checkTodayAttendance = async () => {
+    const checkTodayAttendance = useCallback(async () => {
         if (!user || user._id === undefined) return;
         const userId = user._id || user.id;
 
@@ -50,9 +50,9 @@ function AttendanceForm() {
         } catch (error) {
             console.error('Failed to check attendance:', error);
         }
-    };
+    }, [user]);
 
-    const fetchAttendanceHistory = async () => {
+    const fetchAttendanceHistory = useCallback(async () => {
         if (!user || user._id === undefined) return;
         const userId = user._id || user.id;
         try {
@@ -62,7 +62,7 @@ function AttendanceForm() {
         } catch (error) {
             console.error('Failed to fetch history:', error);
         }
-    };
+    }, [user]);
 
     const markAttendance = async () => {
         if (loading) return;

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { useToast } from '../context/ToastContext';
 import { useAuth } from '../context/AuthContext';
@@ -82,7 +82,7 @@ function AdminDashboard() {
         }
     };
 
-    const fetchAttendance = async () => {
+    const fetchAttendance = useCallback(async () => {
         const token = localStorage.getItem('auth-token') || sessionStorage.getItem('auth-token');
         let attendanceUrl = `${import.meta.env.VITE_API_URL}/api/attendance`;
         if (selectedDate) {
@@ -105,7 +105,7 @@ function AdminDashboard() {
         } catch (err) {
             console.error("Failed to fetch attendance", err);
         }
-    };
+    }, [selectedDate, attendancePage]);
 
     useEffect(() => {
         const fetchAdminData = async () => {
@@ -154,7 +154,7 @@ function AdminDashboard() {
 
         fetchAdminData();
         fetchStats();
-    }, [selectedDate, attendancePage, leavePage]);
+    }, [selectedDate, attendancePage, leavePage, fetchAttendance, showToast]);
 
     // Search functionality
     useEffect(() => {
@@ -190,7 +190,7 @@ function AdminDashboard() {
             setLeaveReason('');
             setLeaveStartDate('');
             setLeaveEndDate('');
-        } catch (err) {
+        } catch {
             showToast("Failed to request leave", 'error');
         } finally {
             setIsSubmittingLeave(false);
@@ -203,7 +203,7 @@ function AdminDashboard() {
             const res = await axios.put(`${import.meta.env.VITE_API_URL}/api/leaves/${id}`, { status }, { headers: { 'auth-token': token } });
             setLeaves(leaves.map(l => l._id === id ? res.data : l));
             showToast(`Leave ${status.toLowerCase()} successfully`, 'success');
-        } catch (err) {
+        } catch {
             showToast("Failed to update status", 'error');
         }
     };
@@ -216,7 +216,7 @@ function AdminDashboard() {
             });
             setUsers(users.filter(u => u._id !== id));
             showToast("User deleted successfully", 'success');
-        } catch (err) {
+        } catch {
             showToast("Failed to delete user", 'error');
         }
     };
@@ -297,11 +297,7 @@ function AdminDashboard() {
     };
 
     // Calculate stats
-    const todayAttendance = attendanceLogs.filter(log => {
-        // Compare just the date parts dd/mm/yyyy
-        return formatDate(log.date) === formatDate(new Date());
-    }).length;
-    const pendingLeaves = leaves.filter(l => l.status === 'Pending').length;
+    // Local calculation removed as they are unused and we use fetched stats
 
     return (
         <div className="fade-in max-w-screen-xl mx-auto p-4 md:p-8">
