@@ -18,8 +18,11 @@ function AddUser() {
         const length = 12;
         const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*';
         let newPassword = '';
+        const randomValues = new Uint32Array(length);
+        window.crypto.getRandomValues(randomValues);
+
         for (let i = 0; i < length; i++) {
-            newPassword += charset.charAt(Math.floor(Math.random() * charset.length));
+            newPassword += charset.charAt(randomValues[i] % charset.length);
         }
         setPassword(newPassword);
         showToast('Strong password generated!', 'success');

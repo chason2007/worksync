@@ -2,13 +2,28 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 const attendanceRoutes = require('./routes/attendance');
 const authRoute = require('./routes/auth');
 const path = require('path');
 require('dotenv').config();
 
 const app = express();
-app.use(cors());
+
+// Security Middleware
+app.use(helmet());
+app.use(cors()); // CORS should be configured more restrictively in production
+
+// Rate Limiting - Global
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+app.use(limiter);
+
 app.use(express.json());
 
 // Serve static files from uploads directory

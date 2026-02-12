@@ -1,10 +1,18 @@
 const router = require('express').Router();
 const User = require('../models/User');
-
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-
 const verify = require('./verifyToken');
+const rateLimit = require('express-rate-limit');
+
+// Auth specific rate limiter
+const authLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000, // 1 hour
+    max: 10, // Limit each IP to 5 login/register requests per hour
+    message: 'Too many login attempts, please try again after an hour',
+    standardHeaders: true,
+    legacyHeaders: false,
+});
 
 // GET CURRENT USER
 router.get('/user', verify, async (req, res) => {
@@ -16,13 +24,11 @@ router.get('/user', verify, async (req, res) => {
     }
 });
 
-
-
 // REGISTER (Create a new user)
-router.post('/register', verify, async (req, res) => {
+router.post('/register', authLimiter, verify, async (req, res) => {
     if (req.user.role !== 'Admin') return res.status(403).send('Access Denied');
 
-    console.log("Register endpoint hit with body:", req.body);
+    // CONSOLE LOG REMOVED FOR SECURITY
     try {
         const email = req.body.email.trim().toLowerCase();
 
@@ -65,7 +71,7 @@ router.post('/register', verify, async (req, res) => {
 });
 
 // LOGIN (Authenticate user)
-router.post('/login', async (req, res) => {
+router.post('/login', authLimiter, async (req, res) => {
     try {
         const email = req.body.email.trim().toLowerCase();
 

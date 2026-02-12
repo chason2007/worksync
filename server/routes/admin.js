@@ -132,7 +132,7 @@ router.get('/users', verify, async (req, res) => {
 
 // UPDATE SPECIFIC USER
 router.put('/users/:id', verify, async (req, res) => {
-    console.log(`[DEBUG] PUT /users/${req.params.id}`, req.body); // Log receipt
+    // CONSOLE LOG REMOVED FOR SECURITY
     if (req.user.role !== 'Admin') return res.status(403).send('Access Denied');
     try {
         // Check uniqueness of Employee ID if provided
