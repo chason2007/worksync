@@ -307,27 +307,13 @@ function Header() {
                                     }}
                                 >
                                     <Avatar user={user} size="sm" />
-                                    <div
-                                        onClick={() => setShowDropdown(!showDropdown)}
-                                        style={{
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            gap: '0.75rem',
-                                            cursor: 'pointer',
-                                            padding: '0.5rem',
-                                            borderRadius: 'var(--pk-radius-sm)',
-                                            transition: 'background 0.2s'
-                                        }}
-                                    >
-                                        <Avatar user={user} size="sm" />
-                                        <div className="desktop-only" style={{ textAlign: 'left' }}>
-                                            <div style={{ fontWeight: '600', fontSize: '0.9rem' }}>{user.name}</div>
-                                            <div style={{ fontSize: '0.8rem', color: 'var(--pk-text-muted)' }}>{user.role}</div>
-                                        </div>
-                                        <span style={{ fontSize: '0.8rem', color: 'var(--pk-text-muted)' }}>
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                                        </span>
+                                    <div className="desktop-only" style={{ textAlign: 'left' }}>
+                                        <div style={{ fontWeight: '600', fontSize: '0.9rem' }}>{user.name}</div>
+                                        <div style={{ fontSize: '0.8rem', color: 'var(--pk-text-muted)' }}>{user.role}</div>
                                     </div>
+                                    <span style={{ fontSize: '0.8rem', color: 'var(--pk-text-muted)' }}>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                    </span>
 
                                     {showDropdown && (
                                         <div className="dropdown-menu">
