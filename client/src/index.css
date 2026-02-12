@@ -222,7 +222,7 @@ a:hover {
 }
 
 .btn-ghost:hover:not(:disabled) {
-  background-color: var(--slate-100);
+  background-color: var(--bg-surface-hover);
   color: var(--text-main);
 }
 
@@ -305,7 +305,7 @@ table {
 }
 
 thead {
-  background-color: var(--slate-50);
+  background-color: var(--bg-surface-hover);
   border-bottom: 1px solid var(--border-color);
 }
 
@@ -329,7 +329,7 @@ tr:last-child td {
 }
 
 tbody tr:hover {
-  background-color: var(--slate-50);
+  background-color: var(--bg-surface-hover);
 }
 
 /* Badges */
@@ -514,7 +514,7 @@ tbody tr:hover {
 
 .modal-footer {
   padding: 1rem 1.5rem;
-  background-color: var(--slate-50);
+  background-color: var(--bg-surface-hover);
   border-top: 1px solid var(--border-color);
   display: flex;
   justify-content: flex-end;
@@ -602,7 +602,7 @@ tbody tr:hover {
 }
 
 .dropdown-item:hover {
-  background-color: var(--slate-50);
+  background-color: var(--bg-surface-hover);
 }
 
 .dropdown-divider {
