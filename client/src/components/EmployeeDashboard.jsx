@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import axios from 'axios';
 import { useToast } from '../context/ToastContext';
 import Avatar from './Avatar';
@@ -323,5 +324,15 @@ function EmployeeDashboard({ user }) {
         </div>
     );
 }
+
+EmployeeDashboard.propTypes = {
+    user: PropTypes.shape({
+        _id: PropTypes.string,
+        id: PropTypes.string,
+        name: PropTypes.string,
+        role: PropTypes.string,
+        position: PropTypes.string,
+    }),
+};
 
 export default EmployeeDashboard;

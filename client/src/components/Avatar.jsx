@@ -51,4 +51,15 @@ function Avatar({ user, size = 'md', className = '' }) {
     );
 }
 
+import PropTypes from 'prop-types';
+
+Avatar.propTypes = {
+    user: PropTypes.shape({
+        name: PropTypes.string,
+        profileImage: PropTypes.string,
+    }),
+    size: PropTypes.string,
+    className: PropTypes.string,
+};
+
 export default Avatar;
