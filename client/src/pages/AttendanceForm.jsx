@@ -24,15 +24,6 @@ function AttendanceForm() {
         return () => clearInterval(timer);
     }, []);
 
-    // Check today's status & History
-    useEffect(() => {
-        if (user) {
-            checkTodayAttendance();
-            fetchAttendanceHistory();
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [user]);
-
     const checkTodayAttendance = useCallback(async () => {
         if (!user || user._id === undefined) return;
         const userId = user._id || user.id;
@@ -63,6 +54,15 @@ function AttendanceForm() {
         } catch (error) {
             console.error('Failed to fetch history:', error);
         }
+    }, [user]);
+
+    // Check today's status & History
+    useEffect(() => {
+        if (user) {
+            checkTodayAttendance();
+            fetchAttendanceHistory();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user]);
 
     const markAttendance = async () => {
