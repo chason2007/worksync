@@ -57,7 +57,8 @@ mongoose.connection.on('error', err => {
 // Routes
 
 // Route Middlewares
-app.use('/api/auth', authRoute); // This adds /register and /login
+app.use('/api/auth', authRoute);
+app.use('/api/users', require('./routes/users'));
 
 const PORT = process.env.PORT || 5000;
 

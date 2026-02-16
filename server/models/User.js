@@ -8,6 +8,8 @@ const UserSchema = new mongoose.Schema({
     position: String,
     profileImage: String, // Filename of uploaded profile image
     employeeId: { type: String, unique: true },
+    phone: String,
+    address: String,
 });
 
 module.exports = mongoose.model('User', UserSchema);

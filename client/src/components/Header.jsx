@@ -260,6 +260,9 @@ function Header() {
 
                                     {showDropdown && (
                                         <div className="dropdown-menu">
+                                            <Link to="/profile" className="dropdown-item" onClick={() => setShowDropdown(false)}>
+                                                <span>My Profile</span>
+                                            </Link>
                                             <Link to="/settings" className="dropdown-item" onClick={() => setShowDropdown(false)}>
                                                 <span>Settings</span>
                                             </Link>
