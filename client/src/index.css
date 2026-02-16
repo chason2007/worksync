@@ -965,8 +965,8 @@ tbody tr:hover {
 }
 
 .status-card.selected {
-  border-color: var(--primary-600);
-  background-color: var(--primary-100);
+  border-color: var(--primary-500);
+  background-color: var(--primary-50);
   box-shadow: 0 0 0 3px var(--primary-100);
 }
 
