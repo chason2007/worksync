@@ -854,6 +854,55 @@ tbody tr:hover {
     width: 50%;
   }
 
+}
+/* Layout Utilities for Redesign */
+.min-h-screen {
+  min-height: 100vh;
+}
+
+.hidden {
+  display: none;
+}
+
+.relative {
+  position: relative;
+}
+
+.absolute {
+  position: absolute;
+}
+
+.inset-0 {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.z-10 {
+  z-index: 10;
+}
+
+/* Glassmorphism */
+.backdrop-blur-sm {
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.bg-white-20 {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Responsive */
+@media (min-width: 768px) {
+  .md-flex {
+    display: flex;
+  }
+  
+  .md-w-half {
+    width: 50%;
+  }
+
   .md-p-12 {
      padding: 3rem;
   }
@@ -863,4 +912,81 @@ tbody tr:hover {
     .lg-max-w-md {
         max-width: 28rem;
     }
+}
+
+/* Attendance Page Styles */
+.page-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.page-header h1 {
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+.status-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.status-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem 1rem;
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  background-color: var(--bg-surface);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.status-card:hover {
+  border-color: var(--primary-400);
+  background-color: var(--primary-50);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.status-card.selected {
+  border-color: var(--primary-600);
+  background-color: var(--primary-100);
+  box-shadow: 0 0 0 3px var(--primary-100);
+}
+
+.status-card-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  color: var(--primary-600);
+}
+
+.status-card-title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+/* Make buttons more prominent on attendance page */
+.page-container .btn {
+  font-weight: 600;
+  letter-spacing: 0.025em;
 }
