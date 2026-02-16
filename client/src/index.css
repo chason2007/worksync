@@ -806,6 +806,7 @@ tbody tr:hover {
 .bg-gradient-violet {
   background: linear-gradient(135deg, #8b5cf6, #7c3aed);
 }
+
 /* Layout Utilities for Redesign */
 .min-h-screen {
   min-height: 100vh;
@@ -849,12 +850,13 @@ tbody tr:hover {
   .md-flex {
     display: flex;
   }
-  
+
   .md-w-half {
     width: 50%;
   }
 
 }
+
 /* Layout Utilities for Redesign */
 .min-h-screen {
   min-height: 100vh;
@@ -898,20 +900,20 @@ tbody tr:hover {
   .md-flex {
     display: flex;
   }
-  
+
   .md-w-half {
     width: 50%;
   }
 
   .md-p-12 {
-     padding: 3rem;
+    padding: 3rem;
   }
 }
 
 @media (min-width: 1024px) {
-    .lg-max-w-md {
-        max-width: 28rem;
-    }
+  .lg-max-w-md {
+    max-width: 28rem;
+  }
 }
 
 /* Attendance Page Styles */
@@ -956,8 +958,8 @@ tbody tr:hover {
 }
 
 .status-card:hover {
-  border-color: var(--primary-400);
-  background-color: var(--primary-50);
+  border-color: var(--primary-200);
+  background-color: var(--bg-surface-hover);
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
 }
