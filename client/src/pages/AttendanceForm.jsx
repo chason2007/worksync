@@ -142,11 +142,11 @@ function AttendanceForm() {
             {attendanceHistory.length > 0 && (
                 <div className="stats-grid">
                     <div className="stat-card">
-                        <h4>Present Days</h4>
+                        <h2>Present Days</h2>
                         <p className="stat-value">{presentDays}</p>
                     </div>
                     <div className="stat-card bg-gradient-warning">
-                        <h4>Half Days</h4>
+                        <h2>Half Days</h2>
                         <p className="stat-value">{halfDays}</p>
                     </div>
                 </div>

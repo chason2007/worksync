@@ -937,6 +937,12 @@ tbody tr:hover {
   font-size: 0.95rem;
 }
 
+.stat-card h2 {
+  font-size: 0.95rem;
+  margin: 0;
+  font-weight: 600;
+}
+
 .status-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
