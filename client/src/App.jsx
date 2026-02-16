@@ -7,6 +7,7 @@ import Settings from './pages/Settings';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
 import { ThemeProvider } from './context/ThemeContext';
+import { NotificationProvider } from './context/NotificationContext';
 import './App.css';
 import './mobile.css';
 
@@ -36,11 +37,13 @@ function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <ToastProvider>
-          <Router>
-            <AppRoutes />
-          </Router>
-        </ToastProvider>
+        <NotificationProvider>
+          <ToastProvider>
+            <Router>
+              <AppRoutes />
+            </Router>
+          </ToastProvider>
+        </NotificationProvider>
       </AuthProvider>
     </ThemeProvider>
   );

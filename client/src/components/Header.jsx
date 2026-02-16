@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+import { useNotifications } from '../context/NotificationContext';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import Avatar from './Avatar';
 import { formatDateTime } from '../utils/dateUtils';
@@ -13,33 +14,12 @@ function Header() {
     const [showDropdown, setShowDropdown] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-    // Notifications State
-    const [notifications, setNotifications] = useState([]);
+    // Notifications State via Context
+    const { notifications, unreadCount, markAsRead, markAllAsRead, fetchNotifications } = useNotifications();
     const [showNotifDropdown, setShowNotifDropdown] = useState(false);
     const notifDropdownRef = useRef(null);
 
-    // Fetch Notifications
-    const fetchNotifications = useCallback(async () => {
-        if (!user) return;
-        try {
-            const token = localStorage.getItem('auth-token') || sessionStorage.getItem('auth-token');
-            const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/notifications`, {
-                headers: { 'auth-token': token }
-            });
-            setNotifications(res.data);
-        } catch (err) {
-            console.error("Failed to fetch notifications", err);
-        }
-    }, [user]);
-
-    // Poll for notifications
-    // Poll for notifications
-    useEffect(() => {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        fetchNotifications();
-        const interval = setInterval(fetchNotifications, 60000); // Poll every minute
-        return () => clearInterval(interval);
-    }, [user, fetchNotifications]);
+    // Initial fetch handled by Context, but we can re-fetch on mount if needed or relies on context auto-polling
 
     // Close Notif Dropdown on click outside
     useEffect(() => {
@@ -52,52 +32,7 @@ function Header() {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-    const markAsRead = async (id, link) => {
-        try {
-            const token = localStorage.getItem('auth-token') || sessionStorage.getItem('auth-token');
-            await axios.put(`${import.meta.env.VITE_API_URL}/api/notifications/${id}/read`, {}, {
-                headers: { 'auth-token': token }
-            });
-            // Update local state
-            setNotifications(prev => prev.map(n => n._id === id ? { ...n, isRead: true } : n));
 
-            if (link) {
-                navigate(link);
-                setShowNotifDropdown(false);
-            }
-        } catch (err) {
-            console.error("Failed to mark as read", err);
-        }
-    };
-
-    const markAllRead = async () => {
-        try {
-            const token = localStorage.getItem('auth-token') || sessionStorage.getItem('auth-token');
-            await axios.put(`${import.meta.env.VITE_API_URL}/api/notifications/mark-all-read`, {}, {
-                headers: { 'auth-token': token }
-            });
-            setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
-        } catch (err) {
-            console.error("Failed to mark all read", err);
-        }
-    };
-
-    const clearAllNotifications = async () => {
-        if (!window.confirm("Are you sure you want to clear all notifications?")) return;
-        try {
-            const token = localStorage.getItem('auth-token') || sessionStorage.getItem('auth-token');
-            await axios.delete(`${import.meta.env.VITE_API_URL}/api/notifications/clear-all`, {
-                headers: { 'auth-token': token }
-            });
-            setNotifications([]);
-            // Optional: toast.success("Notifications cleared"); 
-        } catch (err) {
-            console.error("Failed to clear notifications", err);
-            alert("Failed to clear notifications. Please try again or check the console.");
-        }
-    };
-
-    const unreadCount = notifications.filter(n => !n.isRead).length;
 
 
     const handleLogout = () => {
@@ -245,7 +180,7 @@ function Header() {
                                                 {unreadCount > 0 && (
                                                     <button
                                                         style={{ background: 'none', border: 'none', color: 'var(--pk-primary)', fontSize: '0.75rem', cursor: 'pointer', textDecoration: 'underline' }}
-                                                        onClick={(e) => { e.stopPropagation(); markAllRead(); }}
+                                                        onClick={(e) => { e.stopPropagation(); markAllAsRead(); }}
                                                     >
                                                         Mark all read
                                                     </button>
@@ -278,7 +213,13 @@ function Header() {
                                                         whiteSpace: 'normal',
                                                         lineHeight: '1.4'
                                                     }}
-                                                    onClick={() => markAsRead(notif._id, notif.link)}
+                                                    onClick={() => {
+                                                        markAsRead(notif._id);
+                                                        if (notif.link) {
+                                                            navigate(notif.link);
+                                                            setShowNotifDropdown(false);
+                                                        }
+                                                    }}
                                                 >
                                                     <div style={{ fontSize: '0.85rem', marginBottom: '0.25rem', fontWeight: '500' }}>
                                                         {notif.type === 'success' ? 'Success: ' : notif.type === 'error' ? 'Error: ' : notif.type === 'warning' ? 'Warning: ' : 'Info: '}
