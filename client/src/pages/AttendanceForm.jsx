@@ -30,7 +30,8 @@ function AttendanceForm() {
             checkTodayAttendance();
             fetchAttendanceHistory();
         }
-    }, [user, checkTodayAttendance, fetchAttendanceHistory]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [user]);
 
     const checkTodayAttendance = useCallback(async () => {
         if (!user || user._id === undefined) return;
