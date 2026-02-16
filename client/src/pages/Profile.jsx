@@ -17,7 +17,8 @@ function Profile() {
     const [formData, setFormData] = useState({
         name: '',
         phone: '',
-        address: ''
+        address: '',
+        preferences: {}
     });
 
     // Populate form data from user context
@@ -26,7 +27,8 @@ function Profile() {
             setFormData({
                 name: user.name || '',
                 phone: user.phone || '',
-                address: user.address || ''
+                address: user.address || '',
+                preferences: user.preferences || {}
             });
         }
     }, [user]);

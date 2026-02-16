@@ -18,17 +18,21 @@ router.get('/profile', verify, async (req, res) => {
 // UPDATE OWN PROFILE
 router.put('/profile', verify, async (req, res) => {
     try {
-        const { phone, address, name } = req.body; // Allow name update too? Maybe just phone/address for now to match plan. Plan said "Update name, phone, address".
+        const { phone, address, name, preferences } = req.body;
+
+        // Construct update object
+        const updateData = { name, phone, address };
+
+        // Handle nested preferences update if provided
+        if (preferences) {
+            for (const key in preferences) {
+                updateData[`preferences.${key}`] = preferences[key];
+            }
+        }
 
         const updatedUser = await User.findByIdAndUpdate(
             req.user._id,
-            {
-                $set: {
-                    name,
-                    phone,
-                    address
-                }
-            },
+            { $set: updateData },
             { new: true }
         ).select('-password');
 

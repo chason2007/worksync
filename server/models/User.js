@@ -10,6 +10,12 @@ const UserSchema = new mongoose.Schema({
     employeeId: { type: String, unique: true },
     phone: String,
     address: String,
+    preferences: {
+        theme: { type: String, default: 'system' }, // 'light', 'dark', 'system'
+        timezone: { type: String, default: 'UTC' },
+        dateFormat: { type: String, default: 'YYYY-MM-DD' },
+        language: { type: String, default: 'en' }
+    }
 });
 
 module.exports = mongoose.model('User', UserSchema);

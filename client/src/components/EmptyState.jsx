@@ -1,59 +1,19 @@
 import React from 'react';
 
-function EmptyState({ icon, title = 'No Data Found', description = 'There is nothing to show here yet.', actionLabel, onAction }) {
+function EmptyState({ title = "No data found", message = "Nothing to show here yet.", icon, action }) {
     return (
-        <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '3rem 2rem',
-            textAlign: 'center',
-            color: 'var(--pk-text-muted)',
-            background: 'var(--pk-bg)',
-            borderRadius: 'var(--pk-radius)',
-            border: '2px dashed var(--pk-border)',
-            margin: '1rem 0'
-        }}>
-            <div style={{
-                fontSize: '3rem',
-                marginBottom: '1rem',
-                background: 'var(--pk-surface)',
-                width: '80px',
-                height: '80px',
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                boxShadow: 'var(--pk-shadow)'
-            }}>
-                {icon || 'N/A'}
+        <div className="flex flex-col items-center justify-center p-8 text-center rounded-lg border-2 border-dashed border-gray-200 bg-gray-50/50">
+            <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mb-4 shadow-sm text-gray-400">
+                {icon || (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="8" y1="12" x2="16" y2="12"></line>
+                    </svg>
+                )}
             </div>
-            <h4 style={{
-                margin: '0 0 0.5rem 0',
-                color: 'var(--pk-text-main)',
-                fontSize: '1.1rem',
-                fontWeight: '600'
-            }}>
-                {title}
-            </h4>
-            <p style={{
-                margin: 0,
-                fontSize: '0.9rem',
-                maxWidth: '300px',
-                marginBottom: actionLabel ? '1.5rem' : '0'
-            }}>
-                {description}
-            </p>
-            {actionLabel && onAction && (
-                <button
-                    onClick={onAction}
-                    className="btn btn-primary"
-                    style={{ fontSize: '0.9rem' }}
-                >
-                    {actionLabel}
-                </button>
-            )}
+            <h3 className="text-lg font-medium text-gray-900 mb-1">{title}</h3>
+            <p className="text-gray-500 max-w-sm mb-6">{message}</p>
+            {action}
         </div>
     );
 }

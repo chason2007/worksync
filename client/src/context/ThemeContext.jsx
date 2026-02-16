@@ -59,3 +59,15 @@ export function ThemeProvider({ children }) {
 export function useTheme() {
     return useContext(ThemeContext);
 }
+
+// Helper hook to sync theme with User Preference
+// This should be used in a high-level component (e.g., App.jsx or MainLayout)
+export function useThemeSync(user) {
+    const { setTheme } = useTheme();
+
+    useEffect(() => {
+        if (user?.preferences?.theme) {
+            setTheme(user.preferences.theme);
+        }
+    }, [user, setTheme]);
+}

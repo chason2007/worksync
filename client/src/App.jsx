@@ -14,12 +14,32 @@ import './mobile.css';
 
 import Header from './components/Header';
 
+// Theme Sync Helper
+import { useThemeSync } from './context/ThemeContext';
+// Keyboard Shortcuts
+import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
+import CommandPalette from './components/CommandPalette';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 function AppRoutes() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+  useThemeSync(user);
+
+  const [isPaletteOpen, setIsPaletteOpen] = useState(false);
+
+  useKeyboardShortcuts([
+    { key: 'k', ctrl: true, action: () => setIsPaletteOpen(prev => !prev) },
+    { key: 'h', ctrl: true, action: () => navigate('/') },
+    { key: 'p', ctrl: true, action: () => navigate('/profile') }, // Ctrl+P usually print, but we override
+    { key: 'l', ctrl: true, shift: true, action: () => logout() }
+  ]);
 
   return (
     <div className="app-container">
       <Header />
+      <CommandPalette isOpen={isPaletteOpen} onClose={() => setIsPaletteOpen(false)} />
       <main>
         <Routes>
           <Route path="/" element={user ? <Dashboard /> : <Navigate to="/login" />} />

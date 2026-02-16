@@ -158,6 +158,34 @@ function AdminDashboard() {
         fetchStats();
     }, [selectedDate, attendancePage, leavePage, fetchAttendance, showToast]);
 
+    if (pageLoading) {
+        return (
+            <div className="p-6 max-w-7xl mx-auto space-y-6">
+                {/* Header Skeleton */}
+                <div className="flex justify-between items-center mb-8">
+                    <div>
+                        <Skeleton width="200px" height="32px" className="mb-2" />
+                        <Skeleton width="150px" height="20px" />
+                    </div>
+                    <Skeleton width="120px" height="40px" />
+                </div>
+
+                {/* Stats Grid Skeleton */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <Skeleton type="card" />
+                    <Skeleton type="card" />
+                    <Skeleton type="card" />
+                </div>
+
+                {/* Table Skeleton */}
+                <div className="card">
+                    <Skeleton width="150px" height="24px" className="mb-4" />
+                    <Skeleton height="300px" />
+                </div>
+            </div>
+        );
+    }
+
     // Search functionality
     useEffect(() => {
         if (searchTerm) {
@@ -527,7 +555,7 @@ function AdminDashboard() {
                                     <td colSpan="5">
                                         <EmptyState
                                             title="No Leave Requests"
-                                            description="There are no pending leave requests at the moment."
+                                            message="There are no pending leave requests at the moment."
                                         />
                                     </td>
                                 </tr>
@@ -623,10 +651,10 @@ function AdminDashboard() {
                             ))}
                             {attendanceLogs.length === 0 && (
                                 <tr>
-                                    <td colSpan="4">
+                                    <td colSpan="5">
                                         <EmptyState
                                             title="No Attendance"
-                                            description={`No records for ${formatDate(selectedDate)}.`}
+                                            message={`No records for ${formatDate(selectedDate)}.`}
                                         />
                                     </td>
                                 </tr>
