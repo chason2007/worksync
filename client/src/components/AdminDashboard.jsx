@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import { useToast } from '../context/ToastContext';
 import { useAuth } from '../context/AuthContext';
 import ConfirmModal from './ConfirmModal';
@@ -10,6 +11,7 @@ import StatusBadge from './StatusBadge';
 import { formatDate, formatDateTime } from '../utils/dateUtils';
 
 function AdminDashboard() {
+    const navigate = useNavigate();
     const { user: currentUser } = useAuth();
     const [attendanceLogs, setAttendanceLogs] = useState([]);
     const [attendancePage, setAttendancePage] = useState(1);
@@ -310,7 +312,7 @@ function AdminDashboard() {
                     <button className="btn btn-secondary">
                         Reports
                     </button>
-                    <button className="btn btn-primary">
+                    <button className="btn btn-primary" onClick={() => navigate('/add-user')}>
                         + Add Employee
                     </button>
                 </div>
