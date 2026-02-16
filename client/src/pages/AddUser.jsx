@@ -207,6 +207,7 @@ function AddUser() {
                                     disabled={loading}
                                     className="hidden"
                                     id="profile-image-input"
+                                    tabIndex="-1"
                                     style={{ display: 'none' }}
                                 />
                                 <label
