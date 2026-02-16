@@ -106,6 +106,22 @@
         flex-wrap: wrap;
     }
 
+    /* Notification Dropdown Mobile */
+    .dropdown-menu {
+        width: 300px !important;
+        right: -60px !important;
+        max-width: 90vw !important;
+    }
+
+    /* Touch Targets */
+    .btn,
+    .dropdown-item,
+    .input-group input,
+    .input-group select {
+        min-height: 44px;
+        /* Improved touch target size */
+    }
+
     /* Status selection on Attendance Form */
     .status-grid {
         grid-template-columns: 1fr !important;
