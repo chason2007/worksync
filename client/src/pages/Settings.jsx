@@ -179,7 +179,7 @@ function Settings() {
                                 handleSystemReset
                             )}
                             className="btn btn-danger"
-                            style={{ fontWeight: 'bold' }}
+                            style={{ fontWeight: 'bold', backgroundColor: '#dc2626', color: 'white' }}
                         >
                             RESET SYSTEM
                         </button>
