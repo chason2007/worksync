@@ -353,6 +353,7 @@ function AdminDashboard() {
                                 placeholder="Search users..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
+                                aria-label="Search users"
                             />
                         </div>
                     </div>
@@ -575,6 +576,7 @@ function AdminDashboard() {
                             value={selectedDate}
                             onChange={(e) => setSelectedDate(e.target.value)}
                             className="w-auto"
+                            aria-label="Filter attendance by date"
                         />
                     </div>
                 </div>
