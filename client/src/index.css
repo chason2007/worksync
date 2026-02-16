@@ -970,6 +970,14 @@ tbody tr:hover {
   box-shadow: 0 0 0 3px var(--primary-100);
 }
 
+.status-card.selected .status-card-title {
+  color: var(--slate-900);
+}
+
+.status-card.selected .status-card-icon {
+  color: var(--primary-700);
+}
+
 .status-card-icon {
   font-size: 2rem;
   margin-bottom: 0.5rem;
