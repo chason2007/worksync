@@ -308,10 +308,7 @@ function AdminDashboard() {
                     <h1 className="mb-2">Admin Dashboard</h1>
                     <p className="text-muted">Manage users, attendance, and leave requests</p>
                 </div>
-                <div className="flex gap-2">
-                    <button className="btn btn-secondary">
-                        Reports
-                    </button>
+                <div>
                     <button className="btn btn-primary" onClick={() => navigate('/add-user')}>
                         + Add Employee
                     </button>
