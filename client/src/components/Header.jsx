@@ -119,9 +119,9 @@ function Header() {
 
     return (
         <header style={{
-            background: 'var(--pk-surface)',
-            borderBottom: '1px solid var(--pk-border)',
-            boxShadow: 'var(--pk-shadow)',
+            background: 'var(--bg-surface)',
+            borderBottom: '1px solid var(--border-color)',
+            boxShadow: 'var(--shadow)',
             padding: '1rem 2rem',
             position: 'sticky',
             top: 0,
