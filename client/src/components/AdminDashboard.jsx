@@ -569,7 +569,7 @@ function AdminDashboard() {
                             className="btn btn-secondary"
                             disabled={attendanceLogs.length === 0}
                         >
-                            📥 Export CSV
+                            Export CSV
                         </button>
                         <input
                             type="date"
