@@ -18,14 +18,16 @@ function AppRoutes() {
   return (
     <div className="app-container">
       <Header />
-      <Routes>
-        <Route path="/" element={user ? <Dashboard /> : <Navigate to="/login" />} />
-        <Route path="/attendance" element={user ? <AttendanceForm /> : <Navigate to="/login" />} />
-        <Route path="/settings" element={user?.role === 'Admin' ? <Settings /> : <Navigate to="/" />} />
-        <Route path="/add-user" element={user?.role === 'Admin' ? <AddUser /> : <Navigate to="/" />} />
-        <Route path="/login" element={user ? <Navigate to="/" /> : <Login />} />
-        <Route path="*" element={<Navigate to="/" />} />
-      </Routes>
+      <main>
+        <Routes>
+          <Route path="/" element={user ? <Dashboard /> : <Navigate to="/login" />} />
+          <Route path="/attendance" element={user ? <AttendanceForm /> : <Navigate to="/login" />} />
+          <Route path="/settings" element={user?.role === 'Admin' ? <Settings /> : <Navigate to="/" />} />
+          <Route path="/add-user" element={user?.role === 'Admin' ? <AddUser /> : <Navigate to="/" />} />
+          <Route path="/login" element={user ? <Navigate to="/" /> : <Login />} />
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
+      </main>
     </div>
   );
 }
