@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { useToast } from '../context/ToastContext';
+import { resizeImage } from '../utils/imageUtils';
 
 // Helper functions outside component to avoid initialization issues
 const generatePasswordHelper = () => {
@@ -54,7 +55,7 @@ function AddUser() {
         showToast('Strong password generated!', 'success');
     };
 
-    const handleImageChange = (e) => {
+    const handleImageChange = async (e) => {
         const file = e.target.files[0];
         if (file) {
             // Validate file type
@@ -62,18 +63,21 @@ function AddUser() {
                 showToast('Please select an image file', 'error');
                 return;
             }
-            // Validate file size (5MB)
-            if (file.size > 5 * 1024 * 1024) {
-                showToast('Image size must be less than 5MB', 'error');
-                return;
+
+            try {
+                const resizedFile = await resizeImage(file, 500, 500);
+                setProfileImage(resizedFile);
+
+                // Create preview
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    setImagePreview(reader.result);
+                };
+                reader.readAsDataURL(resizedFile);
+            } catch (err) {
+                console.error("Resize error:", err);
+                showToast('Failed to process image', 'error');
             }
-            setProfileImage(file);
-            // Create preview
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setImagePreview(reader.result);
-            };
-            reader.readAsDataURL(file);
         }
     };
 

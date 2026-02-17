@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import axios from 'axios';
 import Avatar from '../components/Avatar';
+import { resizeImage } from '../utils/imageUtils';
 import { useNavigate } from 'react-router-dom';
 
 function Profile() {
@@ -45,11 +46,12 @@ function Profile() {
         const file = e.target.files[0];
         if (!file) return;
 
-        const formData = new FormData();
-        formData.append('profileImage', file);
-
         try {
             setLoading(true);
+            const resizedFile = await resizeImage(file, 500, 500);
+
+            const formData = new FormData();
+            formData.append('profileImage', resizedFile);
             const token = localStorage.getItem('auth-token') || sessionStorage.getItem('auth-token');
             const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/users/profile/image`, formData, {
                 headers: {
