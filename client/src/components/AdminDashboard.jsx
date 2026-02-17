@@ -19,6 +19,7 @@ function AdminDashboard() {
     const [stats, setStats] = useState({ todayAttendance: 0, pendingLeaves: 0, totalUsers: 0 });
 
     const [pageLoading, setPageLoading] = useState(true);
+    const [isAttendanceLoading, setIsAttendanceLoading] = useState(false);
 
     // Initialize with LOCAL date string (YYYY-MM-DD)
     const [selectedDate, setSelectedDate] = useState(() => {
@@ -85,6 +86,7 @@ function AdminDashboard() {
     };
 
     const fetchAttendance = useCallback(async () => {
+        setIsAttendanceLoading(true);
         const token = localStorage.getItem('auth-token') || sessionStorage.getItem('auth-token');
         let attendanceUrl = `${import.meta.env.VITE_API_URL}/api/attendance`;
         if (selectedDate) {
@@ -106,16 +108,17 @@ function AdminDashboard() {
             }
         } catch (err) {
             console.error("Failed to fetch attendance", err);
+        } finally {
+            setIsAttendanceLoading(false);
         }
     }, [selectedDate, attendancePage]);
 
+    // Initial Data Load (Users, Stats, Leaves)
     useEffect(() => {
-        const fetchAdminData = async () => {
+        const fetchInitialData = async () => {
             setPageLoading(true);
             const token = localStorage.getItem('auth-token') || sessionStorage.getItem('auth-token');
             try {
-                await fetchAttendance();
-
                 // Fetch Users
                 const usersRes = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/users`, { headers: { 'auth-token': token } });
                 const visibleUsers = (Array.isArray(usersRes.data) ? usersRes.data : []).filter(u => u.email !== 'admin@worksync.com');
@@ -127,14 +130,9 @@ function AdminDashboard() {
                 setUsers(sortedUsers);
                 setFilteredUsers(sortedUsers);
 
-                // Fetch Leaves
-                const leavesRes = await axios.get(`${import.meta.env.VITE_API_URL}/api/leaves?page=${leavePage}&limit=10`, { headers: { 'auth-token': token } });
-                if (leavesRes.data.pagination) {
-                    setLeaves(leavesRes.data.data);
-                    setLeaveMeta(leavesRes.data.pagination);
-                } else {
-                    setLeaves(Array.isArray(leavesRes.data) ? leavesRes.data : []);
-                }
+                // Fetch Stats
+                const statsRes = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/stats`, { headers: { 'auth-token': token } });
+                setStats(statsRes.data);
 
             } catch (err) {
                 console.error("Failed to fetch admin data", err);
@@ -144,19 +142,32 @@ function AdminDashboard() {
             }
         };
 
-        const fetchStats = async () => {
+        fetchInitialData();
+    }, [showToast]);
+
+    // Separate Effect for Attendance (runs on date/page change)
+    useEffect(() => {
+        fetchAttendance();
+    }, [fetchAttendance]);
+
+    // Separate Effect for Leaves (runs on leave page change)
+    useEffect(() => {
+        const fetchLeaves = async () => {
             const token = localStorage.getItem('auth-token') || sessionStorage.getItem('auth-token');
             try {
-                const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/stats`, { headers: { 'auth-token': token } });
-                setStats(res.data);
+                const leavesRes = await axios.get(`${import.meta.env.VITE_API_URL}/api/leaves?page=${leavePage}&limit=10`, { headers: { 'auth-token': token } });
+                if (leavesRes.data.pagination) {
+                    setLeaves(leavesRes.data.data);
+                    setLeaveMeta(leavesRes.data.pagination);
+                } else {
+                    setLeaves(Array.isArray(leavesRes.data) ? leavesRes.data : []);
+                }
             } catch (err) {
-                console.error("Failed to fetch stats", err);
+                console.error("Failed to fetch leaves", err);
             }
         };
-
-        fetchAdminData();
-        fetchStats();
-    }, [selectedDate, attendancePage, leavePage, fetchAttendance, showToast]);
+        fetchLeaves();
+    }, [leavePage]);
 
     // Search functionality
     useEffect(() => {
@@ -659,45 +670,58 @@ function AdminDashboard() {
                             </tr>
                         </thead>
                         <tbody>
-                            {attendanceLogs.map(log => (
-                                <tr key={log._id}>
-                                    <td>
-                                        <div className="flex items-center gap-3">
-                                            <Avatar user={log.userId} size="sm" />
-                                            <div>
-                                                <div className="font-bold">{log.userId?.name || 'Unknown'}</div>
-                                                <div className="text-sm text-muted">{log.userId?.email || 'N/A'}</div>
-                                            </div>
+                            {isAttendanceLoading ? (
+                                <tr>
+                                    <td colSpan="4" className="text-center p-8">
+                                        <div className="flex flex-col items-center justify-center text-muted">
+                                            <div className="w-8 h-8 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin mb-2"></div>
+                                            Loading attendance...
                                         </div>
                                     </td>
-                                    <td>
-                                        <div>{formatDateTime(log.date)}</div>
-                                        {(log.modifiedBy || log.modifiedAt) && (
-                                            <div className="text-sm text-muted">
-                                                Edited {log.modifiedAt && formatDate(log.modifiedAt)}
-                                            </div>
-                                        )}
-                                    </td>
-                                    <td><StatusBadge status={log.status} /></td>
-                                    <td>
-                                        <button
-                                            onClick={() => openEditAttendanceModal(log)}
-                                            className="btn btn-ghost"
-                                        >
-                                            Edit
-                                        </button>
-                                    </td>
                                 </tr>
-                            ))}
-                            {attendanceLogs.length === 0 && (
-                                <tr>
-                                    <td colSpan="5">
-                                        <EmptyState
-                                            title="No Attendance"
-                                            message={`No records for ${formatDate(selectedDate)}.`}
-                                        />
-                                    </td>
-                                </tr>
+                            ) : (
+                                <>
+                                    {attendanceLogs.map(log => (
+                                        <tr key={log._id}>
+                                            <td>
+                                                <div className="flex items-center gap-3">
+                                                    <Avatar user={log.userId} size="sm" />
+                                                    <div>
+                                                        <div className="font-bold">{log.userId?.name || 'Unknown'}</div>
+                                                        <div className="text-sm text-muted">{log.userId?.email || 'N/A'}</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div>{formatDateTime(log.date)}</div>
+                                                {(log.modifiedBy || log.modifiedAt) && (
+                                                    <div className="text-sm text-muted">
+                                                        Edited {log.modifiedAt && formatDate(log.modifiedAt)}
+                                                    </div>
+                                                )}
+                                            </td>
+                                            <td><StatusBadge status={log.status} /></td>
+                                            <td>
+                                                <button
+                                                    onClick={() => openEditAttendanceModal(log)}
+                                                    className="btn btn-ghost"
+                                                >
+                                                    Edit
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                    {attendanceLogs.length === 0 && (
+                                        <tr>
+                                            <td colSpan="4">
+                                                <EmptyState
+                                                    title="No Attendance"
+                                                    message={`No records for ${formatDate(selectedDate)}.`}
+                                                />
+                                            </td>
+                                        </tr>
+                                    )}
+                                </>
                             )}
                         </tbody>
                     </table>
