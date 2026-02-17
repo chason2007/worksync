@@ -308,7 +308,8 @@ function Header() {
                     right: 0,
                     bottom: 0,
                     background: 'var(--pk-surface)',
-                    zIndex: 35,
+                    backgroundColor: 'var(--pk-surface)', // Ensure color is applied
+                    zIndex: 100, // Increased z-index
                     padding: '1rem',
                     borderTop: '1px solid var(--pk-border)'
                 }}>
