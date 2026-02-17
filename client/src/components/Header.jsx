@@ -15,7 +15,7 @@ function Header() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     // Notifications State via Context
-    const { notifications, unreadCount, markAsRead, markAllAsRead, fetchNotifications } = useNotifications();
+    const { notifications, unreadCount, markAsRead, markAllAsRead, fetchNotifications, clearAllNotifications } = useNotifications();
     const [showNotifDropdown, setShowNotifDropdown] = useState(false);
     const notifDropdownRef = useRef(null);
 
