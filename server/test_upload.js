@@ -1,6 +1,7 @@
 
 const fs = require('fs');
 const path = require('path');
+require('dotenv').config();
 
 async function testUpload() {
     try {
@@ -9,8 +10,8 @@ async function testUpload() {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                email: 'admin@worksync.com',
-                password: 'admin'
+                email: process.env.SUPER_ADMIN_EMAIL || 'admin@worksync.com',
+                password: process.env.SUPER_ADMIN_PASSWORD || 'admin'
             })
         });
 
