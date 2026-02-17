@@ -29,6 +29,10 @@ function AdminDashboard() {
         return `${yyyy}-${mm}-${dd}`;
     });
 
+    const [isAttendanceLoading, setIsAttendanceLoading] = useState(false);
+
+    // ... (existing code for date change) ...
+
     const handleDateChange = (days) => {
         const result = new Date(selectedDate);
         result.setDate(result.getDate() + days);
@@ -38,6 +42,7 @@ function AdminDashboard() {
         setSelectedDate(`${yyyy}-${mm}-${dd}`);
     };
 
+    // ... (existing state) ...
     const [users, setUsers] = useState([]);
     const [filteredUsers, setFilteredUsers] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
@@ -94,6 +99,7 @@ function AdminDashboard() {
     };
 
     const fetchAttendance = useCallback(async () => {
+        setIsAttendanceLoading(true);
         const token = localStorage.getItem('auth-token') || sessionStorage.getItem('auth-token');
         let attendanceUrl = `${import.meta.env.VITE_API_URL}/api/attendance`;
         if (selectedDate) {
@@ -115,16 +121,17 @@ function AdminDashboard() {
             }
         } catch (err) {
             console.error("Failed to fetch attendance", err);
+        } finally {
+            setIsAttendanceLoading(false);
         }
     }, [selectedDate, attendancePage]);
 
+    // Initial Load (Users, Stats)
     useEffect(() => {
-        const fetchAdminData = async () => {
+        const fetchInitialData = async () => {
             setPageLoading(true);
             const token = localStorage.getItem('auth-token') || sessionStorage.getItem('auth-token');
             try {
-                await fetchAttendance();
-
                 // Fetch Users
                 const usersRes = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/users`, { headers: { 'auth-token': token } });
                 const visibleUsers = (Array.isArray(usersRes.data) ? usersRes.data : []).filter(u => u.email !== 'admin@worksync.com');
@@ -136,14 +143,9 @@ function AdminDashboard() {
                 setUsers(sortedUsers);
                 setFilteredUsers(sortedUsers);
 
-                // Fetch Leaves
-                const leavesRes = await axios.get(`${import.meta.env.VITE_API_URL}/api/leaves?page=${leavePage}&limit=10`, { headers: { 'auth-token': token } });
-                if (leavesRes.data.pagination) {
-                    setLeaves(leavesRes.data.data);
-                    setLeaveMeta(leavesRes.data.pagination);
-                } else {
-                    setLeaves(Array.isArray(leavesRes.data) ? leavesRes.data : []);
-                }
+                // Fetch Stats
+                const statsRes = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/stats`, { headers: { 'auth-token': token } });
+                setStats(statsRes.data);
 
             } catch (err) {
                 console.error("Failed to fetch admin data", err);
@@ -153,19 +155,32 @@ function AdminDashboard() {
             }
         };
 
-        const fetchStats = async () => {
+        fetchInitialData();
+    }, [showToast]);
+
+    // Fetch Attendance Trigger
+    useEffect(() => {
+        fetchAttendance();
+    }, [fetchAttendance]);
+
+    // Fetch Leaves Trigger
+    useEffect(() => {
+        const fetchLeaves = async () => {
             const token = localStorage.getItem('auth-token') || sessionStorage.getItem('auth-token');
             try {
-                const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/stats`, { headers: { 'auth-token': token } });
-                setStats(res.data);
+                const leavesRes = await axios.get(`${import.meta.env.VITE_API_URL}/api/leaves?page=${leavePage}&limit=10`, { headers: { 'auth-token': token } });
+                if (leavesRes.data.pagination) {
+                    setLeaves(leavesRes.data.data);
+                    setLeaveMeta(leavesRes.data.pagination);
+                } else {
+                    setLeaves(Array.isArray(leavesRes.data) ? leavesRes.data : []);
+                }
             } catch (err) {
-                console.error("Failed to fetch stats", err);
+                console.error("Failed to fetch leaves", err);
             }
         };
-
-        fetchAdminData();
-        fetchStats();
-    }, [selectedDate, attendancePage, leavePage, fetchAttendance, showToast]);
+        fetchLeaves();
+    }, [leavePage]);
 
     // Search functionality
     useEffect(() => {
@@ -642,7 +657,7 @@ function AdminDashboard() {
                         </div>
                     </div>
                 </div>
-                <div className="table-container">
+                <div className={`table-container ${isAttendanceLoading ? 'opacity-50 pointer-events-none' : ''}`} style={{ transition: 'opacity 0.2s' }}>
                     <table>
                         <thead>
                             <tr>
@@ -683,7 +698,7 @@ function AdminDashboard() {
                                     </td>
                                 </tr>
                             ))}
-                            {attendanceLogs.length === 0 && (
+                            {attendanceLogs.length === 0 && !isAttendanceLoading && (
                                 <tr>
                                     <td colSpan="5">
                                         <EmptyState
