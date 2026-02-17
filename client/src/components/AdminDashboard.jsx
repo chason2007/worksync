@@ -448,6 +448,21 @@ function AdminDashboard() {
                                                                         onClick={() => openModal(
                                                                             'Delete User',
                                                                             `Are you sure you want to delete ${u.name}?`,
+                                                                            <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+                                                                                {u.profileImage ? (
+                                                                                    <img
+                                                                                        src={u.profileImage.startsWith('data:')
+                                                                                            ? u.profileImage
+                                                                                            : `${import.meta.env.VITE_API_URL}/uploads/profiles/${u.profileImage}`}
+                                                                                        alt={u.name}
+                                                                                        className="w-full h-full object-cover"
+                                                                                    />
+                                                                                ) : (
+                                                                                    <span className="text-xl font-bold text-gray-500">
+                                                                                        {u.name.charAt(0).toUpperCase()}
+                                                                                    </span>
+                                                                                )}
+                                                                            </div>,
                                                                             () => handleDeleteUser(u._id)
                                                                         )}
                                                                         className="btn btn-ghost p-2 text-danger"

@@ -20,7 +20,9 @@ function Avatar({ user, size = 'md', className = '' }) {
     };
 
     const imageUrl = user?.profileImage
-        ? `${import.meta.env.VITE_API_URL}/uploads/profiles/${user.profileImage}`
+        ? (user.profileImage.startsWith('data:')
+            ? user.profileImage
+            : `${import.meta.env.VITE_API_URL}/uploads/profiles/${user.profileImage}`)
         : null;
 
     return (

@@ -52,24 +52,20 @@ router.post('/profile/image', verify, upload.single('profileImage'), async (req,
         const user = await User.findById(req.user._id);
         if (!user) return res.status(404).send('User not found');
 
-        // Delete old image
-        if (user.profileImage) {
-            const oldImagePath = path.join(__dirname, '../public/uploads/profiles', user.profileImage);
-            if (fs.existsSync(oldImagePath)) {
-                fs.unlinkSync(oldImagePath);
-            }
-        }
+        // Convert buffer to Base64
+        const b64 = Buffer.from(req.file.buffer).toString('base64');
+        const mimeType = req.file.mimetype;
+        user.profileImage = `data:${mimeType};base64,${b64}`;
 
-        user.profileImage = req.file.filename;
         await user.save();
 
         res.json({
             message: 'Profile image uploaded successfully',
-            profileImage: req.file.filename,
+            profileImage: user.profileImage, // Send back the full Base64 string for immediate UI update
             user: { ...user.toObject(), password: undefined }
         });
     } catch (err) {
-        if (req.file) fs.unlinkSync(req.file.path);
+        console.error('Upload Error:', err);
         res.status(500).json({ error: err.message });
     }
 });

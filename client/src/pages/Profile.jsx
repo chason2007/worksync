@@ -114,8 +114,22 @@ function Profile() {
                 {/* Profile Card */}
                 <div className="card md:col-span-1 flex flex-col items-center text-center">
                     <div className="relative group cursor-pointer" onClick={handleImageClick}>
-                        <Avatar user={user} size="xl" />
-                        <div className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-lg mx-auto">
+                            {user.profileImage ? (
+                                <img
+                                    src={user.profileImage.startsWith('data:')
+                                        ? user.profileImage
+                                        : `${import.meta.env.VITE_API_URL}/uploads/profiles/${user.profileImage}`}
+                                    alt={user.name}
+                                    className="w-full h-full object-cover"
+                                />
+                            ) : (
+                                <div className="w-full h-full bg-primary text-white flex items-center justify-center text-4xl font-bold">
+                                    {user.name?.charAt(0).toUpperCase()}
+                                </div>
+                            )}
+                        </div>
+                        <div className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity w-32 h-32 mx-auto">
                             <span className="text-white text-sm font-medium">Change</span>
                         </div>
                         <input
