@@ -158,6 +158,21 @@ function AdminDashboard() {
         fetchStats();
     }, [selectedDate, attendancePage, leavePage, fetchAttendance, showToast]);
 
+    // Search functionality
+    useEffect(() => {
+        if (searchTerm) {
+            const filtered = users.filter(u =>
+                u.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                u.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                (u.position && u.position.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                (u.employeeId && u.employeeId.toLowerCase().includes(searchTerm.toLowerCase()))
+            );
+            setFilteredUsers(filtered);
+        } else {
+            setFilteredUsers(users);
+        }
+    }, [searchTerm, users]);
+
     if (pageLoading) {
         return (
             <div className="p-6 max-w-7xl mx-auto space-y-6">
@@ -186,20 +201,7 @@ function AdminDashboard() {
         );
     }
 
-    // Search functionality
-    useEffect(() => {
-        if (searchTerm) {
-            const filtered = users.filter(u =>
-                u.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                u.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                (u.position && u.position.toLowerCase().includes(searchTerm.toLowerCase())) ||
-                (u.employeeId && u.employeeId.toLowerCase().includes(searchTerm.toLowerCase()))
-            );
-            setFilteredUsers(filtered);
-        } else {
-            setFilteredUsers(users);
-        }
-    }, [searchTerm, users]);
+
 
     const submitLeaveRequest = async (e) => {
         e.preventDefault();
