@@ -72,10 +72,11 @@ router.post('/', verify, async (req, res) => {
         const savedLeave = await newLeave.save();
 
         // NOTIFICATION: Notify all Admins
+        const currentUser = await User.findById(req.user._id);
         const admins = await User.find({ role: 'Admin' });
         const notifications = admins.map(admin => ({
             userId: admin._id,
-            message: `New Leave Request from ${req.user.name}: ${req.body.reason}`,
+            message: `New Leave Request from ${currentUser.name}: ${req.body.reason}`,
             type: 'info',
             link: '/' // Admin Dashboard
         }));
