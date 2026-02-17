@@ -331,6 +331,19 @@ function AdminDashboard() {
     // Calculate stats
     // Local calculation removed as they are unused and we use fetched stats
 
+    // Date Navigation
+    const handlePrevDay = () => {
+        const date = new Date(selectedDate);
+        date.setDate(date.getDate() - 1);
+        setSelectedDate(date.toISOString().split('T')[0]);
+    };
+
+    const handleNextDay = () => {
+        const date = new Date(selectedDate);
+        date.setDate(date.getDate() + 1);
+        setSelectedDate(date.toISOString().split('T')[0]);
+    };
+
     return (
         <div className="fade-in max-w-screen-xl mx-auto p-4 md:p-8">
             <div className="flex justify-between items-center mb-8">
@@ -608,13 +621,18 @@ function AdminDashboard() {
             <div className="card">
                 <div className="flex justify-between items-center mb-6">
                     <h3>Attendance Logs</h3>
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
                         <button
                             onClick={exportToCSV}
-                            className="btn btn-secondary"
+                            className="btn btn-secondary mr-2"
                             disabled={attendanceLogs.length === 0}
                         >
                             Export CSV
+                        </button>
+                        <button onClick={handlePrevDay} className="btn btn-secondary p-2" aria-label="Previous Day">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <polyline points="15 18 9 12 15 6"></polyline>
+                            </svg>
                         </button>
                         <input
                             type="date"
@@ -623,6 +641,11 @@ function AdminDashboard() {
                             className="w-auto"
                             aria-label="Filter attendance by date"
                         />
+                        <button onClick={handleNextDay} className="btn btn-secondary p-2" aria-label="Next Day">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
+                        </button>
                     </div>
                 </div>
                 <div className="table-container">
