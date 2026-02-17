@@ -14,6 +14,31 @@ const authLimiter = rateLimit({
     legacyHeaders: false,
 });
 
+// SEED ADMIN (One-time setup for production)
+router.get('/seed-admin', async (req, res) => {
+    try {
+        const email = process.env.SUPER_ADMIN_EMAIL || 'admin@worksync.com';
+        const existing = await User.findOne({ email: email });
+        if (existing) return res.send('Admin account already exists.');
+
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(process.env.SUPER_ADMIN_PASSWORD || 'admin', salt);
+
+        const admin = new User({
+            name: 'Super Admin',
+            email: email,
+            password: hashedPassword,
+            role: 'Admin',
+            position: 'System Owner',
+            employeeId: 'ADMIN001'
+        });
+        await admin.save();
+        res.send('Admin account created successfully. You can now login.');
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
+});
+
 // GET CURRENT USER
 router.get('/user', verify, async (req, res) => {
     try {
