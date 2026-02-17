@@ -29,6 +29,15 @@ function AdminDashboard() {
         return `${yyyy}-${mm}-${dd}`;
     });
 
+    const handleDateChange = (days) => {
+        const result = new Date(selectedDate);
+        result.setDate(result.getDate() + days);
+        const yyyy = result.getFullYear();
+        const mm = String(result.getMonth() + 1).padStart(2, '0');
+        const dd = String(result.getDate()).padStart(2, '0');
+        setSelectedDate(`${yyyy}-${mm}-${dd}`);
+    };
+
     const [users, setUsers] = useState([]);
     const [filteredUsers, setFilteredUsers] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
@@ -616,13 +625,21 @@ function AdminDashboard() {
                         >
                             Export CSV
                         </button>
-                        <input
-                            type="date"
-                            value={selectedDate}
-                            onChange={(e) => setSelectedDate(e.target.value)}
-                            className="w-auto"
-                            aria-label="Filter attendance by date"
-                        />
+                        <div className="flex items-center gap-2">
+                            <button className="btn btn-ghost p-2" onClick={() => handleDateChange(-1)} title="Previous Day">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                            </button>
+                            <input
+                                type="date"
+                                value={selectedDate}
+                                onChange={(e) => setSelectedDate(e.target.value)}
+                                className="w-auto"
+                                aria-label="Filter attendance by date"
+                            />
+                            <button className="btn btn-ghost p-2" onClick={() => handleDateChange(1)} title="Next Day">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <div className="table-container">

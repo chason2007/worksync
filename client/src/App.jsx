@@ -13,6 +13,7 @@ import './App.css';
 import './mobile.css';
 
 import Header from './components/Header';
+import Footer from './components/Footer';
 
 // Theme Sync Helper
 import { useThemeSync } from './context/ThemeContext';
@@ -36,6 +37,7 @@ function AppRoutes() {
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </main>
+      <Footer />
     </div>
   );
 }
