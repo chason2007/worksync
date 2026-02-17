@@ -157,7 +157,7 @@ function AttendanceForm() {
                 {hasSubmittedToday ? (
                     <div className="py-8">
                         <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>
-                            {todayAttendance?.status === 'Absent' ? 'Unmarked' : todayAttendance?.status === 'Half-day' ? 'Half-day' : 'Present'}
+                            {todayAttendance?.status === 'Absent' ? 'Absent' : todayAttendance?.status === 'Half-day' ? 'Half-day' : 'Present'}
                         </div>
                         <h2 className="mb-2">Attendance Marked</h2>
                         <p className="text-muted">
