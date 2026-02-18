@@ -112,6 +112,13 @@ function Header() {
                             >
                                 Dashboard
                             </Link>
+                            <Link
+                                to="/announcements"
+                                className={`nav-link ${isActive('/announcements') ? 'active' : ''}`}
+                                style={{ fontWeight: '500', color: 'var(--pk-text-main)', textDecoration: 'none' }}
+                            >
+                                Announcements
+                            </Link>
                             {user.email !== 'admin@worksync.com' && (
                                 <Link
                                     to="/attendance"
@@ -316,6 +323,9 @@ function Header() {
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                         <Link to="/" className="btn" onClick={() => setMobileMenuOpen(false)} style={{ justifyContent: 'flex-start', background: 'transparent', color: 'var(--pk-text-main)', border: 'none' }}>
                             Dashboard
+                        </Link>
+                        <Link to="/announcements" className="btn" onClick={() => setMobileMenuOpen(false)} style={{ justifyContent: 'flex-start', background: 'transparent', color: 'var(--pk-text-main)', border: 'none' }}>
+                            Announcements
                         </Link>
                         {user.email !== 'admin@worksync.com' && (
                             <Link to="/attendance" className="btn" onClick={() => setMobileMenuOpen(false)} style={{ justifyContent: 'flex-start', background: 'transparent', color: 'var(--pk-text-main)', border: 'none' }}>

@@ -58,6 +58,22 @@ router.post('/', verify, async (req, res) => {
     }
 });
 
+// DELETE ALL ANNOUNCEMENTS (Admin Only)
+router.delete('/', verify, async (req, res) => {
+    if (req.user.role !== 'Admin') return res.status(403).send('Access Denied');
+
+    try {
+        await Announcement.deleteMany({});
+        // Also clear related notifications
+        const Notification = require('../models/Notification');
+        await Notification.deleteMany({ link: { $regex: 'announcementId' } });
+
+        res.json({ message: 'All announcements deleted' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // GET SINGLE ANNOUNCEMENT
 router.get('/:id', verify, async (req, res) => {
     try {

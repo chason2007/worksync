@@ -9,7 +9,7 @@ import Skeleton from './Skeleton';
 import EmptyState from './EmptyState';
 import StatusBadge from './StatusBadge';
 import { formatDate, formatDateTime } from '../utils/dateUtils';
-import AnnouncementSection from './AnnouncementSection';
+
 
 function AdminDashboard() {
     const navigate = useNavigate();
@@ -722,8 +722,7 @@ function AdminDashboard() {
                         </div>
                     </div>
                 );
-            case 'announcements':
-                return <AnnouncementSection />;
+
             default:
                 return null;
         }
@@ -744,14 +743,13 @@ function AdminDashboard() {
             </div>
 
             {/* Tabs Navigation */}
-            {/* Tabs Navigation */}
-            <div className="flex p-1 space-x-1 bg-slate-100 rounded-xl mb-8 overflow-x-auto max-w-md mx-auto">
-                {['overview', 'users', 'leaves', 'announcements'].map((tab) => (
+            <div className="flex border-b border-gray-200 mb-8 overflow-x-auto">
+                {['overview', 'users', 'leaves'].map((tab) => (
                     <button
                         key={tab}
-                        className={`flex-1 rounded-lg py-2.5 text-sm font-medium leading-5 capitalize transition-all duration-200 ${activeTab === tab
-                                ? 'bg-white text-primary-700 shadow shadow-sm ring-1 ring-black/5'
-                                : 'text-slate-500 hover:bg-white/50 hover:text-slate-700'
+                        className={`py-3 px-6 font-medium text-sm focus:outline-none capitalize transition-colors border-b-2 ${activeTab === tab
+                            ? 'border-primary-600 text-primary-600'
+                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                             }`}
                         onClick={() => setActiveTab(tab)}
                     >

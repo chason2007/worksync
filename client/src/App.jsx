@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import AddUser from './pages/AddUser';
 import Settings from './pages/Settings';
 import Profile from './pages/Profile';
+import Announcements from './pages/Announcements';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
 import { ThemeProvider, useThemeSync } from './context/ThemeContext';
@@ -32,6 +33,7 @@ function AppRoutes() {
           <Route path="/settings" element={user?.role === 'Admin' ? <Settings /> : <Navigate to="/" />} />
           <Route path="/add-user" element={user?.role === 'Admin' ? <AddUser /> : <Navigate to="/" />} />
           <Route path="/profile" element={user ? <Profile /> : <Navigate to="/login" />} /> {/* Added Profile route */}
+          <Route path="/announcements" element={user ? <Announcements /> : <Navigate to="/login" />} />
           <Route path="/login" element={user ? <Navigate to="/" /> : <Login />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>

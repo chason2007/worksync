@@ -162,6 +162,38 @@ function Settings() {
                         </button>
                     </div>
 
+                    {/* Delete All Announcements */}
+                    <div className="flex justify-between items-center p-4 bg-danger rounded border-danger">
+                        <div style={{ flex: 1 }}>
+                            <div className="flex items-center gap-2 mb-1">
+                                <strong className="text-danger">Delete All Announcements</strong>
+                            </div>
+                            <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                                Removes all announcements and their notifications.
+                            </div>
+                        </div>
+                        <button
+                            onClick={() => openModal(
+                                'Delete All Announcements',
+                                'This will permanently delete all announcements. This action cannot be undone.',
+                                async () => {
+                                    try {
+                                        const token = localStorage.getItem('auth-token') || sessionStorage.getItem('auth-token');
+                                        const res = await axios.delete(`${import.meta.env.VITE_API_URL}/api/announcements`, {
+                                            headers: { 'auth-token': token }
+                                        });
+                                        showToast(res.data.message, 'success');
+                                    } catch (err) {
+                                        showToast("Failed to delete announcements", 'error');
+                                    }
+                                }
+                            )}
+                            className="btn btn-danger"
+                        >
+                            Delete Announcements
+                        </button>
+                    </div>
+
                     {/* Reset System */}
                     <div className="flex justify-between items-center p-4 bg-danger rounded border-danger">
                         <div style={{ flex: 1 }}>
