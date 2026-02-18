@@ -48,8 +48,7 @@ function AddUser() {
 
     const [loading, setLoading] = useState(false);
     const [profileImage, setProfileImage] = useState(null);
-    const [imagePreview, setImagePreview] = useState(null);
-    const [imagePreview, setImagePreview] = useState(null);
+
     const { showToast } = useToast();
 
     // Fetch next ID

@@ -77,36 +77,25 @@ router.post('/users/:id/upload-image', verify, upload.single('profileImage'), as
             return res.status(400).json({ error: 'No file uploaded' });
         }
 
-        // Get the user and delete old profile image if exists
+        // Get the user
         const user = await User.findById(req.params.id);
         if (!user) {
-            // Delete uploaded file since user doesn't exist
-            fs.unlinkSync(req.file.path);
             return res.status(404).send('User not found');
         }
 
-        // Delete old profile image if it exists
-        if (user.profileImage) {
-            const oldImagePath = path.join(__dirname, '../public/uploads/profiles', user.profileImage);
-            if (fs.existsSync(oldImagePath)) {
-                fs.unlinkSync(oldImagePath);
-            }
-        }
+        // Convert buffer to Base64
+        const b64 = Buffer.from(req.file.buffer).toString('base64');
+        const mimeType = req.file.mimetype;
+        user.profileImage = `data:${mimeType};base64,${b64}`;
 
-        // Update user with new profile image filename
-        user.profileImage = req.file.filename;
         await user.save();
 
         res.json({
             message: 'Profile image uploaded successfully',
-            profileImage: req.file.filename,
+            profileImage: user.profileImage,
             user: { ...user.toObject(), password: undefined }
         });
     } catch (err) {
-        // Delete uploaded file if there was an error
-        if (req.file) {
-            fs.unlinkSync(req.file.path);
-        }
         console.error('Upload error:', err);
         res.status(500).json({ error: err.message });
     }
