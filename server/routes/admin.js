@@ -24,7 +24,7 @@ router.get('/stats', verify, async (req, res) => {
         });
 
         const pendingLeaves = await Leave.countDocuments({ status: 'Pending' });
-        const totalUsers = await User.countDocuments({});
+        const totalUsers = await User.countDocuments({ email: { $ne: 'admin@worksync.com' } });
 
         res.json({
             todayAttendance,
