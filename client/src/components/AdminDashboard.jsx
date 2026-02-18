@@ -20,6 +20,7 @@ function AdminDashboard() {
     const [stats, setStats] = useState({ todayAttendance: 0, pendingLeaves: 0, totalUsers: 0 });
 
     const [pageLoading, setPageLoading] = useState(true);
+    const [activeTab, setActiveTab] = useState('overview');
 
     // Initialize with LOCAL date string (YYYY-MM-DD)
     const [selectedDate, setSelectedDate] = useState(() => {
@@ -343,7 +344,7 @@ function AdminDashboard() {
     // Local calculation removed as they are unused and we use fetched stats
 
     // Tab State
-    const [activeTab, setActiveTab] = useState('overview');
+
 
     const renderTabContent = () => {
         switch (activeTab) {
@@ -748,8 +749,8 @@ function AdminDashboard() {
                     <button
                         key={tab}
                         className={`py-3 px-6 font-medium text-sm focus:outline-none capitalize transition-colors border-b-2 ${activeTab === tab
-                                ? 'border-primary-600 text-primary-600'
-                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                            ? 'border-primary-600 text-primary-600'
+                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                             }`}
                         onClick={() => setActiveTab(tab)}
                     >
