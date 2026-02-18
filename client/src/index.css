@@ -651,6 +651,19 @@ tbody tr:hover {
 }
 
 /* Modal */
+.ring-2 {
+  box-shadow: 0 0 0 2px var(--bg-surface), 0 0 0 4px var(--primary-500);
+}
+
+.ring-primary-500 {
+  /* Combined with ring-2 for simplicity in this custom CSS setup */
+  border-color: var(--primary-500);
+}
+
+.bg-primary-50 {
+  background-color: var(--primary-50);
+}
+
 .modal-backdrop {
   position: fixed;
   inset: 0;

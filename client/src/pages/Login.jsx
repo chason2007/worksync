@@ -148,7 +148,7 @@ function Login() {
                                 className="w-4 h-4 rounded text-primary focus:ring-primary-500 border-gray-300"
                             />
                             <label htmlFor="remember" className="text-sm cursor-pointer text-muted select-none">
-                                Remember me for 30 days
+                                Remember me
                             </label>
                         </div>
 
