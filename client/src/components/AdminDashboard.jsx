@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '../context/ToastContext';
 import { useAuth } from '../context/AuthContext';
@@ -86,10 +86,7 @@ function AdminDashboard() {
 
     const handleUpdateUser = async () => {
         try {
-            const token = localStorage.getItem('auth-token') || sessionStorage.getItem('auth-token');
-            const res = await axios.put(`${import.meta.env.VITE_API_URL}/api/admin/users/${editingUser}`, editForm, {
-                headers: { 'auth-token': token }
-            });
+            const res = await api.put(`/api/admin/users/${editingUser}`, editForm);
             setUsers(users.map(u => u._id === editingUser ? res.data : u));
             setEditingUser(null);
             showToast("User updated successfully", 'success');
@@ -100,8 +97,7 @@ function AdminDashboard() {
 
     const fetchAttendance = useCallback(async () => {
         setIsAttendanceLoading(true);
-        const token = localStorage.getItem('auth-token') || sessionStorage.getItem('auth-token');
-        let attendanceUrl = `${import.meta.env.VITE_API_URL}/api/attendance`;
+        let attendanceUrl = '/api/attendance';
         if (selectedDate) {
             const [y, m, d] = selectedDate.split('-').map(Number);
             const start = new Date(y, m - 1, d, 0, 0, 0, 0);
@@ -112,7 +108,7 @@ function AdminDashboard() {
         attendanceUrl += (attendanceUrl.includes('?') ? '&' : '?') + `page=${attendancePage}&limit=20`;
 
         try {
-            const attendanceRes = await axios.get(attendanceUrl, { headers: { 'auth-token': token } });
+            const attendanceRes = await api.get(attendanceUrl);
             if (attendanceRes.data.pagination) {
                 setAttendanceLogs(attendanceRes.data.data);
                 setAttendanceMeta(attendanceRes.data.pagination);
@@ -130,10 +126,9 @@ function AdminDashboard() {
     useEffect(() => {
         const fetchInitialData = async () => {
             setPageLoading(true);
-            const token = localStorage.getItem('auth-token') || sessionStorage.getItem('auth-token');
             try {
                 // Fetch Users
-                const usersRes = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/users`, { headers: { 'auth-token': token } });
+                const usersRes = await api.get('/api/admin/users');
                 const visibleUsers = (Array.isArray(usersRes.data) ? usersRes.data : []).filter(u => u.email !== 'admin@worksync.com');
                 const sortedUsers = visibleUsers.sort((a, b) => {
                     if (a.role === 'Admin' && b.role !== 'Admin') return -1;
@@ -144,7 +139,7 @@ function AdminDashboard() {
                 setFilteredUsers(sortedUsers);
 
                 // Fetch Stats
-                const statsRes = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/stats`, { headers: { 'auth-token': token } });
+                const statsRes = await api.get('/api/admin/stats');
                 setStats(statsRes.data);
 
             } catch (err) {
@@ -166,9 +161,8 @@ function AdminDashboard() {
     // Fetch Leaves Trigger
     useEffect(() => {
         const fetchLeaves = async () => {
-            const token = localStorage.getItem('auth-token') || sessionStorage.getItem('auth-token');
             try {
-                const leavesRes = await axios.get(`${import.meta.env.VITE_API_URL}/api/leaves?page=${leavePage}&limit=10`, { headers: { 'auth-token': token } });
+                const leavesRes = await api.get(`/api/leaves?page=${leavePage}&limit=10`);
                 if (leavesRes.data.pagination) {
                     setLeaves(leavesRes.data.data);
                     setLeaveMeta(leavesRes.data.pagination);
@@ -232,12 +226,11 @@ function AdminDashboard() {
         setIsSubmittingLeave(true);
 
         try {
-            const token = localStorage.getItem('auth-token') || sessionStorage.getItem('auth-token');
-            const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/leaves`, {
+            const res = await api.post('/api/leaves', {
                 reason: leaveReason,
                 startDate: leaveStartDate,
                 endDate: leaveEndDate
-            }, { headers: { 'auth-token': token } });
+            });
 
             showToast("Leave request submitted successfully!", 'success');
             // If the admin needs to approve their own leave, it will appear in the 'leaves' list
@@ -255,8 +248,7 @@ function AdminDashboard() {
 
     const updateLeaveStatus = async (id, status) => {
         try {
-            const token = localStorage.getItem('auth-token') || sessionStorage.getItem('auth-token');
-            const res = await axios.put(`${import.meta.env.VITE_API_URL}/api/leaves/${id}`, { status }, { headers: { 'auth-token': token } });
+            const res = await api.put(`/api/leaves/${id}`, { status });
             setLeaves(leaves.map(l => l._id === id ? res.data : l));
             showToast(`Leave ${status.toLowerCase()} successfully`, 'success');
         } catch {
@@ -266,10 +258,7 @@ function AdminDashboard() {
 
     const handleDeleteUser = async (id) => {
         try {
-            const token = localStorage.getItem('auth-token') || sessionStorage.getItem('auth-token');
-            await axios.delete(`${import.meta.env.VITE_API_URL}/api/admin/users/${id}`, {
-                headers: { 'auth-token': token }
-            });
+            await api.delete(`/api/admin/users/${id}`);
             setUsers(users.filter(u => u._id !== id));
             showToast("User deleted successfully", 'success');
         } catch {
@@ -332,11 +321,8 @@ function AdminDashboard() {
         if (!editingAttendance) return;
 
         try {
-            const token = localStorage.getItem('auth-token') || sessionStorage.getItem('auth-token');
-            await axios.put(`${import.meta.env.VITE_API_URL}/api/attendance/${editingAttendance._id}`, {
+            await api.put(`/api/attendance/${editingAttendance._id}`, {
                 status: editAttendanceStatus
-            }, {
-                headers: { 'auth-token': token }
             });
 
             showToast(`Attendance updated for ${editingAttendance.userId?.name || 'User'}`, 'success');

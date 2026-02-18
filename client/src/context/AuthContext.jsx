@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect, useContext } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 
 const AuthContext = createContext(null);
 
@@ -14,10 +14,7 @@ export const AuthProvider = ({ children }) => {
             if (token) {
                 try {
                     console.log("Checking user against:", import.meta.env.VITE_API_URL);
-                    const userRes = await axios.get(`${import.meta.env.VITE_API_URL}/api/auth/user`, {
-                        headers: { 'auth-token': token },
-                        timeout: 10000 // 10 second timeout
-                    });
+                    const userRes = await api.get('/api/auth/user');
                     console.log("User found:", userRes.data);
                     setUser(userRes.data);
 

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 import { useToast } from '../context/ToastContext';
 import { resizeImage } from '../utils/imageUtils';
 
@@ -55,10 +55,7 @@ function AddUser() {
     // Fetch next ID
     const fetchNextId = async () => {
         try {
-            const token = localStorage.getItem('auth-token');
-            const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/users/next-id`, {
-                headers: { 'auth-token': token }
-            });
+            const res = await api.get('/api/users/next-id');
             setEmployeeId(res.data.nextId);
             setIdWarning('');
             showToast('Next available ID generated', 'success');
@@ -75,10 +72,7 @@ function AddUser() {
             return;
         }
         try {
-            const token = localStorage.getItem('auth-token');
-            const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/users/check-id/${id}`, {
-                headers: { 'auth-token': token }
-            });
+            const res = await api.get(`/api/users/check-id/${id}`);
             if (res.data.exists) {
                 setIdWarning('This Employee ID is already taken.');
             } else {
@@ -132,15 +126,13 @@ function AddUser() {
         formData.append('profileImage', profileImage);
 
         try {
-            const token = localStorage.getItem('auth-token');
-            console.log('Auth token exists?', !!token);
+            // console.log('Auth token exists?', !!token); // Token handled by interceptor
 
-            const response = await axios.post(
-                `${import.meta.env.VITE_API_URL}/api/admin/users/${userId}/upload-image`,
+            const response = await api.post(
+                `/api/admin/users/${userId}/upload-image`,
                 formData,
                 {
                     headers: {
-                        'auth-token': token,
                         'Content-Type': 'multipart/form-data'
                     }
                 }
@@ -161,19 +153,14 @@ function AddUser() {
         setLoading(true);
 
         try {
-            const token = localStorage.getItem('auth-token');
-            const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/register`, {
+            // const token = localStorage.getItem('auth-token'); // Unused
+            const res = await api.post('/api/auth/register', {
                 name,
                 email,
                 password,
                 role,
-                role,
                 position,
                 employeeId,
-            }, {
-                headers: {
-                    'auth-token': token
-                }
             });
 
             console.log('User created:', res.data);
