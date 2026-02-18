@@ -33,10 +33,6 @@ function EmployeeDashboard({ user }) {
     // Unused state removed: attendanceRecords, attendancePage, attendanceMeta
     const { showToast } = useToast();
 
-    useEffect(() => {
-        fetchData();
-    }, [user, leavePage, fetchData]);
-
     const fetchData = useCallback(async () => {
         const token = localStorage.getItem('auth-token') || sessionStorage.getItem('auth-token');
         try {
@@ -67,6 +63,10 @@ function EmployeeDashboard({ user }) {
             setPageLoading(false);
         }
     }, [user, leavePage]);
+
+    useEffect(() => {
+        fetchData();
+    }, [user, leavePage, fetchData]);
 
     const submitLeaveRequest = async (e) => {
         e.preventDefault();
