@@ -7,7 +7,7 @@ import Settings from './pages/Settings';
 import Profile from './pages/Profile';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
-import { ThemeProvider } from './context/ThemeContext';
+import { ThemeProvider, useThemeSync } from './context/ThemeContext';
 import { NotificationProvider } from './context/NotificationContext';
 import './App.css';
 import './mobile.css';
