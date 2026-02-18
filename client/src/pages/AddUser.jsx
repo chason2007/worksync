@@ -43,11 +43,51 @@ function AddUser() {
     const [password, setPassword] = useState('');
     const [role, setRole] = useState('Employee');
     const [position, setPosition] = useState('');
+    const [employeeId, setEmployeeId] = useState('');
+    const [idWarning, setIdWarning] = useState('');
 
     const [loading, setLoading] = useState(false);
     const [profileImage, setProfileImage] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
+    const [imagePreview, setImagePreview] = useState(null);
     const { showToast } = useToast();
+
+    // Fetch next ID
+    const fetchNextId = async () => {
+        try {
+            const token = localStorage.getItem('auth-token');
+            const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/users/next-id`, {
+                headers: { 'auth-token': token }
+            });
+            setEmployeeId(res.data.nextId);
+            setIdWarning('');
+            showToast('Next available ID generated', 'success');
+        } catch (err) {
+            console.error(err);
+            showToast('Failed to generate ID', 'error');
+        }
+    };
+
+    // Check ID availability
+    const checkIdAvailability = async (id) => {
+        if (!id) {
+            setIdWarning('');
+            return;
+        }
+        try {
+            const token = localStorage.getItem('auth-token');
+            const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/users/check-id/${id}`, {
+                headers: { 'auth-token': token }
+            });
+            if (res.data.exists) {
+                setIdWarning('This Employee ID is already taken.');
+            } else {
+                setIdWarning('');
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    };
 
     const generatePassword = () => {
         const newPassword = generatePasswordHelper();
@@ -127,7 +167,9 @@ function AddUser() {
                 email,
                 password,
                 role,
+                role,
                 position,
+                employeeId,
             }, {
                 headers: {
                     'auth-token': token
@@ -151,7 +193,10 @@ function AddUser() {
             setEmail('');
             setPassword('');
             setRole('Employee');
+            setRole('Employee');
             setPosition('');
+            setEmployeeId('');
+            setIdWarning('');
 
             setProfileImage(null);
             setImagePreview(null);
@@ -275,6 +320,39 @@ function AddUser() {
                                 />
                             </div>
                         </div>
+
+                        {/* Employee ID */}
+                        <div>
+                            <label className="block mb-2 font-medium">
+                                Employee ID
+                            </label>
+                            <div className="flex gap-2">
+                                <div className="input-group flex-1">
+                                    <span className="input-icon"></span>
+                                    <input
+                                        type="text"
+                                        placeholder="EMP001"
+                                        value={employeeId}
+                                        onChange={(e) => {
+                                            setEmployeeId(e.target.value);
+                                            checkIdAvailability(e.target.value);
+                                        }}
+                                        className={idWarning ? 'input-error' : ''}
+                                        disabled={loading}
+                                    />
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={fetchNextId}
+                                    className="btn btn-ghost whitespace-nowrap"
+                                    disabled={loading}
+                                >
+                                    Generate
+                                </button>
+                            </div>
+                            {idWarning && <p className="text-danger text-sm mt-1">{idWarning}</p>}
+                        </div>
+
                         <div>
                             <label className="block mb-2 font-medium">
                                 Role *

@@ -61,14 +61,22 @@ router.post('/register', authLimiter, verify, async (req, res) => {
         const emailExist = await User.findOne({ email: email });
         if (emailExist) return res.status(400).send('Email already exists');
 
-        // Auto-generate Employee ID
-        let newEmployeeId = 'EMP001';
-        const lastUser = await User.findOne({ employeeId: { $exists: true } }).sort({ employeeId: -1 });
-        if (lastUser && lastUser.employeeId) {
-            const match = lastUser.employeeId.match(/^EMP(\d+)$/);
-            if (match) {
-                const nextNum = parseInt(match[1], 10) + 1;
-                newEmployeeId = `EMP${String(nextNum).padStart(3, '0')}`;
+        let newEmployeeId = req.body.employeeId;
+
+        // Validation for custom ID
+        if (newEmployeeId) {
+            const idExist = await User.findOne({ employeeId: newEmployeeId });
+            if (idExist) return res.status(400).send('Employee ID already exists');
+        } else {
+            // Auto-generate Employee ID if not provided
+            newEmployeeId = 'EMP001';
+            const lastUser = await User.findOne({ employeeId: { $exists: true } }).sort({ employeeId: -1 });
+            if (lastUser && lastUser.employeeId) {
+                const match = lastUser.employeeId.match(/^EMP(\d+)$/);
+                if (match) {
+                    const nextNum = parseInt(match[1], 10) + 1;
+                    newEmployeeId = `EMP${String(nextNum).padStart(3, '0')}`;
+                }
             }
         }
 

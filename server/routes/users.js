@@ -70,4 +70,33 @@ router.post('/profile/image', verify, upload.single('profileImage'), async (req,
     }
 });
 
+// CHECK IF EMPLOYEE ID EXISTS
+router.get('/check-id/:id', verify, async (req, res) => {
+    try {
+        const user = await User.findOne({ employeeId: req.params.id });
+        res.json({ exists: !!user });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// GET NEXT EMPLOYEE ID
+router.get('/next-id', verify, async (req, res) => {
+    try {
+        const lastUser = await User.findOne({ employeeId: { $exists: true } }).sort({ employeeId: -1 });
+        let nextId = 'EMP001';
+
+        if (lastUser && lastUser.employeeId) {
+            const match = lastUser.employeeId.match(/^EMP(\d+)$/);
+            if (match) {
+                const nextNum = parseInt(match[1], 10) + 1;
+                nextId = `EMP${String(nextNum).padStart(3, '0')}`;
+            }
+        }
+        res.json({ nextId });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 module.exports = router;
