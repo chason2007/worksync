@@ -50,13 +50,13 @@ function Login() {
                 </div>
 
                 {/* Glassmorphism Logo Container */}
-                <div className="z-10 bg-white-20 backdrop-blur-sm p-4 rounded-2xl w-24 h-24 mb-6 flex items-center justify-center shadow-lg mx-auto">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>
+                <div className="z-10 bg-white-20 backdrop-blur-sm p-6 rounded-2xl mb-6 flex items-center justify-center shadow-lg mx-auto">
+                    <img src="/worksync-logo.png" alt="WorkSync Logo" className="w-20 h-20 object-contain" />
                 </div>
 
                 <div className="z-10 max-w-md">
-                    <h1 className="text-4xl font-extrabold mb-4">WorkSync</h1>
-                    <p className="text-lg opacity-90 leading-relaxed">
+                    <h1 className="text-4xl font-extrabold mb-4 text-white drop-shadow-md">WorkSync</h1>
+                    <p className="text-lg opacity-95 leading-relaxed font-medium text-blue-50">
                         Seamlessly manage your workforce, track attendance, and handle leaves in one unified platform.
                     </p>
                 </div>
@@ -65,16 +65,9 @@ function Login() {
             {/* Right Side - Login Form */}
             <div className="w-full md-w-half flex items-center justify-center p-8 bg-surface">
                 <div className="w-full max-w-md">
-                    <div className="text-center mb-10 md-block hidden">
-                        {/* Mobile logo shown only on mobile usually, but here just spacing */}
-                    </div>
-
-                    {/* Mobile Only Header */}
+                    {/* Mobile Logo removed as per request "remove the flash icon from right above the login form" */}
                     <div className="text-center mb-8 md:hidden block">
-                        <div className="bg-gradient-primary w-12 h-12 rounded-xl mx-auto mb-4 flex items-center justify-center text-white shadow-md">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>
-                        </div>
-                        <h2 className="text-2xl font-bold">Welcome Back</h2>
+                        <h2 className="text-2xl font-bold text-slate-800">Welcome Back</h2>
                     </div>
 
                     <div className="text-left mb-8 hidden md-block">
