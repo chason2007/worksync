@@ -40,18 +40,32 @@ app.use('/api/admin', require('./routes/admin'));
 app.use('/api/leaves', require('./routes/leaves'));
 app.use('/api/notifications', require('./routes/notifications'));
 
-// Connect to MongoDB (Replace with your Atlas string later)
 // Connect to MongoDB
-mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/employeeDB')
-  .then(() => console.log("MongoDB Connected"))
-  .catch(err => {
-    console.error("MongoDB Connection Failed:", err.message);
-    // check for IP whitelist error specifically
-    if (err.message.includes('bad auth')) console.error("Possible bad password or IP whitelist issue.");
-  });
+const connectDB = async () => {
+  try {
+    const conn = await mongoose.connect(process.env.MONGO_URI, {
+      serverSelectionTimeoutMS: 5000,
+      family: 4 // Use IPv4, skip trying IPv6
+    });
+    console.log(`MongoDB Connected: ${conn.connection.host}`);
+  } catch (err) {
+    console.error(`Error: ${err.message}`);
+    // process.exit(1); // Don't exit, let it keep retrying or fail gracefully
+  }
+};
 
-mongoose.connection.on('error', err => {
-  console.error("Runtime MongoDB Error:", err);
+connectDB();
+
+mongoose.connection.on('connected', () => {
+  console.log('Mongoose connected to DB Cluster');
+});
+
+mongoose.connection.on('error', (err) => {
+  console.error('Mongoose connection error:', err.message);
+});
+
+mongoose.connection.on('disconnected', () => {
+  console.log('Mongoose disconnected');
 });
 
 // Routes
