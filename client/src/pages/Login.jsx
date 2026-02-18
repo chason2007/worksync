@@ -50,8 +50,8 @@ function Login() {
                 </div>
 
                 {/* Glassmorphism Logo Container */}
-                <div className="z-10 bg-white-20 backdrop-blur-sm p-6 rounded-2xl mb-6 flex items-center justify-center shadow-lg mx-auto">
-                    <img src="/worksync-logo.png" alt="WorkSync Logo" className="w-20 h-20 object-contain" />
+                <div className="z-10 bg-white-20 backdrop-blur-sm p-4 rounded-2xl mb-6 flex items-center justify-center shadow-lg mx-auto">
+                    <img src="/worksync-logo.png" alt="WorkSync Logo" className="w-12 h-12 object-contain" />
                 </div>
 
                 <div className="z-10 max-w-md">
