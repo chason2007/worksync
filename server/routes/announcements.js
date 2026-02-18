@@ -34,9 +34,38 @@ router.post('/', verify, async (req, res) => {
         const savedAnnouncement = await announcement.save();
         // Populate postedBy to return complete object
         await savedAnnouncement.populate('postedBy', 'name role');
+
+        // Create notification for all users except the sender
+        const User = require('../models/User');
+        const Notification = require('../models/Notification');
+        const users = await User.find({ _id: { $ne: req.user._id } });
+
+        const notifications = users.map(user => ({
+            userId: user._id,
+            message: `New Announcement: ${title}`,
+            type: 'info',
+            link: `/?announcementId=${savedAnnouncement._id}`,
+            isRead: false
+        }));
+
+        if (notifications.length > 0) {
+            await Notification.insertMany(notifications);
+        }
+
         res.json(savedAnnouncement);
     } catch (err) {
         res.status(400).json({ error: err.message });
+    }
+});
+
+// GET SINGLE ANNOUNCEMENT
+router.get('/:id', verify, async (req, res) => {
+    try {
+        const announcement = await Announcement.findById(req.params.id).populate('postedBy', 'name role');
+        if (!announcement) return res.status(404).json({ error: 'Announcement not found' });
+        res.json(announcement);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
 });
 

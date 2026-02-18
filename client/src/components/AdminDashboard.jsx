@@ -342,9 +342,395 @@ function AdminDashboard() {
     // Calculate stats
     // Local calculation removed as they are unused and we use fetched stats
 
+    // Tab State
+    const [activeTab, setActiveTab] = useState('overview');
+
+    const renderTabContent = () => {
+        switch (activeTab) {
+            case 'overview':
+                return (
+                    <>
+                        {/* Overview Stats */}
+                        <div className="stats-grid">
+                            {pageLoading ? (
+                                <>
+                                    <Skeleton type="card" height="120px" />
+                                    <Skeleton type="card" height="120px" />
+                                    <Skeleton type="card" height="120px" />
+                                </>
+                            ) : (
+                                <>
+                                    <div className="stat-card">
+                                        <h4 className="stat-label">Today's Attendance</h4>
+                                        <p className="stat-value text-success">{stats.todayAttendance}</p>
+                                    </div>
+                                    <div className="stat-card">
+                                        <h4 className="stat-label">Pending Leaves</h4>
+                                        <p className="stat-value text-warning">{stats.pendingLeaves}</p>
+                                    </div>
+                                    <div className="stat-card">
+                                        <h4 className="stat-label">Total Users</h4>
+                                        <p className="stat-value text-primary">{stats.totalUsers}</p>
+                                    </div>
+                                </>
+                            )}
+                        </div>
+
+                        {/* Recent Activity / Attendance Logs */}
+                        <div className="card">
+                            <div className="flex justify-between items-center mb-6">
+                                <h3>Attendance Logs</h3>
+                                <div className="flex items-center gap-4">
+                                    <button
+                                        onClick={exportToCSV}
+                                        className="btn btn-secondary"
+                                        disabled={attendanceLogs.length === 0}
+                                    >
+                                        Export CSV
+                                    </button>
+                                    <div className="flex items-center gap-2">
+                                        <button className="btn btn-ghost p-2" onClick={() => handleDateChange(-1)} title="Previous Day">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                                        </button>
+                                        <input
+                                            type="date"
+                                            value={selectedDate}
+                                            onChange={(e) => setSelectedDate(e.target.value)}
+                                            className="w-auto"
+                                            aria-label="Filter attendance by date"
+                                        />
+                                        <button className="btn btn-ghost p-2" onClick={() => handleDateChange(1)} title="Next Day">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className={`table-container ${isAttendanceLoading ? 'opacity-50 pointer-events-none' : ''}`} style={{ transition: 'opacity 0.2s' }}>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Employee</th>
+                                            <th>Date/Time</th>
+                                            <th>Status</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {attendanceLogs.map(log => (
+                                            <tr key={log._id}>
+                                                <td>
+                                                    <div className="flex items-center gap-3">
+                                                        <Avatar user={log.userId} size="sm" />
+                                                        <div>
+                                                            <div className="font-bold">{log.userId?.name || 'Unknown'}</div>
+                                                            <div className="text-sm text-muted">{log.userId?.email || 'N/A'}</div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div>{formatDateTime(log.date)}</div>
+                                                    {(log.modifiedBy || log.modifiedAt) && (
+                                                        <div className="text-sm text-muted">
+                                                            Edited {log.modifiedAt && formatDate(log.modifiedAt)}
+                                                        </div>
+                                                    )}
+                                                </td>
+                                                <td><StatusBadge status={log.status} /></td>
+                                                <td>
+                                                    <button
+                                                        onClick={() => openEditAttendanceModal(log)}
+                                                        className="btn btn-ghost"
+                                                    >
+                                                        Edit
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                        {attendanceLogs.length === 0 && !isAttendanceLoading && (
+                                            <tr>
+                                                <td colSpan="5">
+                                                    <EmptyState
+                                                        title="No Attendance"
+                                                        message={`No records for ${formatDate(selectedDate)}.`}
+                                                    />
+                                                </td>
+                                            </tr>
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            {/* Attendance Pagination Controls */}
+                            {attendanceMeta.pages > 1 && (
+                                <div className="flex justify-center gap-2 mt-4">
+                                    <button
+                                        className="btn btn-ghost"
+                                        disabled={attendancePage === 1}
+                                        onClick={() => setAttendancePage(p => Math.max(1, p - 1))}
+                                    >
+                                        « Previous
+                                    </button>
+                                    <span className="flex items-center text-sm text-muted">
+                                        Page {attendancePage} of {attendanceMeta.pages}
+                                    </span>
+                                    <button
+                                        className="btn btn-ghost"
+                                        disabled={attendancePage === attendanceMeta.pages}
+                                        onClick={() => setAttendancePage(p => Math.min(attendanceMeta.pages, p + 1))}
+                                    >
+                                        Next »
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    </>
+                );
+            case 'users':
+                return (
+                    <div className="card">
+                        <div className="flex justify-between items-center mb-6">
+                            <h3>User Management</h3>
+                            <div className="input-group w-64">
+                                <span className="input-icon"></span>
+                                <input
+                                    type="text"
+                                    placeholder="Search users..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    aria-label="Search users"
+                                />
+                            </div>
+                        </div>
+                        <div className="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>User</th>
+                                        <th>Role</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {pageLoading ? (
+                                        <tr><td colSpan="3"><Skeleton /></td></tr>
+                                    ) : (
+                                        <>
+                                            {filteredUsers.map(u => (
+                                                <tr key={u._id}>
+                                                    {editingUser === u._id ? (
+                                                        <>
+                                                            <td colSpan="2">
+                                                                <div className="flex-col gap-2">
+                                                                    <input
+                                                                        type="text"
+                                                                        value={editForm.name}
+                                                                        onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                                                                        placeholder="Name"
+                                                                    />
+                                                                    <input
+                                                                        type="email"
+                                                                        value={editForm.email}
+                                                                        onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+                                                                        placeholder="Email"
+                                                                    />
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div className="flex gap-2">
+                                                                    <button onClick={handleUpdateUser} className="btn btn-primary btn-sm">Save</button>
+                                                                    <button onClick={() => setEditingUser(null)} className="btn btn-ghost btn-sm">Cancel</button>
+                                                                </div>
+                                                            </td>
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <td>
+                                                                <div className="flex items-center gap-3">
+                                                                    <Avatar user={u} size="sm" />
+                                                                    <div>
+                                                                        <div className="font-bold">{u.name}</div>
+                                                                        <div className="text-sm text-muted">{u.email}</div>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td><StatusBadge status={u.role} /></td>
+                                                            <td>
+                                                                {(u.role !== 'Admin' || (currentUser && currentUser.email === 'admin@worksync.com')) && (
+                                                                    <div className="flex gap-2">
+                                                                        <button onClick={() => handleEditClick(u)} className="btn btn-ghost p-2">Edit</button>
+                                                                        <button
+                                                                            onClick={() => openModal(
+                                                                                'Delete User',
+                                                                                `Are you sure you want to delete ${u.name}?`,
+                                                                                <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+                                                                                    {u.profileImage ? (
+                                                                                        <img
+                                                                                            src={u.profileImage.startsWith('data:')
+                                                                                                ? u.profileImage
+                                                                                                : `${import.meta.env.VITE_API_URL}/uploads/profiles/${u.profileImage}`}
+                                                                                            alt={u.name}
+                                                                                            className="w-full h-full object-cover"
+                                                                                        />
+                                                                                    ) : (
+                                                                                        <span className="text-xl font-bold text-gray-500">
+                                                                                            {u.name.charAt(0).toUpperCase()}
+                                                                                        </span>
+                                                                                    )}
+                                                                                </div>,
+                                                                                () => handleDeleteUser(u._id)
+                                                                            )}
+                                                                            className="btn btn-ghost p-2 text-danger"
+                                                                        >
+                                                                            Delete
+                                                                        </button>
+                                                                    </div>
+                                                                )}
+                                                            </td>
+                                                        </>
+                                                    )}
+                                                </tr>
+                                            ))}
+                                        </>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                );
+            case 'leaves':
+                return (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        {/* Request Leave Section for Admin */}
+                        <div className="card h-fit md:col-span-1">
+                            <h3 className="mb-4">Request Leave</h3>
+                            <form onSubmit={submitLeaveRequest} className="flex flex-col gap-4">
+                                <div>
+                                    <label className="mb-2 block text-sm font-bold text-muted">Reason</label>
+                                    <input
+                                        type="text"
+                                        placeholder="Meeting, Personal..."
+                                        value={leaveReason}
+                                        onChange={e => setLeaveReason(e.target.value)}
+                                        required
+                                        disabled={isSubmittingLeave}
+                                    />
+                                </div>
+                                <div className="flex gap-2">
+                                    <div className="w-full">
+                                        <label className="mb-2 block text-sm font-bold text-muted">Start Date</label>
+                                        <input
+                                            type="date"
+                                            value={leaveStartDate}
+                                            onChange={e => setLeaveStartDate(e.target.value)}
+                                            required
+                                            disabled={isSubmittingLeave}
+                                        />
+                                    </div>
+                                    <div className="w-full">
+                                        <label className="mb-2 block text-sm font-bold text-muted">End Date</label>
+                                        <input
+                                            type="date"
+                                            value={leaveEndDate}
+                                            onChange={e => setLeaveEndDate(e.target.value)}
+                                            required
+                                            disabled={isSubmittingLeave}
+                                        />
+                                    </div>
+                                </div>
+                                <button
+                                    type="submit"
+                                    className="btn btn-primary w-full mt-2"
+                                    disabled={isSubmittingLeave}
+                                >
+                                    {isSubmittingLeave ? 'Submitting...' : 'Submit Request'}
+                                </button>
+                            </form>
+                        </div>
+
+                        {/* Leave Requests */}
+                        <div className="card md:col-span-2">
+                            <h3 className="mb-4">Leave Requests</h3>
+                            <div className="table-container">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Employee</th>
+                                            <th>Reason</th>
+                                            <th>Dates</th>
+                                            <th>Status</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {leaves.map(l => (
+                                            <tr key={l._id}>
+                                                <td>
+                                                    <div className="flex items-center gap-3">
+                                                        <Avatar user={l.userId} size="sm" />
+                                                        <span className="font-bold">{l.userId?.name}</span>
+                                                    </div>
+                                                </td>
+                                                <td>{l.reason}</td>
+                                                <td>{formatDate(l.startDate)} - {formatDate(l.endDate)}</td>
+                                                <td><StatusBadge status={l.status} /></td>
+                                                <td>
+                                                    {l.status === 'Pending' && (
+                                                        <div className="flex gap-2">
+                                                            <button onClick={() => updateLeaveStatus(l._id, 'Approved')} className="btn btn-primary py-1 px-3">Approve</button>
+                                                            <button onClick={() => updateLeaveStatus(l._id, 'Rejected')} className="btn btn-danger py-1 px-3">Reject</button>
+                                                        </div>
+                                                    )}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                        {leaves.length === 0 && (
+                                            <tr>
+                                                <td colSpan="5">
+                                                    <EmptyState
+                                                        title="No Leave Requests"
+                                                        message="There are no pending leave requests at the moment."
+                                                    />
+                                                </td>
+                                            </tr>
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {/* Leave Pagination Controls */}
+                            {leaveMeta.pages > 1 && (
+                                <div className="flex justify-center gap-2 mt-4">
+                                    <button
+                                        className="btn btn-ghost"
+                                        disabled={leavePage === 1}
+                                        onClick={() => setLeavePage(p => Math.max(1, p - 1))}
+                                    >
+                                        « Previous
+                                    </button>
+                                    <span className="flex items-center text-sm text-muted">
+                                        Page {leavePage} of {leaveMeta.pages}
+                                    </span>
+                                    <button
+                                        className="btn btn-ghost"
+                                        disabled={leavePage === leaveMeta.pages}
+                                        onClick={() => setLeavePage(p => Math.min(leaveMeta.pages, p + 1))}
+                                    >
+                                        Next »
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                );
+            case 'announcements':
+                return <AnnouncementSection />;
+            default:
+                return null;
+        }
+    };
+
     return (
         <div className="fade-in max-w-screen-xl mx-auto p-4 md:p-8">
-            <div className="flex justify-between items-center mb-8">
+            <div className="flex justify-between items-center mb-6">
                 <div>
                     <h1 className="mb-2">Admin Dashboard</h1>
                     <p className="text-muted">Manage users, attendance, and leave requests</p>
@@ -356,374 +742,25 @@ function AdminDashboard() {
                 </div>
             </div>
 
-            {/* Announcements Section */}
-            <AnnouncementSection />
-
-            {/* Overview Stats */}
-            <div className="stats-grid">
-                {pageLoading ? (
-                    <>
-                        <Skeleton type="card" height="120px" />
-                        <Skeleton type="card" height="120px" />
-                        <Skeleton type="card" height="120px" />
-                    </>
-                ) : (
-                    <>
-                        <div className="stat-card">
-                            <h4 className="stat-label">Today's Attendance</h4>
-                            <p className="stat-value text-success">{stats.todayAttendance}</p>
-                        </div>
-                        <div className="stat-card">
-                            <h4 className="stat-label">Pending Leaves</h4>
-                            <p className="stat-value text-warning">{stats.pendingLeaves}</p>
-                        </div>
-                        <div className="stat-card">
-                            <h4 className="stat-label">Total Users</h4>
-                            <p className="stat-value text-primary">{stats.totalUsers}</p>
-                        </div>
-                    </>
-                )}
+            {/* Tabs Navigation */}
+            <div className="flex border-b border-gray-200 mb-8 overflow-x-auto">
+                {['overview', 'users', 'leaves', 'announcements'].map((tab) => (
+                    <button
+                        key={tab}
+                        className={`py-3 px-6 font-medium text-sm focus:outline-none capitalize transition-colors border-b-2 ${activeTab === tab
+                                ? 'border-primary-600 text-primary-600'
+                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                            }`}
+                        onClick={() => setActiveTab(tab)}
+                    >
+                        {tab}
+                    </button>
+                ))}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-                {/* User Management */}
-                <div className="card md:col-span-2">
-                    <div className="flex justify-between items-center mb-6">
-                        <h3>User Management</h3>
-                        <div className="input-group w-64">
-                            <span className="input-icon"></span>
-                            <input
-                                type="text"
-                                placeholder="Search users..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                aria-label="Search users"
-                            />
-                        </div>
-                    </div>
-                    <div className="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>User</th>
-                                    <th>Role</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {pageLoading ? (
-                                    <tr><td colSpan="3"><Skeleton /></td></tr>
-                                ) : (
-                                    <>
-                                        {filteredUsers.map(u => (
-                                            <tr key={u._id}>
-                                                {editingUser === u._id ? (
-                                                    <>
-                                                        <td colSpan="2">
-                                                            <div className="flex-col gap-2">
-                                                                <input
-                                                                    type="text"
-                                                                    value={editForm.name}
-                                                                    onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                                                                    placeholder="Name"
-                                                                />
-                                                                <input
-                                                                    type="email"
-                                                                    value={editForm.email}
-                                                                    onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
-                                                                    placeholder="Email"
-                                                                />
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <div className="flex gap-2">
-                                                                <button onClick={handleUpdateUser} className="btn btn-primary btn-sm">Save</button>
-                                                                <button onClick={() => setEditingUser(null)} className="btn btn-ghost btn-sm">Cancel</button>
-                                                            </div>
-                                                        </td>
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <td>
-                                                            <div className="flex items-center gap-3">
-                                                                <Avatar user={u} size="sm" />
-                                                                <div>
-                                                                    <div className="font-bold">{u.name}</div>
-                                                                    <div className="text-sm text-muted">{u.email}</div>
-                                                                </div>
-                                                            </div>
-                                                        </td>
-                                                        <td><StatusBadge status={u.role} /></td>
-                                                        <td>
-                                                            {(u.role !== 'Admin' || (currentUser && currentUser.email === 'admin@worksync.com')) && (
-                                                                <div className="flex gap-2">
-                                                                    <button onClick={() => handleEditClick(u)} className="btn btn-ghost p-2">Edit</button>
-                                                                    <button
-                                                                        onClick={() => openModal(
-                                                                            'Delete User',
-                                                                            `Are you sure you want to delete ${u.name}?`,
-                                                                            <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
-                                                                                {u.profileImage ? (
-                                                                                    <img
-                                                                                        src={u.profileImage.startsWith('data:')
-                                                                                            ? u.profileImage
-                                                                                            : `${import.meta.env.VITE_API_URL}/uploads/profiles/${u.profileImage}`}
-                                                                                        alt={u.name}
-                                                                                        className="w-full h-full object-cover"
-                                                                                    />
-                                                                                ) : (
-                                                                                    <span className="text-xl font-bold text-gray-500">
-                                                                                        {u.name.charAt(0).toUpperCase()}
-                                                                                    </span>
-                                                                                )}
-                                                                            </div>,
-                                                                            () => handleDeleteUser(u._id)
-                                                                        )}
-                                                                        className="btn btn-ghost p-2 text-danger"
-                                                                    >
-                                                                        Delete
-                                                                    </button>
-                                                                </div>
-                                                            )}
-                                                        </td>
-                                                    </>
-                                                )}
-                                            </tr>
-                                        ))}
-                                    </>
-                                )}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                {/* Request Leave Section for Admin */}
-                <div className="card h-fit">
-                    <h3 className="mb-4">Request Leave</h3>
-                    <form onSubmit={submitLeaveRequest} className="flex flex-col gap-4">
-                        <div>
-                            <label className="mb-2 block text-sm font-bold text-muted">Reason</label>
-                            <input
-                                type="text"
-                                placeholder="Meeting, Personal..."
-                                value={leaveReason}
-                                onChange={e => setLeaveReason(e.target.value)}
-                                required
-                                disabled={isSubmittingLeave}
-                            />
-                        </div>
-                        <div className="flex gap-2">
-                            <div className="w-full">
-                                <label className="mb-2 block text-sm font-bold text-muted">Start Date</label>
-                                <input
-                                    type="date"
-                                    value={leaveStartDate}
-                                    onChange={e => setLeaveStartDate(e.target.value)}
-                                    required
-                                    disabled={isSubmittingLeave}
-                                />
-                            </div>
-                            <div className="w-full">
-                                <label className="mb-2 block text-sm font-bold text-muted">End Date</label>
-                                <input
-                                    type="date"
-                                    value={leaveEndDate}
-                                    onChange={e => setLeaveEndDate(e.target.value)}
-                                    required
-                                    disabled={isSubmittingLeave}
-                                />
-                            </div>
-                        </div>
-                        <button
-                            type="submit"
-                            className="btn btn-primary w-full mt-2"
-                            disabled={isSubmittingLeave}
-                        >
-                            {isSubmittingLeave ? 'Submitting...' : 'Submit Request'}
-                        </button>
-                    </form>
-                </div>
-            </div>
-
-            {/* Leave Requests */}
-            <div className="card mb-8">
-                <h3 className="mb-4">Leave Requests</h3>
-                <div className="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Employee</th>
-                                <th>Reason</th>
-                                <th>Dates</th>
-                                <th>Status</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {leaves.map(l => (
-                                <tr key={l._id}>
-                                    <td>
-                                        <div className="flex items-center gap-3">
-                                            <Avatar user={l.userId} size="sm" />
-                                            <span className="font-bold">{l.userId?.name}</span>
-                                        </div>
-                                    </td>
-                                    <td>{l.reason}</td>
-                                    <td>{formatDate(l.startDate)} - {formatDate(l.endDate)}</td>
-                                    <td><StatusBadge status={l.status} /></td>
-                                    <td>
-                                        {l.status === 'Pending' && (
-                                            <div className="flex gap-2">
-                                                <button onClick={() => updateLeaveStatus(l._id, 'Approved')} className="btn btn-primary py-1 px-3">Approve</button>
-                                                <button onClick={() => updateLeaveStatus(l._id, 'Rejected')} className="btn btn-danger py-1 px-3">Reject</button>
-                                            </div>
-                                        )}
-                                    </td>
-                                </tr>
-                            ))}
-                            {leaves.length === 0 && (
-                                <tr>
-                                    <td colSpan="5">
-                                        <EmptyState
-                                            title="No Leave Requests"
-                                            message="There are no pending leave requests at the moment."
-                                        />
-                                    </td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
-                </div>
-                {/* Leave Pagination Controls */}
-                {leaveMeta.pages > 1 && (
-                    <div className="flex justify-center gap-2 mt-4">
-                        <button
-                            className="btn btn-ghost"
-                            disabled={leavePage === 1}
-                            onClick={() => setLeavePage(p => Math.max(1, p - 1))}
-                        >
-                            « Previous
-                        </button>
-                        <span className="flex items-center text-sm text-muted">
-                            Page {leavePage} of {leaveMeta.pages}
-                        </span>
-                        <button
-                            className="btn btn-ghost"
-                            disabled={leavePage === leaveMeta.pages}
-                            onClick={() => setLeavePage(p => Math.min(leaveMeta.pages, p + 1))}
-                        >
-                            Next »
-                        </button>
-                    </div>
-                )}
-            </div>
-
-            {/* Attendance Logs */}
-            <div className="card">
-                <div className="flex justify-between items-center mb-6">
-                    <h3>Attendance Logs</h3>
-                    <div className="flex items-center gap-4">
-                        <button
-                            onClick={exportToCSV}
-                            className="btn btn-secondary"
-                            disabled={attendanceLogs.length === 0}
-                        >
-                            Export CSV
-                        </button>
-                        <div className="flex items-center gap-2">
-                            <button className="btn btn-ghost p-2" onClick={() => handleDateChange(-1)} title="Previous Day">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                            </button>
-                            <input
-                                type="date"
-                                value={selectedDate}
-                                onChange={(e) => setSelectedDate(e.target.value)}
-                                className="w-auto"
-                                aria-label="Filter attendance by date"
-                            />
-                            <button className="btn btn-ghost p-2" onClick={() => handleDateChange(1)} title="Next Day">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div className={`table-container ${isAttendanceLoading ? 'opacity-50 pointer-events-none' : ''}`} style={{ transition: 'opacity 0.2s' }}>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Employee</th>
-                                <th>Date/Time</th>
-                                <th>Status</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {attendanceLogs.map(log => (
-                                <tr key={log._id}>
-                                    <td>
-                                        <div className="flex items-center gap-3">
-                                            <Avatar user={log.userId} size="sm" />
-                                            <div>
-                                                <div className="font-bold">{log.userId?.name || 'Unknown'}</div>
-                                                <div className="text-sm text-muted">{log.userId?.email || 'N/A'}</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div>{formatDateTime(log.date)}</div>
-                                        {(log.modifiedBy || log.modifiedAt) && (
-                                            <div className="text-sm text-muted">
-                                                Edited {log.modifiedAt && formatDate(log.modifiedAt)}
-                                            </div>
-                                        )}
-                                    </td>
-                                    <td><StatusBadge status={log.status} /></td>
-                                    <td>
-                                        <button
-                                            onClick={() => openEditAttendanceModal(log)}
-                                            className="btn btn-ghost"
-                                        >
-                                            Edit
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                            {attendanceLogs.length === 0 && !isAttendanceLoading && (
-                                <tr>
-                                    <td colSpan="5">
-                                        <EmptyState
-                                            title="No Attendance"
-                                            message={`No records for ${formatDate(selectedDate)}.`}
-                                        />
-                                    </td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
-                </div>
-
-                {/* Attendance Pagination Controls */}
-                {attendanceMeta.pages > 1 && (
-                    <div className="flex justify-center gap-2 mt-4">
-                        <button
-                            className="btn btn-ghost"
-                            disabled={attendancePage === 1}
-                            onClick={() => setAttendancePage(p => Math.max(1, p - 1))}
-                        >
-                            « Previous
-                        </button>
-                        <span className="flex items-center text-sm text-muted">
-                            Page {attendancePage} of {attendanceMeta.pages}
-                        </span>
-                        <button
-                            className="btn btn-ghost"
-                            disabled={attendancePage === attendanceMeta.pages}
-                            onClick={() => setAttendancePage(p => Math.min(attendanceMeta.pages, p + 1))}
-                        >
-                            Next »
-                        </button>
-                    </div>
-                )}
+            {/* Tab Content */}
+            <div className="fade-in">
+                {renderTabContent()}
             </div>
 
             <ConfirmModal

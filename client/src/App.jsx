@@ -14,9 +14,7 @@ import './mobile.css';
 
 import Header from './components/Header';
 import Footer from './components/Footer';
-
-// Theme Sync Helper
-import { useThemeSync } from './context/ThemeContext';
+import GlobalAnnouncementListener from './components/GlobalAnnouncementListener';
 
 function AppRoutes() {
   const { user } = useAuth();
@@ -26,6 +24,7 @@ function AppRoutes() {
   return (
     <div className="app-container">
       <Header />
+      <GlobalAnnouncementListener />
       <main className="fade-in">
         <Routes>
           <Route path="/" element={user ? <Dashboard /> : <Navigate to="/login" />} />
