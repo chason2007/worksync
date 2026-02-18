@@ -12,7 +12,7 @@ function Footer() {
             alignItems: 'center'
         }}>
             <span style={{ color: 'var(--pk-text-muted)', fontSize: '0.9rem' }}>
-                WorkSync - developed by Chason Hurtis
+                WorkSync - developed by Chason Hurtis • v1.0.0
             </span>
             <a
                 href="https://github.com/chason2007/worksync"
