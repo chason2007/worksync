@@ -39,6 +39,7 @@ app.use('/api/attendance', attendanceRoutes);
 app.use('/api/admin', require('./routes/admin'));
 app.use('/api/leaves', require('./routes/leaves'));
 app.use('/api/notifications', require('./routes/notifications'));
+app.use('/api/announcements', require('./routes/announcements'));
 
 // Connect to MongoDB
 const connectDB = async () => {

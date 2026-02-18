@@ -8,6 +8,7 @@ import EmptyState from './EmptyState';
 import StatusBadge from './StatusBadge';
 import ConfirmModal from './ConfirmModal';
 import { formatDate } from '../utils/dateUtils';
+import AnnouncementSection from './AnnouncementSection';
 
 function EmployeeDashboard({ user }) {
     const [pageLoading, setPageLoading] = useState(true);

@@ -9,6 +9,7 @@ import Skeleton from './Skeleton';
 import EmptyState from './EmptyState';
 import StatusBadge from './StatusBadge';
 import { formatDate, formatDateTime } from '../utils/dateUtils';
+import AnnouncementSection from './AnnouncementSection';
 
 function AdminDashboard() {
     const navigate = useNavigate();
@@ -354,6 +355,9 @@ function AdminDashboard() {
                     </button>
                 </div>
             </div>
+
+            {/* Announcements Section */}
+            <AnnouncementSection />
 
             {/* Overview Stats */}
             <div className="stats-grid">
