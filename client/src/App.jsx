@@ -26,7 +26,7 @@ function AppRoutes() {
   return (
     <div className="app-container">
       <Header />
-      <main>
+      <main className="fade-in">
         <Routes>
           <Route path="/" element={user ? <Dashboard /> : <Navigate to="/login" />} />
           <Route path="/attendance" element={user ? <AttendanceForm /> : <Navigate to="/login" />} />

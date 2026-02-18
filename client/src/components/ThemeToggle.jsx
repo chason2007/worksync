@@ -33,7 +33,9 @@ function ThemeToggle() {
                 background: 'var(--pk-surface)'
             }}
         >
-            {getIcon()}
+            <span key={theme} style={{ display: 'inline-block', animation: 'rotate-in 0.5s cubic-bezier(0.25, 1, 0.5, 1)' }}>
+                {getIcon()}
+            </span>
         </button>
     );
 }

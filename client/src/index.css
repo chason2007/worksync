@@ -175,7 +175,7 @@ a:hover {
 }
 
 .btn:active {
-  transform: translateY(1px);
+  transform: scale(0.98);
 }
 
 .btn:disabled {
@@ -252,7 +252,8 @@ select:focus,
 textarea:focus {
   outline: none;
   border-color: var(--primary-500);
-  box-shadow: 0 0 0 3px var(--primary-100);
+  box-shadow: 0 0 0 4px var(--primary-100);
+  transform: translateY(-1px);
 }
 
 input::placeholder {
@@ -299,37 +300,79 @@ input::placeholder {
 
 table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  /* Changed for sticky header border radius */
+  border-spacing: 0;
   text-align: left;
   font-size: 0.875rem;
 }
 
 thead {
-  background-color: var(--bg-surface-hover);
-  border-bottom: 1px solid var(--border-color);
+  background-color: var(--bg-surface);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+thead th:first-child {
+  border-top-left-radius: var(--radius-lg);
+}
+
+thead th:last-child {
+  border-top-right-radius: var(--radius-lg);
 }
 
 th {
-  padding: 0.75rem 1.5rem;
+  padding: 1rem 1.5rem;
   font-weight: 600;
   color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   font-size: 0.75rem;
+  border-bottom: 1px solid var(--border-color);
+  background-color: var(--bg-surface);
+  /* For sticky opacity */
 }
 
 td {
   padding: 1rem 1.5rem;
   color: var(--text-main);
   border-bottom: 1px solid var(--border-color);
+  transition: background-color 0.15s ease;
 }
 
 tr:last-child td {
   border-bottom: none;
 }
 
+tbody tr {
+  transition: transform 0.1s ease, background-color 0.15s ease;
+}
+
 tbody tr:hover {
   background-color: var(--bg-surface-hover);
+  cursor: default;
+}
+
+/* Page Transitions */
+.page-enter {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.page-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 300ms, transform 300ms;
+}
+
+.page-exit {
+  opacity: 1;
+}
+
+.page-exit-active {
+  opacity: 0;
+  transition: opacity 200ms;
 }
 
 /* Badges */
@@ -1006,7 +1049,25 @@ tbody tr:hover {
   font-weight: 600;
   letter-spacing: 0.025em;
 }
+
 @keyframes shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes rotate-in {
+  from {
+    transform: rotate(-90deg) scale(0.5);
+    opacity: 0;
+  }
+
+  to {
+    transform: rotate(0) scale(1);
+    opacity: 1;
+  }
 }
