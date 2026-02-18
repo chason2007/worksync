@@ -8,9 +8,12 @@ function Footer() {
             borderTop: '1px solid var(--border-color)',
             background: 'var(--bg-surface)',
             display: 'flex',
-            justifyContent: 'flex-end',
+            justifyContent: 'space-between',
             alignItems: 'center'
         }}>
+            <span style={{ color: 'var(--pk-text-muted)', fontSize: '0.9rem' }}>
+                WorkSync - developed by Chason Hurtis
+            </span>
             <a
                 href="https://github.com/chason2007/worksync"
                 target="_blank"
