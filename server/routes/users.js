@@ -95,6 +95,7 @@ router.get('/next-id', verify, async (req, res) => {
         }
         res.json({ nextId });
     } catch (err) {
+        console.error("Error in /next-id:", err);
         res.status(500).json({ error: err.message });
     }
 });
