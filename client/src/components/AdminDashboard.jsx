@@ -363,7 +363,7 @@ function AdminDashboard() {
             </div>
 
             {/* Dashboard Content */}
-            <div className="space-y-8 fade-in">
+            <div className="space-y-12 fade-in">
 
                 {/* 1. Overview Stats */}
                 <div className="stats-grid">
