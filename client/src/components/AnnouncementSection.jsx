@@ -119,7 +119,7 @@ function AnnouncementSection() {
             )}
 
             {/* Announcements List */}
-            <div className="space-y-4">
+            <div className="flex flex-col gap-4">
                 {loading ? (
                     <>
                         <Skeleton height="80px" />
@@ -148,9 +148,9 @@ function AnnouncementSection() {
                             <div className="flex items-center justify-between text-xs text-muted pt-3 border-t border-slate-100">
                                 <div className="flex items-center gap-2">
                                     <div className="w-5 h-5 rounded-full bg-slate-200 overflow-hidden flex items-center justify-center">
-                                        <span className="font-bold text-xs">{announcement.postedBy?.name?.[0]}</span>
+                                        <span className="font-bold text-xs">{announcement.postedBy?.name?.[0] || '?'}</span>
                                     </div>
-                                    <span>Posted by {announcement.postedBy?.name || 'Admin'}</span>
+                                    <span>Posted by {announcement.postedBy?.name || 'Unknown User'}</span>
                                 </div>
                                 <time>{formatDateTime(announcement.createdAt)}</time>
                             </div>
