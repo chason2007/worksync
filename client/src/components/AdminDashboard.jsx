@@ -9,6 +9,7 @@ import Skeleton from './Skeleton';
 import EmptyState from './EmptyState';
 import StatusBadge from './StatusBadge';
 import { formatDate, formatDateTime } from '../utils/dateUtils';
+import AnnouncementSection from './AnnouncementSection';
 
 
 function AdminDashboard() {
@@ -365,7 +366,10 @@ function AdminDashboard() {
             {/* Dashboard Content */}
             <div className="flex flex-col gap-8 fade-in">
 
-                {/* 1. Overview Stats */}
+                {/* 1. Announcements */}
+                <AnnouncementSection />
+
+                {/* 2. Overview Stats */}
                 <div className="stats-grid">
                     {pageLoading ? (
                         <>

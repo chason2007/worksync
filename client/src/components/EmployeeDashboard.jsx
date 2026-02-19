@@ -127,6 +127,11 @@ function EmployeeDashboard({ user }) {
                 </div>
             </div>
 
+            {/* Announcements */}
+            <div className="mb-8">
+                <AnnouncementSection />
+            </div>
+
             {/* Stats Cards */}
             <div className="stats-grid mb-8">
                 {pageLoading ? (
