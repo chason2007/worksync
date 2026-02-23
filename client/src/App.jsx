@@ -30,7 +30,7 @@ function AppRoutes() {
         <Routes>
           <Route path="/" element={user ? <Dashboard /> : <Navigate to="/login" />} />
           <Route path="/attendance" element={user ? <AttendanceForm /> : <Navigate to="/login" />} />
-          <Route path="/settings" element={user?.role === 'Admin' ? <Settings /> : <Navigate to="/" />} />
+          <Route path="/settings" element={user ? <Settings /> : <Navigate to="/login" />} />
           <Route path="/add-user" element={user?.role === 'Admin' ? <AddUser /> : <Navigate to="/" />} />
           <Route path="/profile" element={user ? <Profile /> : <Navigate to="/login" />} /> {/* Added Profile route */}
           <Route path="/announcements" element={user ? <Announcements /> : <Navigate to="/login" />} />

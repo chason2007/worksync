@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import axios from 'axios';
+import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import ConfirmModal from '../components/ConfirmModal';
 import ThemeToggle from '../components/ThemeToggle';
 
 function Settings() {
+    const { user } = useAuth();
     const { showToast } = useToast();
     const [modalConfig, setModalConfig] = useState({ isOpen: false, title: '', message: '', onConfirm: null });
 
@@ -70,7 +72,7 @@ function Settings() {
 
     return (
         <div className="fade-in" style={{ maxWidth: '800px', margin: '0 auto', padding: '2rem' }}>
-            <h1 className="mb-8">Admin Settings</h1>
+            <h1 className="mb-8">{user?.role === 'Admin' ? 'Admin Settings' : 'Settings'}</h1>
 
             {/* Appearance Settings */}
             <div className="card mb-8">
@@ -88,136 +90,139 @@ function Settings() {
                 </div>
             </div>
 
-            <div className="card border-danger">
-                <h3 className="flex items-center gap-2 text-danger">
-                    Danger Zone
-                </h3>
-                <p style={{ color: 'var(--pk-text-muted)', marginBottom: '1.5rem' }}>
-                    These actions are destructive and cannot be undone. Please be certain.
-                </p>
-                <div className="flex flex-col gap-4">
-                    {/* Delete Users */}
-                    <div className="flex justify-between items-center p-4 bg-danger rounded border-danger">
-                        <div style={{ flex: 1 }}>
-                            <div className="flex items-center gap-2 mb-1">
-                                <strong className="text-danger">Delete All Users</strong>
-                            </div>
-                            <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-                                Removes all employee accounts. Admin remains.
-                            </div>
-                        </div>
-                        <button
-                            onClick={() => openModal(
-                                'Delete All Users',
-                                'This will permanently delete all employee accounts. Admin accounts will remain. This action cannot be undone.',
-                                handleDeleteUsers
-                            )}
-                            className="btn btn-danger"
-                        >
-                            Delete Users
-                        </button>
-                    </div>
 
-                    {/* Delete Attendance */}
-                    <div className="flex justify-between items-center p-4 bg-danger rounded border-danger">
-                        <div style={{ flex: 1 }}>
-                            <div className="flex items-center gap-2 mb-1">
-                                <strong className="text-danger">Delete All Attendance</strong>
+            {user?.role === 'Admin' && (
+                <div className="card border-danger">
+                    <h3 className="flex items-center gap-2 text-danger">
+                        Danger Zone
+                    </h3>
+                    <p style={{ color: 'var(--pk-text-muted)', marginBottom: '1.5rem' }}>
+                        These actions are destructive and cannot be undone. Please be certain.
+                    </p>
+                    <div className="flex flex-col gap-4">
+                        {/* Delete Users */}
+                        <div className="flex justify-between items-center p-4 bg-danger rounded border-danger">
+                            <div style={{ flex: 1 }}>
+                                <div className="flex items-center gap-2 mb-1">
+                                    <strong className="text-danger">Delete All Users</strong>
+                                </div>
+                                <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                                    Removes all employee accounts. Admin remains.
+                                </div>
                             </div>
-                            <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-                                Clears the entire attendance history log.
-                            </div>
+                            <button
+                                onClick={() => openModal(
+                                    'Delete All Users',
+                                    'This will permanently delete all employee accounts. Admin accounts will remain. This action cannot be undone.',
+                                    handleDeleteUsers
+                                )}
+                                className="btn btn-danger"
+                            >
+                                Delete Users
+                            </button>
                         </div>
-                        <button
-                            onClick={() => openModal(
-                                'Delete All Attendance',
-                                'This will permanently delete all attendance records from the system. This action cannot be undone.',
-                                handleDeleteAttendance
-                            )}
-                            className="btn btn-danger"
-                        >
-                            Delete Attendance
-                        </button>
-                    </div>
 
-                    {/* Delete Leaves */}
-                    <div className="flex justify-between items-center p-4 bg-danger rounded border-danger">
-                        <div style={{ flex: 1 }}>
-                            <div className="flex items-center gap-2 mb-1">
-                                <strong className="text-danger">Delete All Leaves</strong>
+                        {/* Delete Attendance */}
+                        <div className="flex justify-between items-center p-4 bg-danger rounded border-danger">
+                            <div style={{ flex: 1 }}>
+                                <div className="flex items-center gap-2 mb-1">
+                                    <strong className="text-danger">Delete All Attendance</strong>
+                                </div>
+                                <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                                    Clears the entire attendance history log.
+                                </div>
                             </div>
-                            <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-                                Removes all leave requests (Pending/Approved/Rejected).
-                            </div>
+                            <button
+                                onClick={() => openModal(
+                                    'Delete All Attendance',
+                                    'This will permanently delete all attendance records from the system. This action cannot be undone.',
+                                    handleDeleteAttendance
+                                )}
+                                className="btn btn-danger"
+                            >
+                                Delete Attendance
+                            </button>
                         </div>
-                        <button
-                            onClick={() => openModal(
-                                'Delete All Leaves',
-                                'This will permanently delete all leave requests regardless of status. This action cannot be undone.',
-                                handleDeleteLeaves
-                            )}
-                            className="btn btn-danger"
-                        >
-                            Delete Leaves
-                        </button>
-                    </div>
 
-                    {/* Delete All Announcements */}
-                    <div className="flex justify-between items-center p-4 bg-danger rounded border-danger">
-                        <div style={{ flex: 1 }}>
-                            <div className="flex items-center gap-2 mb-1">
-                                <strong className="text-danger">Delete All Announcements</strong>
+                        {/* Delete Leaves */}
+                        <div className="flex justify-between items-center p-4 bg-danger rounded border-danger">
+                            <div style={{ flex: 1 }}>
+                                <div className="flex items-center gap-2 mb-1">
+                                    <strong className="text-danger">Delete All Leaves</strong>
+                                </div>
+                                <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                                    Removes all leave requests (Pending/Approved/Rejected).
+                                </div>
                             </div>
-                            <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-                                Removes all announcements and their notifications.
-                            </div>
+                            <button
+                                onClick={() => openModal(
+                                    'Delete All Leaves',
+                                    'This will permanently delete all leave requests regardless of status. This action cannot be undone.',
+                                    handleDeleteLeaves
+                                )}
+                                className="btn btn-danger"
+                            >
+                                Delete Leaves
+                            </button>
                         </div>
-                        <button
-                            onClick={() => openModal(
-                                'Delete All Announcements',
-                                'This will permanently delete all announcements. This action cannot be undone.',
-                                async () => {
-                                    try {
-                                        const token = localStorage.getItem('auth-token') || sessionStorage.getItem('auth-token');
-                                        const res = await axios.delete(`${import.meta.env.VITE_API_URL}/api/announcements`, {
-                                            headers: { 'auth-token': token }
-                                        });
-                                        showToast(res.data.message, 'success');
-                                    } catch (err) {
-                                        showToast("Failed to delete announcements", 'error');
+
+                        {/* Delete All Announcements */}
+                        <div className="flex justify-between items-center p-4 bg-danger rounded border-danger">
+                            <div style={{ flex: 1 }}>
+                                <div className="flex items-center gap-2 mb-1">
+                                    <strong className="text-danger">Delete All Announcements</strong>
+                                </div>
+                                <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                                    Removes all announcements and their notifications.
+                                </div>
+                            </div>
+                            <button
+                                onClick={() => openModal(
+                                    'Delete All Announcements',
+                                    'This will permanently delete all announcements. This action cannot be undone.',
+                                    async () => {
+                                        try {
+                                            const token = localStorage.getItem('auth-token') || sessionStorage.getItem('auth-token');
+                                            const res = await axios.delete(`${import.meta.env.VITE_API_URL}/api/announcements`, {
+                                                headers: { 'auth-token': token }
+                                            });
+                                            showToast(res.data.message, 'success');
+                                        } catch (err) {
+                                            showToast("Failed to delete announcements", 'error');
+                                        }
                                     }
-                                }
-                            )}
-                            className="btn btn-danger"
-                        >
-                            Delete Announcements
-                        </button>
-                    </div>
-
-                    {/* Reset System */}
-                    <div className="flex justify-between items-center p-4 bg-danger rounded border-danger">
-                        <div style={{ flex: 1 }}>
-                            <div className="flex items-center gap-2 mb-1">
-                                <strong className="text-danger">RESET SYSTEM</strong>
-                            </div>
-                            <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-                                Deletes ALL data (Users, Attendance, Leaves). Only Super Admin remains.
-                            </div>
+                                )}
+                                className="btn btn-danger"
+                            >
+                                Delete Announcements
+                            </button>
                         </div>
-                        <button
-                            onClick={() => openModal(
-                                'RESET ENTIRE SYSTEM',
-                                'WARNING: This will delete ALL attendance records, ALL leaves, and ALL users (except you). This cannot be undone. Are you absolutely sure?',
-                                handleSystemReset
-                            )}
-                            className="btn btn-danger"
-                            style={{ fontWeight: 'bold', backgroundColor: '#dc2626', color: 'white' }}
-                        >
-                            RESET SYSTEM
-                        </button>
+
+                        {/* Reset System */}
+                        <div className="flex justify-between items-center p-4 bg-danger rounded border-danger">
+                            <div style={{ flex: 1 }}>
+                                <div className="flex items-center gap-2 mb-1">
+                                    <strong className="text-danger">RESET SYSTEM</strong>
+                                </div>
+                                <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                                    Deletes ALL data (Users, Attendance, Leaves). Only Super Admin remains.
+                                </div>
+                            </div>
+                            <button
+                                onClick={() => openModal(
+                                    'RESET ENTIRE SYSTEM',
+                                    'WARNING: This will delete ALL attendance records, ALL leaves, and ALL users (except you). This cannot be undone. Are you absolutely sure?',
+                                    handleSystemReset
+                                )}
+                                className="btn btn-danger"
+                                style={{ fontWeight: 'bold', backgroundColor: '#dc2626', color: 'white' }}
+                            >
+                                RESET SYSTEM
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
+            )}
 
             <ConfirmModal
                 isOpen={modalConfig.isOpen}
