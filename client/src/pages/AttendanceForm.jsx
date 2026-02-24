@@ -16,61 +16,30 @@ function AttendanceForm() {
     const { showToast } = useToast();
     const { user } = useAuth();
 
-    const getTodayStatusDisplay = () => {
-        if (!todayAttendance) return 'Present';
-        switch (todayAttendance.status) {
-            case 'Absent': return 'Absent';
-            case 'Half-day': return 'Half-day';
-            default: return 'Present';
-        }
-    };
-
-    // Update current time (just for header display)
     useEffect(() => {
-        const timer = setInterval(() => {
-            setCurrentTime(new Date());
-        }, 1000);
+        const timer = setInterval(() => setCurrentTime(new Date()), 1000);
         return () => clearInterval(timer);
     }, []);
 
     const checkTodayAttendance = useCallback(async () => {
         if (!user?._id) return;
-        const userId = user._id;
-
         try {
             const token = localStorage.getItem('auth-token') || sessionStorage.getItem('auth-token');
-            const response = await axios.get(
-                `${import.meta.env.VITE_API_URL}/api/attendance/today/${userId}`,
-                { headers: { 'auth-token': token } }
-            );
-
-            if (response.data.hasAttendance) {
-                setHasSubmittedToday(true);
-                setTodayAttendance(response.data.attendance);
-            }
-        } catch (error) {
-            console.error('Failed to check attendance:', error);
-        }
+            const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/attendance/today/${user._id}`, { headers: { 'auth-token': token } });
+            if (res.data.hasAttendance) { setHasSubmittedToday(true); setTodayAttendance(res.data.attendance); }
+        } catch (error) { console.error('Failed to check attendance:', error); }
     }, [user]);
 
     const fetchAttendanceHistory = useCallback(async () => {
         if (!user?._id) return;
-        const userId = user._id;
         try {
-            const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/attendance/user/${userId}`);
-            const records = Array.isArray(response.data) ? response.data : [];
-            setAttendanceHistory(records.slice(0, 7)); // Last 7 days
-        } catch (error) {
-            console.error('Failed to fetch history:', error);
-        }
+            const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/attendance/user/${user._id}`);
+            setAttendanceHistory((Array.isArray(res.data) ? res.data : []).slice(0, 7));
+        } catch (error) { console.error('Failed to fetch history:', error); }
     }, [user]);
 
-    // Check today's status & History
     useEffect(() => {
-        if (user) {
-            checkTodayAttendance();
-            fetchAttendanceHistory();
-        }
+        if (user) { checkTodayAttendance(); fetchAttendanceHistory(); }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user]);
 
@@ -79,133 +48,131 @@ function AttendanceForm() {
         setLoading(true);
         try {
             const token = localStorage.getItem('auth-token') || sessionStorage.getItem('auth-token');
-            const userId = user._id || user.id;
-
-            const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/attendance/mark`, {
-                userId,
-                status
-            }, { headers: { 'auth-token': token } });
-
+            const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/attendance/mark`, { userId: user._id || user.id, status }, { headers: { 'auth-token': token } });
             showToast(`Attendance marked as ${status}!`, 'success');
-            setHasSubmittedToday(true);
-            setTodayAttendance(res.data);
-            fetchAttendanceHistory();
+            setHasSubmittedToday(true); setTodayAttendance(res.data); fetchAttendanceHistory();
         } catch (error) {
-            const msg = error.response?.data?.error || 'Failed to mark attendance';
-            showToast(msg, 'error');
-        } finally {
-            setLoading(false);
-        }
+            showToast(error.response?.data?.error || 'Failed to mark attendance', 'error');
+        } finally { setLoading(false); }
     };
 
-
-    const formatTime = (date) => date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    const formatTime = (d) => d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
     const statusOptions = [
         {
-            value: 'Present',
-            icon: (
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="20 6 9 17 4 12"></polyline>
-                </svg>
-            ),
-            label: 'Present'
+            value: 'Present', label: 'Present', accent: '#10b981', bg: 'rgba(16,185,129,0.08)',
+            icon: <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
         },
         {
-            value: 'Half-day',
-            icon: (
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <path d="M12 2a10 10 0 0 1 0 20Z" fill="currentColor" fillOpacity="0.5"></path>
-                </svg>
-            ),
-            label: 'Half Day'
+            value: 'Half-day', label: 'Half Day', accent: '#f59e0b', bg: 'rgba(245,158,11,0.08)',
+            icon: <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><path d="M12 2a10 10 0 0 1 0 20Z" fill="currentColor" fillOpacity="0.4" /></svg>
         },
         {
-            value: 'Absent',
-            icon: (
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                </svg>
-            ),
-            label: 'Absent'
-        }
+            value: 'Absent', label: 'Absent', accent: '#ef4444', bg: 'rgba(239,68,68,0.08)',
+            icon: <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+        },
     ];
 
     const presentDays = attendanceHistory.filter(r => r.status === 'Present').length;
     const halfDays = attendanceHistory.filter(r => r.status === 'Half-day').length;
 
     return (
-        <div className="page-container">
-            {/* Header */}
-            <div className="page-header">
-                <h1>Attendance Tracker</h1>
-                <p className="subtitle">{formatDate(currentTime)}</p>
-                <p className="subtitle text-primary font-semibold">
-                    {formatTime(currentTime)}
-                </p>
+        <div className="fade-in max-w-screen-xl mx-auto p-4 md:p-8">
+
+            {/* Hero Banner */}
+            <div style={{
+                background: 'linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)',
+                borderRadius: 'var(--pk-radius)',
+                padding: '2rem 2.5rem',
+                marginBottom: '2rem',
+                color: '#fff',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                gap: '1rem',
+                flexWrap: 'wrap',
+                position: 'relative',
+                overflow: 'hidden',
+            }}>
+                <div style={{ position: 'absolute', right: '-40px', top: '-40px', width: '180px', height: '180px', borderRadius: '50%', background: 'rgba(255,255,255,0.08)', pointerEvents: 'none' }} />
+                <div style={{ position: 'absolute', right: '60px', bottom: '-60px', width: '140px', height: '140px', borderRadius: '50%', background: 'rgba(255,255,255,0.06)', pointerEvents: 'none' }} />
+
+                <div style={{ position: 'relative' }}>
+                    <p style={{ margin: 0, opacity: 0.8, fontSize: '0.85rem', fontWeight: 500 }}>Daily Check-in</p>
+                    <h1 style={{ margin: '0.2rem 0 0.4rem', color: '#fff', fontSize: '1.75rem' }}>Attendance Tracker</h1>
+                    <p style={{ margin: 0, opacity: 0.75, fontSize: '0.875rem' }}>{formatDate(currentTime)}</p>
+                </div>
+
+                <div style={{ background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(6px)', borderRadius: 'var(--pk-radius-sm)', padding: '0.75rem 1.25rem', border: '1px solid rgba(255,255,255,0.2)', position: 'relative', textAlign: 'center', minWidth: '120px' }}>
+                    <div style={{ fontSize: '1.35rem', fontWeight: 700, letterSpacing: '-0.01em', fontVariantNumeric: 'tabular-nums' }}>{formatTime(currentTime)}</div>
+                    <div style={{ opacity: 0.7, fontSize: '0.72rem', marginTop: '0.15rem', letterSpacing: '0.05em' }}>LIVE TIME</div>
+                </div>
             </div>
 
             {/* Stats */}
             {attendanceHistory.length > 0 && (
-                <div className="stats-grid">
+                <div className="stats-grid" style={{ marginBottom: '2rem' }}>
                     <div className="stat-card">
-                        <h2>Present Days</h2>
-                        <p className="stat-value">{presentDays}</p>
+                        <h4 className="stat-label">Present (Last 7 days)</h4>
+                        <p className="stat-value text-success">{presentDays}</p>
                     </div>
-                    <div className="stat-card bg-gradient-warning">
-                        <h2>Half Days</h2>
-                        <p className="stat-value">{halfDays}</p>
+                    <div className="stat-card">
+                        <h4 className="stat-label">Half Days (Last 7 days)</h4>
+                        <p className="stat-value text-warning">{halfDays}</p>
                     </div>
                 </div>
             )}
 
-            {/* Attendance Card */}
-            <div className="card text-center">
+            {/* Mark Attendance Card */}
+            <div className="card" style={{ marginBottom: '2rem', textAlign: 'center' }}>
                 {hasSubmittedToday ? (
-                    <div className="py-8">
-                        <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>
-                            {getTodayStatusDisplay()}
+                    <div style={{ padding: '2rem 1rem' }}>
+                        <div style={{ width: '72px', height: '72px', borderRadius: '50%', background: 'rgba(16,185,129,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.25rem', color: '#10b981' }}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
                         </div>
-                        <h2 className="mb-2">Attendance Marked</h2>
+                        <h2 style={{ marginBottom: '0.5rem' }}>Attendance Marked</h2>
                         <p className="text-muted">
                             You have marked yourself as <strong>{todayAttendance?.status}</strong> for today.
                         </p>
                     </div>
                 ) : (
                     <>
-                        <h3 className="mb-4">How are you working today?</h3>
-                        <div className="status-grid">
-                            {statusOptions.map((option) => (
+                        <h2 style={{ fontSize: '1.05rem', fontWeight: 700, marginBottom: '1.5rem' }}>How are you working today?</h2>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', maxWidth: '480px', margin: '0 auto 1.5rem' }}>
+                            {statusOptions.map(opt => (
                                 <button
-                                    key={option.value}
+                                    key={opt.value}
                                     type="button"
-                                    className={`status-card ${status === option.value ? 'selected' : ''}`}
-                                    onClick={() => setStatus(option.value)}
+                                    onClick={() => setStatus(opt.value)}
+                                    aria-pressed={status === opt.value}
                                     style={{
-                                        background: 'none',
-                                        border: 'none',
-                                        padding: 0,
+                                        background: status === opt.value ? opt.bg : 'var(--pk-surface)',
+                                        border: status === opt.value ? `2px solid ${opt.accent}` : '2px solid var(--pk-border)',
+                                        borderRadius: 'var(--pk-radius)',
+                                        padding: '1.25rem 0.75rem',
                                         cursor: 'pointer',
-                                        textAlign: 'center',
-                                        font: 'inherit',
-                                        color: 'inherit',
-                                        width: '100%'
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'center',
+                                        gap: '0.5rem',
+                                        color: status === opt.value ? opt.accent : 'var(--pk-text-muted)',
+                                        transition: 'all 0.15s ease',
+                                        fontFamily: 'inherit',
+                                        transform: status === opt.value ? 'scale(1.04)' : 'scale(1)',
                                     }}
-                                    aria-pressed={status === option.value}
                                 >
-                                    <span className="status-card-icon">{option.icon}</span>
-                                    <h4 className="status-card-title">{option.label}</h4>
+                                    {opt.icon}
+                                    <span style={{ fontWeight: 600, fontSize: '0.85rem' }}>{opt.label}</span>
                                 </button>
                             ))}
                         </div>
                         <button
                             onClick={markAttendance}
-                            className="btn btn-primary w-full py-3 mt-4 text-lg"
+                            className="btn btn-primary"
                             disabled={loading}
+                            style={{ width: '100%', maxWidth: '480px', height: '48px', fontSize: '0.95rem', fontWeight: 700, boxShadow: '0 4px 14px rgba(14,165,233,0.35)' }}
                         >
-                            {loading ? 'Submitting...' : 'Submit Attendance'}
+                            {loading ? 'Submitting…' : 'Submit Attendance'}
                         </button>
                     </>
                 )}
@@ -214,18 +181,14 @@ function AttendanceForm() {
             {/* History Table */}
             {attendanceHistory.length > 0 && (
                 <div className="card">
-                    <h3 className="mb-4">Recent History</h3>
-                    <div className="table-responsive">
+                    <h2 style={{ fontSize: '1.05rem', fontWeight: 700, marginBottom: '1.25rem' }}>Recent History</h2>
+                    <div className="table-container">
                         <table>
                             <thead>
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Day</th>
-                                    <th>Status</th>
-                                </tr>
+                                <tr><th>Date</th><th>Day</th><th>Status</th></tr>
                             </thead>
                             <tbody>
-                                {attendanceHistory.map((record) => (
+                                {attendanceHistory.map(record => (
                                     <tr key={record._id || record.id || record.date}>
                                         <td>{formatDate(record.date)}</td>
                                         <td>{new Date(record.date).toLocaleDateString('en-US', { weekday: 'long' })}</td>
