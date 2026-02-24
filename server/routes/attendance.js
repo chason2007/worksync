@@ -153,8 +153,8 @@ router.put('/:id', verify, async (req, res) => {
 // Get Logs for a User (with Pagination)
 router.get('/user/:userId', verify, async (req, res) => {
     try {
-        const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 20;
+        const page = Math.max(1, parseInt(req.query.page, 10) || 1);
+        const limit = Math.min(100, Math.max(1, parseInt(req.query.limit, 10) || 20));
         const skip = (page - 1) * limit;
         // Security Check: Only allow if it's the user themselves OR an Admin
         if (req.user.role !== 'Admin' && req.user._id !== req.params.userId) {
@@ -202,7 +202,6 @@ router.get('/', verify, async (req, res) => {
                 $lte: new Date(req.query.to)
             };
         } else if (req.query.date) {
-            console.log('Query Date param:', req.query.date);
             // Fallback: Full UTC day for the given date string
             const startOfDay = new Date(req.query.date + 'T00:00:00.000Z');
             const endOfDay = new Date(req.query.date + 'T23:59:59.999Z');
@@ -212,8 +211,8 @@ router.get('/', verify, async (req, res) => {
             };
         }
 
-        const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 50;
+        const page = Math.max(1, parseInt(req.query.page, 10) || 1);
+        const limit = Math.min(100, Math.max(1, parseInt(req.query.limit, 10) || 50));
         const skip = (page - 1) * limit;
 
         // Find records based on query
