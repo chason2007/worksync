@@ -26,7 +26,7 @@ api.interceptors.request.use(
 api.interceptors.response.use(
     (response) => response,
     (error) => {
-        if (error.response && error.response.status === 401) {
+        if (error.response?.status === 401) {
             // Token expired or invalid
             localStorage.removeItem('auth-token');
             localStorage.removeItem('user');

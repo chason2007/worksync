@@ -77,10 +77,10 @@ router.post('/register', authLimiter, verify, async (req, res) => {
             // Auto-generate Employee ID if not provided
             newEmployeeId = 'EMP001';
             const lastUser = await User.findOne({ employeeId: { $exists: true } }).sort({ employeeId: -1 });
-            if (lastUser && lastUser.employeeId) {
+            if (lastUser?.employeeId) {
                 const match = lastUser.employeeId.match(/^EMP(\d+)$/);
                 if (match) {
-                    const nextNum = parseInt(match[1], 10) + 1;
+                    const nextNum = Number.parseInt(match[1], 10) + 1;
                     newEmployeeId = `EMP${String(nextNum).padStart(3, '0')}`;
                 }
             }

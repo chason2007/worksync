@@ -25,11 +25,9 @@ const getResizedDimensions = (width, height, maxWidth, maxHeight) => {
             newHeight *= maxWidth / width;
             newWidth = maxWidth;
         }
-    } else {
-        if (height > maxHeight) {
-            newWidth *= maxHeight / height;
-            newHeight = maxHeight;
-        }
+    } else if (height > maxHeight) {
+        newWidth *= maxHeight / height;
+        newHeight = maxHeight;
     }
     return { width: newWidth, height: newHeight };
 };

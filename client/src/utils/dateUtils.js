@@ -6,7 +6,7 @@
 export const formatDate = (date) => {
     if (!date) return '';
     const d = new Date(date);
-    if (isNaN(d.getTime())) return ''; // Invalid date
+    if (Number.isNaN(d.getTime())) return ''; // Invalid date
 
     const day = String(d.getDate()).padStart(2, '0');
     const month = String(d.getMonth() + 1).padStart(2, '0');
@@ -23,7 +23,7 @@ export const formatDate = (date) => {
 export const formatDateTime = (date) => {
     if (!date) return '';
     const d = new Date(date);
-    if (isNaN(d.getTime())) return '';
+    if (Number.isNaN(d.getTime())) return '';
 
     const datePart = formatDate(d);
     const timePart = d.toLocaleTimeString([], { hour12: true });
