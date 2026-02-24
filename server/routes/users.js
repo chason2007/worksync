@@ -4,6 +4,7 @@ const verify = require('./verifyToken');
 const upload = require('../middleware/upload');
 const path = require('node:path');
 const fs = require('node:fs');
+const { handleProfileImageUpload } = require('../utils/imageUploadHelper');
 
 // GET OWN PROFILE
 router.get('/profile', verify, async (req, res) => {
@@ -45,25 +46,10 @@ router.put('/profile', verify, async (req, res) => {
 // UPLOAD PROFILE IMAGE
 router.post('/profile/image', verify, upload.single('profileImage'), async (req, res) => {
     try {
-        if (!req.file) {
-            return res.status(400).json({ error: 'No file uploaded' });
-        }
-
         const user = await User.findById(req.user._id);
         if (!user) return res.status(404).send('User not found');
 
-        // Convert buffer to Base64
-        const b64 = Buffer.from(req.file.buffer).toString('base64');
-        const mimeType = req.file.mimetype;
-        user.profileImage = `data:${mimeType};base64,${b64}`;
-
-        await user.save();
-
-        res.json({
-            message: 'Profile image uploaded successfully',
-            profileImage: user.profileImage, // Send back the full Base64 string for immediate UI update
-            user: { ...user.toObject(), password: undefined }
-        });
+        return handleProfileImageUpload(user, req.file, res);
     } catch (err) {
         console.error('Upload Error:', err);
         res.status(500).json({ error: err.message });

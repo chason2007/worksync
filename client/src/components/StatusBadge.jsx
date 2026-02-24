@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 const STATUS_CONFIG = {
     // Attendance
@@ -30,6 +31,11 @@ const StatusBadge = ({ status, className = '' }) => {
             <span className="status-text">{status}</span>
         </span>
     );
+};
+
+StatusBadge.propTypes = {
+    status: PropTypes.string.isRequired,
+    className: PropTypes.string
 };
 
 export default StatusBadge;

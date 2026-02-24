@@ -59,8 +59,7 @@ function AddUser() {
             setEmployeeId(res.data.nextId);
             setIdWarning('');
             showToast('Next available ID generated', 'success');
-        } catch (err) {
-            console.error(err);
+        } catch {
             showToast('Failed to generate ID', 'error');
         }
     };
@@ -78,8 +77,8 @@ function AddUser() {
             } else {
                 setIdWarning('');
             }
-        } catch (err) {
-            console.error(err);
+        } catch {
+            // Silently fail for check
         }
     };
 
@@ -154,7 +153,7 @@ function AddUser() {
 
         try {
             // const token = localStorage.getItem('auth-token'); // Unused
-            const res = await api.post('/api/auth/register', {
+            await api.post('/api/auth/register', {
                 name,
                 email,
                 password,

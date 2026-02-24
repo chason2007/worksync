@@ -8,6 +8,7 @@ const upload = require('../middleware/upload');
 const bcrypt = require('bcryptjs');
 const path = require('node:path');
 const fs = require('node:fs');
+const { handleProfileImageUpload } = require('../utils/imageUploadHelper');
 
 
 
@@ -73,28 +74,13 @@ router.post('/users/:id/upload-image', verify, upload.single('profileImage'), as
     if (req.user.role !== 'Admin') return res.status(403).send('Access Denied');
 
     try {
-        if (!req.file) {
-            return res.status(400).json({ error: 'No file uploaded' });
-        }
-
         // Get the user
         const user = await User.findById(req.params.id);
         if (!user) {
             return res.status(404).send('User not found');
         }
 
-        // Convert buffer to Base64
-        const b64 = Buffer.from(req.file.buffer).toString('base64');
-        const mimeType = req.file.mimetype;
-        user.profileImage = `data:${mimeType};base64,${b64}`;
-
-        await user.save();
-
-        res.json({
-            message: 'Profile image uploaded successfully',
-            profileImage: user.profileImage,
-            user: { ...user.toObject(), password: undefined }
-        });
+        return handleProfileImageUpload(user, req.file, res);
     } catch (err) {
         console.error('Upload error:', err);
         res.status(500).json({ error: err.message });

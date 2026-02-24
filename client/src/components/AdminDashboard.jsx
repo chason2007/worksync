@@ -543,12 +543,14 @@ function AdminDashboard() {
                                                                     value={editForm.name}
                                                                     onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
                                                                     placeholder="Name"
+                                                                    aria-label="User Name"
                                                                 />
                                                                 <input
                                                                     type="email"
                                                                     value={editForm.email}
                                                                     onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
                                                                     placeholder="Email"
+                                                                    aria-label="User Email"
                                                                 />
                                                             </div>
                                                         </td>

@@ -183,11 +183,11 @@ function Settings() {
                                     async () => {
                                         try {
                                             const token = localStorage.getItem('auth-token') || sessionStorage.getItem('auth-token');
-                                            const res = await axios.delete(`${import.meta.env.VITE_API_URL}/api/announcements`, {
+                                            await axios.delete(`${import.meta.env.VITE_API_URL}/api/announcements`, {
                                                 headers: { 'auth-token': token }
                                             });
-                                            showToast(res.data.message, 'success');
-                                        } catch (err) {
+                                            showToast('All announcements deleted', 'success');
+                                        } catch {
                                             showToast("Failed to delete announcements", 'error');
                                         }
                                     }

@@ -1,5 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
-import axios from 'axios';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNotifications } from '../context/NotificationContext';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
@@ -10,12 +9,11 @@ import { formatDateTime } from '../utils/dateUtils';
 function Header() {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
-    const location = useLocation();
     const [showDropdown, setShowDropdown] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     // Notifications State via Context
-    const { notifications, unreadCount, markAsRead, markAllAsRead, fetchNotifications, clearAllNotifications } = useNotifications();
+    const { notifications, unreadCount, markAsRead, markAllAsRead, clearAllNotifications } = useNotifications();
     const [showNotifDropdown, setShowNotifDropdown] = useState(false);
     const notifDropdownRef = useRef(null);
 
@@ -155,10 +153,11 @@ function Header() {
                     {user ? (
                         <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
                             {/* Notification Bell */}
-                            <div
-                                style={{ position: 'relative', cursor: 'pointer' }}
+                            <button
+                                style={{ position: 'relative', cursor: 'pointer', background: 'none', border: 'none', color: 'inherit' }}
                                 ref={notifDropdownRef}
                                 onClick={() => setShowNotifDropdown(!showNotifDropdown)}
+                                aria-label="Notifications"
                             >
                                 <span style={{ fontSize: '1.3rem' }}>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
@@ -209,7 +208,7 @@ function Header() {
                                             </div>
                                         ) : (
                                             notifications.map(notif => (
-                                                <div
+                                                <button
                                                     key={notif._id}
                                                     className="dropdown-item"
                                                     style={{
@@ -218,7 +217,10 @@ function Header() {
                                                         borderLeft: notif.isRead ? 'none' : '3px solid var(--pk-primary)',
                                                         padding: '0.75rem',
                                                         whiteSpace: 'normal',
-                                                        lineHeight: '1.4'
+                                                        lineHeight: '1.4',
+                                                        border: 'none',
+                                                        textAlign: 'left',
+                                                        width: '100%'
                                                     }}
                                                     onClick={() => {
                                                         markAsRead(notif._id);
@@ -229,22 +231,29 @@ function Header() {
                                                     }}
                                                 >
                                                     <div style={{ fontSize: '0.85rem', marginBottom: '0.25rem', fontWeight: '500' }}>
-                                                        {notif.type === 'success' ? 'Success: ' : notif.type === 'error' ? 'Error: ' : notif.type === 'warning' ? 'Warning: ' : 'Info: '}
+                                                        {(() => {
+                                                            switch (notif.type) {
+                                                                case 'success': return 'Success: ';
+                                                                case 'error': return 'Error: ';
+                                                                case 'warning': return 'Warning: ';
+                                                                default: return 'Info: ';
+                                                            }
+                                                        })()}
                                                         {notif.message}
                                                     </div>
                                                     <div style={{ fontSize: '0.7rem', color: 'var(--pk-text-muted)' }}>
                                                         {formatDateTime(notif.createdAt)}
                                                     </div>
-                                                </div>
+                                                </button>
                                             ))
                                         )}
                                     </div>
                                 )}
-                            </div>
+                            </button>
 
                             {/* User Dropdown */}
                             <div className="dropdown">
-                                <div
+                                <button
                                     onClick={() => setShowDropdown(!showDropdown)}
                                     style={{
                                         display: 'flex',
@@ -253,8 +262,13 @@ function Header() {
                                         cursor: 'pointer',
                                         padding: '0.5rem',
                                         borderRadius: 'var(--pk-radius-sm)',
-                                        transition: 'background 0.2s'
+                                        transition: 'background 0.2s',
+                                        background: 'none',
+                                        border: 'none',
+                                        color: 'inherit'
                                     }}
+                                    aria-haspopup="true"
+                                    aria-expanded={showDropdown}
                                 >
                                     <Avatar user={user} size="sm" />
                                     <div className="desktop-only" style={{ textAlign: 'left' }}>
@@ -279,7 +293,7 @@ function Header() {
                                             </div>
                                         </div>
                                     )}
-                                </div>
+                                </button>
                             </div>
                         </div>
                     ) : (
@@ -293,71 +307,75 @@ function Header() {
 
 
             {/* Click outside to close dropdown */}
-            {showDropdown && (
-                <div
-                    onClick={() => setShowDropdown(false)}
-                    style={{
+            {
+                showDropdown && (
+                    <div
+                        onClick={() => setShowDropdown(false)}
+                        style={{
+                            position: 'fixed',
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            zIndex: 39
+                        }}
+                    />
+                )
+            }
+            {/* Mobile Menu Overlay */}
+            {
+                mobileMenuOpen && user && (
+                    <div className="mobile-menu-overlay" style={{
                         position: 'fixed',
-                        top: 0,
+                        top: '73px',
                         left: 0,
                         right: 0,
                         bottom: 0,
-                        zIndex: 39
-                    }}
-                />
-            )}
-            {/* Mobile Menu Overlay */}
-            {mobileMenuOpen && user && (
-                <div className="mobile-menu-overlay" style={{
-                    position: 'fixed',
-                    top: '73px',
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    background: 'var(--pk-surface)',
-                    backgroundColor: 'var(--pk-surface)', // Ensure color is applied
-                    zIndex: 100, // Increased z-index
-                    padding: '1rem',
-                    borderTop: '1px solid var(--pk-border)'
-                }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                        <Link to="/" className="btn" onClick={() => setMobileMenuOpen(false)} style={{ justifyContent: 'flex-start', background: 'transparent', color: 'var(--pk-text-main)', border: 'none' }}>
-                            Dashboard
-                        </Link>
-                        <Link to="/announcements" className="btn" onClick={() => setMobileMenuOpen(false)} style={{ justifyContent: 'flex-start', background: 'transparent', color: 'var(--pk-text-main)', border: 'none' }}>
-                            Announcements
-                        </Link>
-                        {user.email !== 'admin@worksync.com' && (
-                            <Link to="/attendance" className="btn" onClick={() => setMobileMenuOpen(false)} style={{ justifyContent: 'flex-start', background: 'transparent', color: 'var(--pk-text-main)', border: 'none' }}>
-                                Attendance
+                        background: 'var(--pk-surface)',
+                        backgroundColor: 'var(--pk-surface)', // Ensure color is applied
+                        zIndex: 100, // Increased z-index
+                        padding: '1rem',
+                        borderTop: '1px solid var(--pk-border)'
+                    }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                            <Link to="/" className="btn" onClick={() => setMobileMenuOpen(false)} style={{ justifyContent: 'flex-start', background: 'transparent', color: 'var(--pk-text-main)', border: 'none' }}>
+                                Dashboard
                             </Link>
-                        )}
-                        {user.role === 'Admin' && (
-                            <>
-                                <Link to="/add-user" className="btn" onClick={() => setMobileMenuOpen(false)} style={{ justifyContent: 'flex-start', background: 'transparent', color: 'var(--pk-text-main)', border: 'none' }}>
-                                    Add User
+                            <Link to="/announcements" className="btn" onClick={() => setMobileMenuOpen(false)} style={{ justifyContent: 'flex-start', background: 'transparent', color: 'var(--pk-text-main)', border: 'none' }}>
+                                Announcements
+                            </Link>
+                            {user.email !== 'admin@worksync.com' && (
+                                <Link to="/attendance" className="btn" onClick={() => setMobileMenuOpen(false)} style={{ justifyContent: 'flex-start', background: 'transparent', color: 'var(--pk-text-main)', border: 'none' }}>
+                                    Attendance
                                 </Link>
-                                <Link to="/settings" className="btn" onClick={() => setMobileMenuOpen(false)} style={{ justifyContent: 'flex-start', background: 'transparent', color: 'var(--pk-text-main)', border: 'none' }}>
-                                    Settings
-                                </Link>
-                            </>
-                        )}
-                        <div style={{ padding: '0.5rem', marginTop: '1rem', borderTop: '1px solid var(--pk-border)' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
-                                <Avatar user={user} size="sm" />
-                                <div>
-                                    <div style={{ fontWeight: '600' }}>{user.name}</div>
-                                    <div style={{ fontSize: '0.8rem', color: 'var(--pk-text-muted)' }}>{user.email}</div>
+                            )}
+                            {user.role === 'Admin' && (
+                                <>
+                                    <Link to="/add-user" className="btn" onClick={() => setMobileMenuOpen(false)} style={{ justifyContent: 'flex-start', background: 'transparent', color: 'var(--pk-text-main)', border: 'none' }}>
+                                        Add User
+                                    </Link>
+                                    <Link to="/settings" className="btn" onClick={() => setMobileMenuOpen(false)} style={{ justifyContent: 'flex-start', background: 'transparent', color: 'var(--pk-text-main)', border: 'none' }}>
+                                        Settings
+                                    </Link>
+                                </>
+                            )}
+                            <div style={{ padding: '0.5rem', marginTop: '1rem', borderTop: '1px solid var(--pk-border)' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
+                                    <Avatar user={user} size="sm" />
+                                    <div>
+                                        <div style={{ fontWeight: '600' }}>{user.name}</div>
+                                        <div style={{ fontSize: '0.8rem', color: 'var(--pk-text-muted)' }}>{user.email}</div>
+                                    </div>
                                 </div>
+                                <button onClick={handleLogout} className="btn btn-danger" style={{ width: '100%' }}>
+                                    Sign Out
+                                </button>
                             </div>
-                            <button onClick={handleLogout} className="btn btn-danger" style={{ width: '100%' }}>
-                                Sign Out
-                            </button>
                         </div>
                     </div>
-                </div>
-            )}
-        </header>
+                )
+            }
+        </header >
     );
 }
 

@@ -53,7 +53,7 @@ function Profile() {
             const formData = new FormData();
             formData.append('profileImage', resizedFile);
             const token = localStorage.getItem('auth-token') || sessionStorage.getItem('auth-token');
-            const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/users/profile/image`, formData, {
+            await axios.post(`${import.meta.env.VITE_API_URL}/api/users/profile/image`, formData, {
                 headers: {
                     'auth-token': token,
                     'Content-Type': 'multipart/form-data'
@@ -67,7 +67,7 @@ function Profile() {
             // Better: update the user object we have.
 
             // Re-fetch user profile to sync everything
-            const userRes = await axios.get(`${import.meta.env.VITE_API_URL}/api/users/profile`, {
+            await axios.get(`${import.meta.env.VITE_API_URL}/api/users/profile`, {
                 headers: { 'auth-token': token }
             });
 
@@ -90,7 +90,7 @@ function Profile() {
         try {
             setLoading(true);
             const token = localStorage.getItem('auth-token') || sessionStorage.getItem('auth-token');
-            const res = await axios.put(`${import.meta.env.VITE_API_URL}/api/users/profile`, formData, {
+            await axios.put(`${import.meta.env.VITE_API_URL}/api/users/profile`, formData, {
                 headers: { 'auth-token': token }
             });
 

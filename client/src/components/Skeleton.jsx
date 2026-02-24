@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 function Skeleton({ type = 'text', width, height, style = {}, className = '' }) {
     const baseStyle = {
@@ -27,5 +28,13 @@ function Skeleton({ type = 'text', width, height, style = {}, className = '' }) 
 
     return <div className={`skeleton ${className}`} style={baseStyle}></div>;
 }
+
+Skeleton.propTypes = {
+    type: PropTypes.oneOf(['text', 'circle', 'title', 'card']),
+    width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    style: PropTypes.object,
+    className: PropTypes.string
+};
 
 export default Skeleton;

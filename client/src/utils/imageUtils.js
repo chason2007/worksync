@@ -47,25 +47,21 @@ const createBlobFromCanvas = (canvas, fileType) => {
 };
 
 export const resizeImage = async (file, maxWidth = 500, maxHeight = 500) => {
-    try {
-        const dataUrl = await readFileAsDataURL(file);
-        const img = await loadImage(dataUrl);
+    const dataUrl = await readFileAsDataURL(file);
+    const img = await loadImage(dataUrl);
 
-        const { width, height } = getResizedDimensions(img.width, img.height, maxWidth, maxHeight);
+    const { width, height } = getResizedDimensions(img.width, img.height, maxWidth, maxHeight);
 
-        const canvas = document.createElement('canvas');
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, width, height);
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0, width, height);
 
-        const blob = await createBlobFromCanvas(canvas, file.type);
+    const blob = await createBlobFromCanvas(canvas, file.type);
 
-        return new File([blob], file.name, {
-            type: file.type,
-            lastModified: Date.now(),
-        });
-    } catch (error) {
-        throw error;
-    }
+    return new File([blob], file.name, {
+        type: file.type,
+        lastModified: Date.now(),
+    });
 };

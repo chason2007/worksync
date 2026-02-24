@@ -89,8 +89,8 @@ export const NotificationProvider = ({ children }) => {
         if (user) {
             fetchNotifications();
         } else {
-            setNotifications([]);
-            setUnreadCount(0);
+            setNotifications(prev => prev.length === 0 ? prev : []);
+            setUnreadCount(prev => prev === 0 ? prev : 0);
         }
     }, [user]);
 

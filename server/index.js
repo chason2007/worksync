@@ -35,11 +35,7 @@ app.use(express.json());
 // Serve static files from uploads directory
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
-app.use((req, res, next) => {
-  console.log(`[GLOBAL LOG] ${req.method} ${req.url}`);
-  next();
-});
-console.log('Auth Route Loaded:', typeof authRoute);
+
 
 app.use('/api/attendance', attendanceRoutes);
 app.use('/api/admin', require('./routes/admin'));

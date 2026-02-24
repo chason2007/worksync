@@ -16,6 +16,15 @@ function AttendanceForm() {
     const { showToast } = useToast();
     const { user } = useAuth();
 
+    const getTodayStatusDisplay = () => {
+        if (!todayAttendance) return 'Present';
+        switch (todayAttendance.status) {
+            case 'Absent': return 'Absent';
+            case 'Half-day': return 'Half-day';
+            default: return 'Present';
+        }
+    };
+
     // Update current time (just for header display)
     useEffect(() => {
         const timer = setInterval(() => {
@@ -157,7 +166,7 @@ function AttendanceForm() {
                 {hasSubmittedToday ? (
                     <div className="py-8">
                         <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>
-                            {todayAttendance?.status === 'Absent' ? 'Absent' : todayAttendance?.status === 'Half-day' ? 'Half-day' : 'Present'}
+                            {getTodayStatusDisplay()}
                         </div>
                         <h2 className="mb-2">Attendance Marked</h2>
                         <p className="text-muted">
@@ -169,14 +178,26 @@ function AttendanceForm() {
                         <h3 className="mb-4">How are you working today?</h3>
                         <div className="status-grid">
                             {statusOptions.map((option) => (
-                                <div
+                                <button
                                     key={option.value}
+                                    type="button"
                                     className={`status-card ${status === option.value ? 'selected' : ''}`}
                                     onClick={() => setStatus(option.value)}
+                                    style={{
+                                        background: 'none',
+                                        border: 'none',
+                                        padding: 0,
+                                        cursor: 'pointer',
+                                        textAlign: 'center',
+                                        font: 'inherit',
+                                        color: 'inherit',
+                                        width: '100%'
+                                    }}
+                                    aria-pressed={status === option.value}
                                 >
                                     <span className="status-card-icon">{option.icon}</span>
                                     <h4 className="status-card-title">{option.label}</h4>
-                                </div>
+                                </button>
                             ))}
                         </div>
                         <button

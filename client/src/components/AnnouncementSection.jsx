@@ -3,7 +3,7 @@ import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { formatDateTime } from '../utils/dateUtils';
-import Avatar from './Avatar';
+
 import Skeleton from './Skeleton';
 
 function AnnouncementSection() {
@@ -51,12 +51,13 @@ function AnnouncementSection() {
     };
 
     const handleDelete = async (id) => {
-        if (!window.confirm('Are you sure you want to delete this announcement?')) return;
+        if (!globalThis.confirm('Are you sure you want to delete this announcement?')) return;
         try {
             await api.delete(`/api/announcements/${id}`);
             showToast('Announcement deleted', 'success');
             setAnnouncements(announcements.filter(a => a._id !== id));
         } catch (err) {
+            console.error('Delete announcement error:', err);
             showToast('Failed to delete announcement', 'error');
         }
     };
