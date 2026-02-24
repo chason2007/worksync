@@ -16,7 +16,8 @@ app.use(helmet());
 app.use(cors({
   origin: [
     process.env.CLIENT_URL || 'http://localhost:5173',
-    'https://worksync-8fdf.vercel.app'
+    'https://worksync-8fdf.vercel.app',
+    'https://worksync-ems.vercel.app'
   ],
   credentials: true,
 }));
