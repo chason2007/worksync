@@ -20,7 +20,9 @@ function Footer() {
                 rel="noopener noreferrer"
                 style={{ color: 'var(--pk-text-muted)', display: 'flex', alignItems: 'center', transition: 'color 0.2s', gap: '0.5rem', textDecoration: 'none' }}
                 onMouseOver={(e) => e.currentTarget.style.color = 'var(--pk-text-main)'}
+                onFocus={(e) => e.currentTarget.style.color = 'var(--pk-text-main)'}
                 onMouseOut={(e) => e.currentTarget.style.color = 'var(--pk-text-muted)'}
+                onBlur={(e) => e.currentTarget.style.color = 'var(--pk-text-muted)'}
                 title="View Source on GitHub"
             >
                 <span style={{ fontSize: '0.9rem' }}>Open Source</span>

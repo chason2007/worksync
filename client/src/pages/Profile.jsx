@@ -115,7 +115,7 @@ function Profile() {
 
                 {/* Profile Card */}
                 <div className="card md:col-span-1 flex flex-col items-center text-center">
-                    <div className="relative group cursor-pointer" onClick={handleImageClick}>
+                    <button type="button" className="relative group cursor-pointer appearance-none bg-transparent border-none p-0 outline-none" onClick={handleImageClick}>
                         <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-lg mx-auto">
                             {user.profileImage ? (
                                 <img
@@ -141,7 +141,7 @@ function Profile() {
                             style={{ display: 'none' }}
                             accept="image/*"
                         />
-                    </div>
+                    </button>
 
                     <h2 className="mt-4 mb-1">{user.name}</h2>
                     <p className="text-muted mb-2">{user.position || user.role}</p>
