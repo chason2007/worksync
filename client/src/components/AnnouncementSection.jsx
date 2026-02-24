@@ -20,7 +20,7 @@ function AnnouncementSection() {
 
     const fetchAnnouncements = async () => {
         try {
-            constres = await api.get('/api/announcements');
+            const res = await api.get('/api/announcements');
             setAnnouncements(res.data);
         } catch (err) {
             console.error("Failed to fetch announcements", err);

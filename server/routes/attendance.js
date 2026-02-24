@@ -17,7 +17,7 @@ router.get('/today/:userId', verify, async (req, res) => {
         const endOfDay = new Date(today.setHours(23, 59, 59, 999));
 
         const attendance = await Attendance.findOne({
-            userId: req.params.userId,
+            userId: String(req.params.userId),
             date: {
                 $gte: startOfDay,
                 $lte: endOfDay
@@ -46,17 +46,17 @@ router.get('/stats/:userId', verify, async (req, res) => {
         const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
 
         const totalPresent = await Attendance.countDocuments({
-            userId: req.params.userId,
+            userId: String(req.params.userId),
             status: 'Present'
         });
 
         const totalHalfDays = await Attendance.countDocuments({
-            userId: req.params.userId,
+            userId: String(req.params.userId),
             status: 'Half-day'
         });
 
         const thisMonthPresent = await Attendance.countDocuments({
-            userId: req.params.userId,
+            userId: String(req.params.userId),
             status: 'Present',
             date: { $gte: startOfMonth, $lte: endOfMonth }
         });
@@ -161,7 +161,7 @@ router.get('/user/:userId', verify, async (req, res) => {
             return res.status(403).json({ error: 'Access Denied: You can only view your own logs.' });
         }
 
-        const query = { userId: req.params.userId };
+        const query = { userId: String(req.params.userId) };
 
         const logs = await Attendance.find(query)
             .sort({ date: -1 })

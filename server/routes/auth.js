@@ -70,7 +70,8 @@ router.post('/register', authLimiter, verify, async (req, res) => {
 
         // Validation for custom ID
         if (newEmployeeId) {
-            const idExist = await User.findOne({ employeeId: newEmployeeId });
+            // Security Update: Cast to String to prevent NoSQL injection if req.body.employeeId is an object
+            const idExist = await User.findOne({ employeeId: String(newEmployeeId) });
             if (idExist) return res.status(400).send('Employee ID already exists');
         } else {
             // Auto-generate Employee ID if not provided
