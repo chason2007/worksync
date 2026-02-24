@@ -125,7 +125,7 @@ function AddUser() {
         formData.append('profileImage', profileImage);
 
         try {
-            // console.log('Auth token exists?', !!token); // Token handled by interceptor
+
 
             const response = await api.post(
                 `/api/admin/users/${userId}/upload-image`,
@@ -152,7 +152,7 @@ function AddUser() {
         setLoading(true);
 
         try {
-            // const token = localStorage.getItem('auth-token'); // Unused
+
             await api.post('/api/auth/register', {
                 name,
                 email,
@@ -178,7 +178,6 @@ function AddUser() {
             setName('');
             setEmail('');
             setPassword('');
-            setRole('Employee');
             setRole('Employee');
             setPosition('');
             setEmployeeId('');
@@ -221,7 +220,7 @@ function AddUser() {
 
                     {/* Profile Image */}
                     <div>
-                        <label className="block mb-2 font-medium">
+                        <label htmlFor="profile-image-input" className="block mb-2 font-medium">
                             Profile Image
                         </label>
                         <div className="flex gap-4 items-center">
@@ -292,12 +291,13 @@ function AddUser() {
                     {/* Position and Role */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label className="block mb-2 font-medium">
+                            <label htmlFor="position" className="block mb-2 font-medium">
                                 Position
                             </label>
                             <div className="input-group">
                                 <span className="input-icon"></span>
                                 <input
+                                    id="position"
                                     type="text"
                                     placeholder="Manager, Lead..."
                                     value={position}
@@ -309,13 +309,14 @@ function AddUser() {
 
                         {/* Employee ID */}
                         <div>
-                            <label className="block mb-2 font-medium">
+                            <label htmlFor="employeeId" className="block mb-2 font-medium">
                                 Employee ID
                             </label>
                             <div className="flex gap-2">
                                 <div className="input-group flex-1">
                                     <span className="input-icon"></span>
                                     <input
+                                        id="employeeId"
                                         type="text"
                                         placeholder="EMP001"
                                         value={employeeId}
@@ -354,7 +355,7 @@ function AddUser() {
                                         disabled={loading}
                                         className="w-5 h-5 m-0"
                                     />
-                                    Employee
+                                    <span>Employee</span>
                                 </label>
                                 <label className="flex items-center gap-2 cursor-pointer">
                                     <input

@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useMemo } from 'react';
+import PropTypes from 'prop-types';
 import axios from 'axios';
 import { useAuth } from './AuthContext';
 
@@ -15,7 +16,7 @@ export const useNotifications = () => {
 export const NotificationProvider = ({ children }) => {
     const [notifications, setNotifications] = useState([]);
     const [unreadCount, setUnreadCount] = useState(0);
-    const [loading, setLoading] = useState(false);
+    const [loading] = useState(false);
     const { user } = useAuth();
 
     const fetchNotifications = async () => {
@@ -105,7 +106,7 @@ export const NotificationProvider = ({ children }) => {
         return () => clearInterval(interval);
     }, [user]);
 
-    const value = {
+    const value = useMemo(() => ({
         notifications,
         unreadCount,
         loading,
@@ -113,11 +114,15 @@ export const NotificationProvider = ({ children }) => {
         markAsRead,
         markAllAsRead,
         clearAllNotifications
-    };
+    }), [notifications, unreadCount, loading]);
 
     return (
         <NotificationContext.Provider value={value}>
             {children}
         </NotificationContext.Provider>
     );
+};
+
+NotificationProvider.propTypes = {
+    children: PropTypes.node.isRequired
 };

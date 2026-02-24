@@ -34,8 +34,8 @@ function AttendanceForm() {
     }, []);
 
     const checkTodayAttendance = useCallback(async () => {
-        if (!user || user._id === undefined) return;
-        const userId = user._id || user.id;
+        if (!user?._id) return;
+        const userId = user._id;
 
         try {
             const token = localStorage.getItem('auth-token') || sessionStorage.getItem('auth-token');
@@ -54,8 +54,8 @@ function AttendanceForm() {
     }, [user]);
 
     const fetchAttendanceHistory = useCallback(async () => {
-        if (!user || user._id === undefined) return;
-        const userId = user._id || user.id;
+        if (!user?._id) return;
+        const userId = user._id;
         try {
             const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/attendance/user/${userId}`);
             const records = Array.isArray(response.data) ? response.data : [];
@@ -98,7 +98,7 @@ function AttendanceForm() {
         }
     };
 
-    // const formatDate = (date) => new Date(date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
     const formatTime = (date) => date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 
     const statusOptions = [
@@ -225,8 +225,8 @@ function AttendanceForm() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {attendanceHistory.map((record, index) => (
-                                    <tr key={index}>
+                                {attendanceHistory.map((record) => (
+                                    <tr key={record._id || record.id || record.date}>
                                         <td>{formatDate(record.date)}</td>
                                         <td>{new Date(record.date).toLocaleDateString('en-US', { weekday: 'long' })}</td>
                                         <td><StatusBadge status={record.status} /></td>

@@ -4,12 +4,11 @@ import { useToast } from '../context/ToastContext';
 import axios from 'axios';
 import Avatar from '../components/Avatar';
 import { resizeImage } from '../utils/imageUtils';
-import { useNavigate } from 'react-router-dom';
+import { resizeImage } from '../utils/imageUtils';
 
 function Profile() {
-    const { user, login } = useAuth(); // login used to update local user state
+    const { user } = useAuth();
     const { showToast } = useToast();
-    const navigate = useNavigate();
 
     const [isEditing, setIsEditing] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -162,8 +161,9 @@ function Profile() {
                     <form onSubmit={handleSubmit}>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="form-group">
-                                <label>Full Name</label>
+                                <label htmlFor="profile-name">Full Name</label>
                                 <input
+                                    id="profile-name"
                                     type="text"
                                     name="name"
                                     value={formData.name}
@@ -173,8 +173,9 @@ function Profile() {
                                 />
                             </div>
                             <div className="form-group">
-                                <label>Email</label>
+                                <label htmlFor="profile-email">Email</label>
                                 <input
+                                    id="profile-email"
                                     type="email"
                                     value={user.email}
                                     disabled={true} // Email cannot be changed
@@ -182,8 +183,9 @@ function Profile() {
                                 />
                             </div>
                             <div className="form-group">
-                                <label>Phone</label>
+                                <label htmlFor="profile-phone">Phone</label>
                                 <input
+                                    id="profile-phone"
                                     type="text"
                                     name="phone"
                                     value={formData.phone}
@@ -194,8 +196,9 @@ function Profile() {
                                 />
                             </div>
                             <div className="form-group md:col-span-2">
-                                <label>Address</label>
+                                <label htmlFor="profile-address">Address</label>
                                 <textarea
+                                    id="profile-address"
                                     name="address"
                                     value={formData.address}
                                     onChange={handleChange}
