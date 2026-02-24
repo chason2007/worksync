@@ -1,4 +1,5 @@
-import { createContext, useState, useEffect, useContext } from 'react';
+import { createContext, useState, useEffect, useContext, useMemo } from 'react';
+import PropTypes from 'prop-types';
 import api from '../services/api';
 
 const AuthContext = createContext(null);
@@ -67,8 +68,15 @@ export const AuthProvider = ({ children }) => {
         setUser(null);
     };
 
+    const value = useMemo(() => ({
+        user,
+        login,
+        logout,
+        loading
+    }), [user, loading]);
+
     return (
-        <AuthContext.Provider value={{ user, login, logout, loading }}>
+        <AuthContext.Provider value={value}>
             {loading ? (
                 <div style={{
                     display: 'flex',
@@ -88,6 +96,10 @@ export const AuthProvider = ({ children }) => {
             )}
         </AuthContext.Provider>
     );
+};
+
+AuthProvider.propTypes = {
+    children: PropTypes.node.isRequired
 };
 
 // eslint-disable-next-line react-refresh/only-export-components
