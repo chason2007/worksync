@@ -6,8 +6,8 @@ const Leave = require('../models/Leave');
 const verify = require('./verifyToken');
 const upload = require('../middleware/upload');
 const bcrypt = require('bcryptjs');
-const path = require('path');
-const fs = require('fs');
+const path = require('node:path');
+const fs = require('node:fs');
 
 
 

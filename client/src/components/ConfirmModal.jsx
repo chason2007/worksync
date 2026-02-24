@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import PropTypes from 'prop-types';
 
 function ConfirmModal({ isOpen, onClose, onConfirm, title, message, confirmText = 'Confirm', cancelText = 'Cancel', danger = false }) {
     const [loading, setLoading] = useState(false);
@@ -25,13 +26,25 @@ function ConfirmModal({ isOpen, onClose, onConfirm, title, message, confirmText 
             justifyContent: 'center',
             zIndex: 1000,
             animation: 'fadeIn 0.2s ease-out'
-        }} onClick={onClose}>
+        }}
+            onClick={onClose}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') onClose();
+            }}
+            aria-label="Close modal"
+        >
             <div className="card" style={{
                 maxWidth: '500px',
                 width: '90%',
                 margin: 0,
                 animation: 'slideUp 0.3s ease-out'
-            }} onClick={(e) => e.stopPropagation()}>
+            }}
+                onClick={(e) => e.stopPropagation()}
+                role="presentation"
+                onKeyDown={(e) => e.stopPropagation()}
+            >
                 <h3 style={{
                     marginBottom: '1rem',
                     color: danger ? 'var(--pk-danger)' : 'var(--pk-text-main)'
@@ -71,3 +84,18 @@ function ConfirmModal({ isOpen, onClose, onConfirm, title, message, confirmText 
 }
 
 export default ConfirmModal;
+
+ConfirmModal.propTypes = {
+    isOpen: PropTypes.bool.isRequired,
+    onClose: PropTypes.func.isRequired,
+    onConfirm: PropTypes.func.isRequired,
+    title: PropTypes.string.isRequired,
+    message: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.node,
+        PropTypes.element
+    ]).isRequired,
+    confirmText: PropTypes.string,
+    cancelText: PropTypes.string,
+    danger: PropTypes.bool
+};

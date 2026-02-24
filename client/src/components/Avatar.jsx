@@ -19,11 +19,12 @@ function Avatar({ user, size = 'md', className = '' }) {
         e.target.nextSibling.style.display = 'flex';
     };
 
-    const imageUrl = user?.profileImage
-        ? (user.profileImage.startsWith('data:')
+    let imageUrl = null;
+    if (user?.profileImage) {
+        imageUrl = user.profileImage.startsWith('data:')
             ? user.profileImage
-            : `${import.meta.env.VITE_API_URL}/uploads/profiles/${user.profileImage}`)
-        : null;
+            : `${import.meta.env.VITE_API_URL}/uploads/profiles/${user.profileImage}`;
+    }
 
     // Super Admin Gear Icon
     if (user?.email === 'admin@worksync.com') {
@@ -70,6 +71,7 @@ import PropTypes from 'prop-types';
 Avatar.propTypes = {
     user: PropTypes.shape({
         name: PropTypes.string,
+        email: PropTypes.string,
         profileImage: PropTypes.string,
     }),
     size: PropTypes.string,

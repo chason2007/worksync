@@ -61,6 +61,52 @@ function AnnouncementSection() {
         }
     };
 
+    const renderContent = () => {
+        if (loading) {
+            return (
+                <>
+                    <Skeleton height="80px" />
+                    <Skeleton height="80px" />
+                </>
+            );
+        }
+
+        if (announcements.length === 0) {
+            return (
+                <div className="text-center py-8 text-muted bg-slate-50 rounded-lg border border-dashed border-slate-200">
+                    No announcements yet.
+                </div>
+            );
+        }
+
+        return announcements.map(announcement => (
+            <div key={announcement._id} className="p-4 border rounded-lg hover:border-primary-200 transition-colors bg-white shadow-sm">
+                <div className="flex justify-between items-start mb-2">
+                    <h4 className="text-lg font-bold text-slate-800">{announcement.title}</h4>
+                    {user.role === 'Admin' && (
+                        <button
+                            onClick={() => handleDelete(announcement._id)}
+                            className="text-red-500 hover:text-red-700 p-1 opacity-50 hover:opacity-100 transition-opacity"
+                            title="Delete Announcement"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                        </button>
+                    )}
+                </div>
+                <p className="text-slate-600 mb-3 whitespace-pre-wrap leading-relaxed">{announcement.content}</p>
+                <div className="flex items-center justify-between text-xs text-muted pt-3 border-t border-slate-100">
+                    <div className="flex items-center gap-2">
+                        <div className="w-5 h-5 rounded-full bg-slate-200 overflow-hidden flex items-center justify-center">
+                            <span className="font-bold text-xs">{announcement.postedBy?.name?.[0] || '?'}</span>
+                        </div>
+                        <span>Posted by {announcement.postedBy?.name || 'Unknown User'}</span>
+                    </div>
+                    <time>{formatDateTime(announcement.createdAt)}</time>
+                </div>
+            </div>
+        ));
+    };
+
     return (
         <div className="card mb-8">
             <div className="flex justify-between items-center mb-4">
@@ -85,8 +131,9 @@ function AnnouncementSection() {
             {showForm && (
                 <form onSubmit={handlePost} className="mb-6 p-4 bg-slate-50 rounded-lg border border-slate-200">
                     <div className="mb-3">
-                        <label className="block text-sm font-bold text-muted mb-1">Title</label>
+                        <label htmlFor="postTitle" className="block text-sm font-bold text-muted mb-1">Title</label>
                         <input
+                            id="postTitle"
                             type="text"
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
@@ -97,8 +144,9 @@ function AnnouncementSection() {
                         />
                     </div>
                     <div className="mb-3">
-                        <label className="block text-sm font-bold text-muted mb-1">Content</label>
+                        <label htmlFor="postContent" className="block text-sm font-bold text-muted mb-1">Content</label>
                         <textarea
+                            id="postContent"
                             value={content}
                             onChange={(e) => setContent(e.target.value)}
                             className="w-full p-2 border rounded h-24"
@@ -120,43 +168,7 @@ function AnnouncementSection() {
 
             {/* Announcements List */}
             <div className="flex flex-col gap-4">
-                {loading ? (
-                    <>
-                        <Skeleton height="80px" />
-                        <Skeleton height="80px" />
-                    </>
-                ) : announcements.length === 0 ? (
-                    <div className="text-center py-8 text-muted bg-slate-50 rounded-lg border border-dashed border-slate-200">
-                        No announcements yet.
-                    </div>
-                ) : (
-                    announcements.map(announcement => (
-                        <div key={announcement._id} className="p-4 border rounded-lg hover:border-primary-200 transition-colors bg-white shadow-sm">
-                            <div className="flex justify-between items-start mb-2">
-                                <h4 className="text-lg font-bold text-slate-800">{announcement.title}</h4>
-                                {user.role === 'Admin' && (
-                                    <button
-                                        onClick={() => handleDelete(announcement._id)}
-                                        className="text-red-500 hover:text-red-700 p-1 opacity-50 hover:opacity-100 transition-opacity"
-                                        title="Delete Announcement"
-                                    >
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                                    </button>
-                                )}
-                            </div>
-                            <p className="text-slate-600 mb-3 whitespace-pre-wrap leading-relaxed">{announcement.content}</p>
-                            <div className="flex items-center justify-between text-xs text-muted pt-3 border-t border-slate-100">
-                                <div className="flex items-center gap-2">
-                                    <div className="w-5 h-5 rounded-full bg-slate-200 overflow-hidden flex items-center justify-center">
-                                        <span className="font-bold text-xs">{announcement.postedBy?.name?.[0] || '?'}</span>
-                                    </div>
-                                    <span>Posted by {announcement.postedBy?.name || 'Unknown User'}</span>
-                                </div>
-                                <time>{formatDateTime(announcement.createdAt)}</time>
-                            </div>
-                        </div>
-                    ))
-                )}
+                {renderContent()}
             </div>
         </div>
     );

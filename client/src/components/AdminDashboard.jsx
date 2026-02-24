@@ -185,8 +185,8 @@ function AdminDashboard() {
             const filtered = users.filter(u =>
                 u.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 u.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                (u.position && u.position.toLowerCase().includes(searchTerm.toLowerCase())) ||
-                (u.employeeId && u.employeeId.toLowerCase().includes(searchTerm.toLowerCase()))
+                u.position?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                u.employeeId?.toLowerCase().includes(searchTerm.toLowerCase())
             );
             setFilteredUsers(filtered);
         } else {
@@ -572,7 +572,7 @@ function AdminDashboard() {
                                                         </td>
                                                         <td><StatusBadge status={u.role} /></td>
                                                         <td>
-                                                            {(u.role !== 'Admin' || (currentUser && currentUser.email === 'admin@worksync.com')) && (
+                                                            {(u.role !== 'Admin' || currentUser?.email === 'admin@worksync.com') && (
                                                                 <div className="flex gap-2">
                                                                     <button onClick={() => handleEditClick(u)} className="btn btn-ghost p-2">Edit</button>
                                                                     <button
@@ -606,8 +606,9 @@ function AdminDashboard() {
                         <h3 className="mb-4">Request Leave</h3>
                         <form onSubmit={submitLeaveRequest} className="flex flex-col gap-4">
                             <div>
-                                <label className="mb-2 block text-sm font-bold text-muted">Reason</label>
+                                <label htmlFor="leaveReason" className="mb-2 block text-sm font-bold text-muted">Reason</label>
                                 <input
+                                    id="leaveReason"
                                     type="text"
                                     placeholder="Meeting, Personal..."
                                     value={leaveReason}
@@ -618,8 +619,9 @@ function AdminDashboard() {
                             </div>
                             <div className="flex gap-2">
                                 <div className="w-full">
-                                    <label className="mb-2 block text-sm font-bold text-muted">Start Date</label>
+                                    <label htmlFor="leaveStartDate" className="mb-2 block text-sm font-bold text-muted">Start Date</label>
                                     <input
+                                        id="leaveStartDate"
                                         type="date"
                                         value={leaveStartDate}
                                         onChange={e => setLeaveStartDate(e.target.value)}
@@ -628,8 +630,9 @@ function AdminDashboard() {
                                     />
                                 </div>
                                 <div className="w-full">
-                                    <label className="mb-2 block text-sm font-bold text-muted">End Date</label>
+                                    <label htmlFor="leaveEndDate" className="mb-2 block text-sm font-bold text-muted">End Date</label>
                                     <input
+                                        id="leaveEndDate"
                                         type="date"
                                         value={leaveEndDate}
                                         onChange={e => setLeaveEndDate(e.target.value)}
@@ -735,7 +738,18 @@ function AdminDashboard() {
             {/* Edit Attendance Modal */}
             {showEditAttendanceModal && editingAttendance && (
                 <>
-                    <div className="modal-backdrop" onClick={() => setShowEditAttendanceModal(false)} />
+                    <div
+                        className="modal-backdrop"
+                        onClick={() => setShowEditAttendanceModal(false)}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                                setShowEditAttendanceModal(false);
+                            }
+                        }}
+                        aria-label="Close modal"
+                    />
                     <div className="modal">
                         <div className="modal-header">
                             <h3>Edit Attendance</h3>
@@ -755,18 +769,19 @@ function AdminDashboard() {
                                 </span>
                             </p>
                             <div>
-                                <label className="block mb-2 font-bold text-sm">Status</label>
+                                <span className="block mb-2 font-bold text-sm">Status</span>
                                 <div className="grid grid-cols-3 gap-2">
                                     {['Present', 'Half-day', 'Absent'].map((status) => (
-                                        <div
+                                        <button
                                             key={status}
+                                            type="button"
                                             className={`stat-card cursor-pointer p-4 items-center justify-center ${editAttendanceStatus === status ? 'bg-primary-50 ring-2 ring-primary-500' : 'bg-surface'}`}
                                             onClick={() => setEditAttendanceStatus(status)}
                                         >
                                             <div className="text-sm font-semibold text-center">
                                                 {status}
                                             </div>
-                                        </div>
+                                        </button>
                                     ))}
                                 </div>
                             </div>

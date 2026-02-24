@@ -12,13 +12,13 @@ export function ThemeProvider({ children }) {
         const root = document.documentElement;
 
         // Remove previous theme class/attribute
-        root.removeAttribute('data-theme');
+        delete root.dataset.theme;
 
         if (theme === 'system') {
             const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-            root.setAttribute('data-theme', systemTheme);
+            root.dataset.theme = systemTheme;
         } else {
-            root.setAttribute('data-theme', theme);
+            root.dataset.theme = theme;
         }
 
         // Save preference
@@ -33,7 +33,7 @@ export function ThemeProvider({ children }) {
         const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
         const handleChange = () => {
             const systemTheme = mediaQuery.matches ? 'dark' : 'light';
-            document.documentElement.setAttribute('data-theme', systemTheme);
+            document.documentElement.dataset.theme = systemTheme;
         };
 
         mediaQuery.addEventListener('change', handleChange);

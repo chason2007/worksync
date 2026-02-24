@@ -1,5 +1,5 @@
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 
 const filePath = path.join(process.cwd(), 'dist/assets/index-DHWMc41U.js');
 const outputPath = path.join(process.cwd(), 'debug_results.txt');

@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { formatDateTime } from '../utils/dateUtils';
 import Avatar from './Avatar';
 
@@ -7,14 +8,25 @@ function AnnouncementModal({ announcement, onClose }) {
 
     return (
         <>
-            <div className="modal-backdrop" onClick={onClose} />
+            <div
+                className="modal-backdrop"
+                onClick={onClose}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        onClose();
+                    }
+                }}
+                aria-label="Close modal"
+            />
             <div className="modal max-w-2xl w-full">
                 <div className="modal-header">
                     <h3 className="text-xl font-bold flex items-center gap-2">
-                        <span className="text-primary-500">
+                        <span className="text-primary-500 mr-2">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
                         </span>
-                        Announcement
+                        <span>Announcement</span>
                     </h3>
                     <button
                         className="btn btn-ghost p-2"
@@ -53,3 +65,15 @@ function AnnouncementModal({ announcement, onClose }) {
 }
 
 export default AnnouncementModal;
+
+AnnouncementModal.propTypes = {
+    announcement: PropTypes.shape({
+        title: PropTypes.string.isRequired,
+        content: PropTypes.string.isRequired,
+        createdAt: PropTypes.string.isRequired,
+        postedBy: PropTypes.shape({
+            name: PropTypes.string
+        })
+    }),
+    onClose: PropTypes.func.isRequired
+};

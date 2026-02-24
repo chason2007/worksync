@@ -2,8 +2,8 @@ const router = require('express').Router();
 const User = require('../models/User');
 const verify = require('./verifyToken');
 const upload = require('../middleware/upload');
-const path = require('path');
-const fs = require('fs');
+const path = require('node:path');
+const fs = require('node:fs');
 
 // GET OWN PROFILE
 router.get('/profile', verify, async (req, res) => {
@@ -73,7 +73,7 @@ router.post('/profile/image', verify, upload.single('profileImage'), async (req,
 // CHECK IF EMPLOYEE ID EXISTS
 router.get('/check-id/:id', verify, async (req, res) => {
     try {
-        const user = await User.findOne({ employeeId: req.params.id });
+        const user = await User.findOne({ employeeId: String(req.params.id) });
         res.json({ exists: !!user });
     } catch (err) {
         res.status(500).json({ error: err.message });
