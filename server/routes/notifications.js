@@ -31,7 +31,7 @@ router.get('/', verify, async (req, res) => {
 router.put('/:id/read', verify, async (req, res) => {
     try {
         const notification = await Notification.findOneAndUpdate(
-            { _id: req.params.id, userId: req.user._id },
+            { _id: String(req.params.id), userId: req.user._id },
             { isRead: true },
             { new: true }
         );

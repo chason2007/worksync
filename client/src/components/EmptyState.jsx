@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 function EmptyState({ title = "No data found", message = "Nothing to show here yet.", icon, action }) {
     return (
@@ -19,3 +20,10 @@ function EmptyState({ title = "No data found", message = "Nothing to show here y
 }
 
 export default EmptyState;
+
+EmptyState.propTypes = {
+    title: PropTypes.string,
+    message: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
+    icon: PropTypes.node,
+    action: PropTypes.node
+};

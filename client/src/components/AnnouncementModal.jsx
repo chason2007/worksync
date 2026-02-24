@@ -8,16 +8,10 @@ function AnnouncementModal({ announcement, onClose }) {
 
     return (
         <>
-            <div
+            <button
+                type="button"
                 className="modal-backdrop"
                 onClick={onClose}
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                        onClose();
-                    }
-                }}
                 aria-label="Close modal"
             />
             <div className="modal max-w-2xl w-full">

@@ -20,31 +20,36 @@ function ConfirmModal({ isOpen, onClose, onConfirm, title, message, confirmText 
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             zIndex: 1000,
             animation: 'fadeIn 0.2s ease-out'
-        }}
-            onClick={onClose}
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') onClose();
-            }}
-            aria-label="Close modal"
-        >
+        }}>
+            <button
+                type="button"
+                onClick={onClose}
+                aria-label="Close modal"
+                style={{
+                    position: 'absolute',
+                    inset: 0,
+                    width: '100%',
+                    height: '100%',
+                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                    border: 'none',
+                    padding: 0,
+                    margin: 0,
+                    cursor: 'pointer'
+                }}
+            />
             <div className="card" style={{
                 maxWidth: '500px',
                 width: '90%',
                 margin: 0,
+                position: 'relative',
+                zIndex: 1,
                 animation: 'slideUp 0.3s ease-out'
-            }}
-                onClick={(e) => e.stopPropagation()}
-                role="presentation"
-                onKeyDown={(e) => e.stopPropagation()}
-            >
+            }}>
                 <h3 style={{
                     marginBottom: '1rem',
                     color: danger ? 'var(--pk-danger)' : 'var(--pk-text-main)'

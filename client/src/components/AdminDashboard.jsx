@@ -308,7 +308,7 @@ function AdminDashboard() {
 
         document.body.appendChild(link);
         link.click();
-        document.body.removeChild(link);
+        link.remove();
 
         showToast(`Exported ${attendanceLogs.length} attendance records`, 'success');
     };
@@ -738,16 +738,10 @@ function AdminDashboard() {
             {/* Edit Attendance Modal */}
             {showEditAttendanceModal && editingAttendance && (
                 <>
-                    <div
+                    <button
+                        type="button"
                         className="modal-backdrop"
                         onClick={() => setShowEditAttendanceModal(false)}
-                        role="button"
-                        tabIndex={0}
-                        onKeyDown={(e) => {
-                            if (e.key === 'Enter' || e.key === ' ') {
-                                setShowEditAttendanceModal(false);
-                            }
-                        }}
                         aria-label="Close modal"
                     />
                     <div className="modal">
