@@ -117,7 +117,7 @@ function ManageUsers() {
                     <button
                         className="btn"
                         onClick={() => navigate('/add-user')}
-                        style={{ background: '#fff', color: 'var(--pk-primary)', fontWeight: 700, border: 'none', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}
+                        style={{ background: '#fff', color: '#4f46e5', fontWeight: 700, border: 'none', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}
                     >
                         + Add User
                     </button>
