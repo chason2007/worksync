@@ -14,7 +14,7 @@ import AnnouncementSection from './AnnouncementSection';
 
 function AdminDashboard() {
     const navigate = useNavigate();
-    const { user: currentUser } = useAuth();
+    const { user } = useAuth();
     const [attendanceLogs, setAttendanceLogs] = useState([]);
     const [attendancePage, setAttendancePage] = useState(1);
     const [attendanceMeta, setAttendanceMeta] = useState({ pages: 1, total: 0 });
@@ -48,9 +48,6 @@ function AdminDashboard() {
 
     const { showToast } = useToast();
 
-    const openModal = (title, message, onConfirm) => {
-        setModalConfig({ isOpen: true, title, message, onConfirm });
-    };
 
     const closeModal = () => {
         setModalConfig({ isOpen: false, title: '', message: '', onConfirm: null });

@@ -16,7 +16,7 @@ export function ThemeProvider({ children }) {
         delete root.dataset.theme;
 
         if (theme === 'system') {
-            const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            const systemTheme = globalThis.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
             root.dataset.theme = systemTheme;
         } else {
             root.dataset.theme = theme;
@@ -31,7 +31,7 @@ export function ThemeProvider({ children }) {
     useEffect(() => {
         if (theme !== 'system') return;
 
-        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        const mediaQuery = globalThis.matchMedia('(prefers-color-scheme: dark)');
         const handleChange = () => {
             const systemTheme = mediaQuery.matches ? 'dark' : 'light';
             document.documentElement.dataset.theme = systemTheme;
