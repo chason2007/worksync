@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, useCallback } from 'react';
+import { createContext, useContext, useState, useCallback, useMemo } from 'react';
+import PropTypes from 'prop-types';
 import Toast from '../components/Toast';
 
 const ToastContext = createContext();
@@ -24,8 +25,10 @@ export function ToastProvider({ children }) {
         setToasts(prev => prev.filter(toast => toast.id !== id));
     }, []);
 
+    const value = useMemo(() => ({ showToast }), [showToast]);
+
     return (
-        <ToastContext.Provider value={{ showToast }}>
+        <ToastContext.Provider value={value}>
             {children}
             <div style={{
                 position: 'fixed',
@@ -48,3 +51,7 @@ export function ToastProvider({ children }) {
         </ToastContext.Provider>
     );
 }
+
+ToastProvider.propTypes = {
+    children: PropTypes.node.isRequired
+};
