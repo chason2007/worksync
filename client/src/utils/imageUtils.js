@@ -2,7 +2,7 @@ const readFileAsDataURL = (file) => {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = (event) => resolve(event.target.result);
-        reader.onerror = (error) => reject(error);
+        reader.onerror = (error) => reject(new Error('Failed to read file: ' + error.message));
         reader.readAsDataURL(file);
     });
 };
@@ -11,7 +11,7 @@ const loadImage = (src) => {
     return new Promise((resolve, reject) => {
         const img = new Image();
         img.onload = () => resolve(img);
-        img.onerror = (error) => reject(error);
+        img.onerror = (error) => reject(new Error('Failed to load image: ' + error.message));
         img.src = src;
     });
 };
