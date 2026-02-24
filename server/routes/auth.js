@@ -104,8 +104,7 @@ router.post('/register', authLimiter, verify, async (req, res) => {
         res.send(savedUser);
 
     } catch (err) {
-        console.error("REGISTER ERROR:", err);
-        res.status(400).json({ error: err.message, stack: err.stack });
+        res.status(400).json({ error: err.message });
     }
 });
 
@@ -144,7 +143,6 @@ router.post('/login', authLimiter, async (req, res) => {
         });
 
     } catch (err) {
-        console.error("LOGIN ERROR:", err);
         res.status(500).send(err.message);
     }
 });

@@ -224,8 +224,6 @@ router.get('/', verify, async (req, res) => {
 
         const total = await Attendance.countDocuments(query);
 
-        console.log(`Found ${logs.length} logs (Page ${page} of ${Math.ceil(total / limit)}).`);
-
         res.json({
             data: logs,
             pagination: {

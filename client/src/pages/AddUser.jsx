@@ -116,11 +116,10 @@ function AddUser() {
 
     const uploadProfileImage = async (userId) => {
         if (!profileImage) {
-            console.log('No profile image to upload');
             return;
         }
 
-        console.log('Starting image upload for user:', userId);
+
         const formData = new FormData();
         formData.append('profileImage', profileImage);
 
@@ -136,7 +135,7 @@ function AddUser() {
                     }
                 }
             );
-            console.log('Image upload response:', response.data);
+
             showToast('Profile image uploaded successfully!', 'success');
         } catch (err) {
             console.error('Image upload error:', err);
@@ -153,7 +152,7 @@ function AddUser() {
 
         try {
 
-            await api.post('/api/auth/register', {
+            const res = await api.post('/api/auth/register', {
                 name,
                 email,
                 password,
@@ -162,13 +161,11 @@ function AddUser() {
                 employeeId,
             });
 
-            console.log('User created:', res.data);
-            console.log('Has profile image?', !!profileImage);
-            console.log('User ID:', res.data._id);
+
 
             // Upload profile image if selected
             if (profileImage && res.data._id) {
-                console.log('Uploading profile image for user:', res.data._id);
+
                 await uploadProfileImage(res.data._id);
             }
 

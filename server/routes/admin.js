@@ -62,7 +62,6 @@ router.put('/users/:id/reset-password', verify, async (req, res) => {
 
         res.json({ message: 'Password reset successfully', user: { name: user.name, email: user.email } });
     } catch (err) {
-        console.error('Reset password error:', err);
         res.status(500).json({ error: err.message });
     }
 });
@@ -82,15 +81,14 @@ router.post('/users/:id/upload-image', verify, upload.single('profileImage'), as
 
         return handleProfileImageUpload(user, req.file, res);
     } catch (err) {
-        console.error('Upload error:', err);
         res.status(500).json({ error: err.message });
     }
 });
 
 
 // DEBUG TEST ROUTE
-router.put('/test', (req, res) => {
-    console.log("PUT /api/admin/test HIT!");
+router.put('/test', verify, (req, res) => {
+    if (req.user.role !== 'Admin') return res.status(403).send('Access Denied');
     res.json({ message: "Admin Test Route Works" });
 });
 
@@ -137,7 +135,6 @@ router.put('/users/:id', verify, async (req, res) => {
         delete userObj.password;
         res.json(userObj);
     } catch (err) {
-        console.error("UPDATE USER ERROR:", err);
         res.status(500).json({ error: err.message });
     }
 });
@@ -153,7 +150,6 @@ router.delete('/users/:id', verify, async (req, res) => {
         if (userToDelete.role === 'Admin') {
             // Fetch requester's details to check if they are Super Admin
             const requester = await User.findById(req.user._id);
-            console.log(`[DELETE ADMIN] Req: ${requester ? requester.email : 'Unknown'} vs Target: ${userToDelete.email}`);
 
             if (!requester || requester.email !== process.env.SUPER_ADMIN_EMAIL) {
                 return res.status(403).json({ error: 'Only Super Admin (admin@worksync.com) can delete other Admins.' });

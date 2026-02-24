@@ -4,13 +4,10 @@ const verify = require('./verifyToken');
 
 // Clear All Notifications
 router.delete('/clear-all', verify, async (req, res) => {
-    console.log("Attempting to clearing all notifications for user:", req.user._id);
     try {
         await Notification.deleteMany({ userId: req.user._id });
-        console.log("Successfully cleared notifications");
         res.json({ message: 'All notifications cleared' });
     } catch (err) {
-        console.error("Error clearing notifications:", err);
         res.status(500).json({ error: err.message });
     }
 });

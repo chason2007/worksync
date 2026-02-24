@@ -14,9 +14,7 @@ export const AuthProvider = ({ children }) => {
 
             if (token) {
                 try {
-                    console.log("Checking user against:", import.meta.env.VITE_API_URL);
                     const userRes = await api.get('/api/auth/user');
-                    console.log("User found:", userRes.data);
                     setUser(userRes.data);
 
                     // Update whichever storage has the token
@@ -38,7 +36,6 @@ export const AuthProvider = ({ children }) => {
                     setUser(null);
                 }
             } else {
-                console.log("No token found");
                 setUser(null);
             }
             setLoading(false);
