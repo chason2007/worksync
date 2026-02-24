@@ -121,6 +121,13 @@ function Header() {
                             >
                                 Announcements
                             </Link>
+                            <Link
+                                to="/leaves"
+                                className={`nav-link ${isActive('/leaves') ? 'active' : ''}`}
+                                style={{ fontWeight: '500', color: 'var(--pk-text-main)', textDecoration: 'none' }}
+                            >
+                                Leaves
+                            </Link>
                             {user.email !== 'admin@worksync.com' && (
                                 <Link
                                     to="/attendance"
@@ -336,6 +343,9 @@ function Header() {
                             </Link>
                             <Link to="/announcements" className="btn" onClick={() => setMobileMenuOpen(false)} style={{ justifyContent: 'flex-start', background: 'transparent', color: 'var(--pk-text-main)', border: 'none' }}>
                                 Announcements
+                            </Link>
+                            <Link to="/leaves" className="btn" onClick={() => setMobileMenuOpen(false)} style={{ justifyContent: 'flex-start', background: 'transparent', color: 'var(--pk-text-main)', border: 'none' }}>
+                                Leaves
                             </Link>
                             {user.email !== 'admin@worksync.com' && (
                                 <Link to="/attendance" className="btn" onClick={() => setMobileMenuOpen(false)} style={{ justifyContent: 'flex-start', background: 'transparent', color: 'var(--pk-text-main)', border: 'none' }}>
