@@ -8,7 +8,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.3.0] - 2026-02-24
 
 ### Added
-- **Domain Support**: Updated backend CORS configuration to support the new frontend domain `https://worksync-ems.vercel.app`.
 - **Dedicated User Management Page**: Extracted the user administration module from the Admin Dashboard into its own page (`ManageUsers.jsx`).
 - **New Navigation**: Added "Users" link to the Header for Admin users on both desktop and mobile views.
 - **Manage Users Button**: Added a direct access button on the Admin Dashboard to the new User Management page.
@@ -27,7 +26,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Application Branding**: Updated the footer to reflect the new version `v1.3.0`.
 
 ### Fixed
-- **Hotfix**: Resolved a build error caused by a duplicate import of `resizeImage` in `Profile.jsx`.
 - **State Management**: Resolved issues with attendance date filtering and state consistency in `AdminDashboard.jsx`.
 - **Form Logic**: Removed a duplicate `setRole` call during user creation in `AddUser.jsx`.
 - **UI Consistency**: Standardized Avatar sizing and component spacing across the dashboard and profile pages.
