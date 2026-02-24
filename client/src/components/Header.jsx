@@ -108,13 +108,6 @@ function Header() {
                     {user && (
                         <nav className="desktop-nav" style={{ display: 'flex', gap: '1.5rem', marginLeft: '1.5rem' }}>
                             <Link
-                                to="/"
-                                className={`nav-link ${isActive('/') ? 'active' : ''}`}
-                                style={{ fontWeight: '500', color: 'var(--pk-text-main)', textDecoration: 'none' }}
-                            >
-                                Dashboard
-                            </Link>
-                            <Link
                                 to="/announcements"
                                 className={`nav-link ${isActive('/announcements') ? 'active' : ''}`}
                                 style={{ fontWeight: '500', color: 'var(--pk-text-main)', textDecoration: 'none' }}
@@ -140,22 +133,13 @@ function Header() {
                                 </Link>
                             )}
                             {user.role === 'Admin' && (
-                                <>
-                                    <Link
-                                        to="/users"
-                                        className={`nav-link ${isActive('/users') ? 'active' : ''}`}
-                                        style={{ fontWeight: '500', color: 'var(--pk-text-main)', textDecoration: 'none' }}
-                                    >
-                                        Users
-                                    </Link>
-                                    <Link
-                                        to="/settings"
-                                        className={`nav-link ${isActive('/settings') ? 'active' : ''}`}
-                                        style={{ fontWeight: '500', color: 'var(--pk-text-main)', textDecoration: 'none' }}
-                                    >
-                                        Settings
-                                    </Link>
-                                </>
+                                <Link
+                                    to="/users"
+                                    className={`nav-link ${isActive('/users') ? 'active' : ''}`}
+                                    style={{ fontWeight: '500', color: 'var(--pk-text-main)', textDecoration: 'none' }}
+                                >
+                                    Users
+                                </Link>
                             )}
                         </nav>
                     )}
@@ -340,9 +324,6 @@ function Header() {
                         borderTop: '1px solid var(--pk-border)'
                     }}>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                            <Link to="/" className="btn" onClick={() => setMobileMenuOpen(false)} style={{ justifyContent: 'flex-start', background: 'transparent', color: 'var(--pk-text-main)', border: 'none' }}>
-                                Dashboard
-                            </Link>
                             <Link to="/announcements" className="btn" onClick={() => setMobileMenuOpen(false)} style={{ justifyContent: 'flex-start', background: 'transparent', color: 'var(--pk-text-main)', border: 'none' }}>
                                 Announcements
                             </Link>
@@ -357,14 +338,9 @@ function Header() {
                                 </Link>
                             )}
                             {user.role === 'Admin' && (
-                                <>
-                                    <Link to="/users" className="btn" onClick={() => setMobileMenuOpen(false)} style={{ justifyContent: 'flex-start', background: 'transparent', color: 'var(--pk-text-main)', border: 'none' }}>
-                                        Users
-                                    </Link>
-                                    <Link to="/settings" className="btn" onClick={() => setMobileMenuOpen(false)} style={{ justifyContent: 'flex-start', background: 'transparent', color: 'var(--pk-text-main)', border: 'none' }}>
-                                        Settings
-                                    </Link>
-                                </>
+                                <Link to="/users" className="btn" onClick={() => setMobileMenuOpen(false)} style={{ justifyContent: 'flex-start', background: 'transparent', color: 'var(--pk-text-main)', border: 'none' }}>
+                                    Users
+                                </Link>
                             )}
                             <div style={{ padding: '0.5rem', marginTop: '1rem', borderTop: '1px solid var(--pk-border)' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
