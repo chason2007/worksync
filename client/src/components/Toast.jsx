@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import PropTypes from 'prop-types';
 
 function Toast({ message, type = 'success', onClose }) {
     useEffect(() => {
@@ -74,5 +75,11 @@ function Toast({ message, type = 'success', onClose }) {
         </div>
     );
 }
+
+Toast.propTypes = {
+    message: PropTypes.string.isRequired,
+    type: PropTypes.oneOf(['success', 'error']),
+    onClose: PropTypes.func.isRequired
+};
 
 export default Toast;
