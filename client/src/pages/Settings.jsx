@@ -63,7 +63,7 @@ function Settings() {
             });
             showToast("System Reset Complete", 'success');
             setTimeout(() => {
-                window.location.reload();
+                globalThis.location.reload();
             }, 1000);
         } catch (err) {
             showToast("Reset Failed: " + (err.response?.data?.error || err.message), 'error');

@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import axios from 'axios';
-import Avatar from '../components/Avatar';
 import { resizeImage } from '../utils/imageUtils';
 
 function Profile() {
@@ -64,7 +63,7 @@ function Profile() {
             });
 
             showToast('Profile image updated!', 'success');
-            setTimeout(() => window.location.reload(), 1000);
+            setTimeout(() => globalThis.location.reload(), 1000);
 
         } catch (err) {
             showToast(err.response?.data?.error || 'Failed to upload image', 'error');
@@ -85,7 +84,7 @@ function Profile() {
             showToast('Profile updated successfully', 'success');
             setIsEditing(false);
             // Reload to reflect changes in header/context
-            setTimeout(() => window.location.reload(), 500);
+            setTimeout(() => globalThis.location.reload(), 500);
         } catch (err) {
             showToast(err.response?.data?.error || 'Failed to update profile', 'error');
         } finally {
