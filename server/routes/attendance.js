@@ -153,8 +153,8 @@ router.put('/:id', verify, async (req, res) => {
 // Get Logs for a User (with Pagination)
 router.get('/user/:userId', verify, async (req, res) => {
     try {
-        const page = Math.max(1, parseInt(req.query.page, 10) || 1);
-        const limit = Math.min(100, Math.max(1, parseInt(req.query.limit, 10) || 20));
+        const page = Math.max(1, Number.parseInt(req.query.page, 10) || 1);
+        const limit = Math.min(100, Math.max(1, Number.parseInt(req.query.limit, 10) || 20));
         const skip = (page - 1) * limit;
         // Security Check: Only allow if it's the user themselves OR an Admin
         if (req.user.role !== 'Admin' && req.user._id !== req.params.userId) {
@@ -211,8 +211,8 @@ router.get('/', verify, async (req, res) => {
             };
         }
 
-        const page = Math.max(1, parseInt(req.query.page, 10) || 1);
-        const limit = Math.min(100, Math.max(1, parseInt(req.query.limit, 10) || 50));
+        const page = Math.max(1, Number.parseInt(req.query.page, 10) || 1);
+        const limit = Math.min(100, Math.max(1, Number.parseInt(req.query.limit, 10) || 50));
         const skip = (page - 1) * limit;
 
         // Find records based on query
