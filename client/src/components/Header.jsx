@@ -16,6 +16,7 @@ function Header() {
     const { notifications, unreadCount, markAsRead, markAllAsRead, clearAllNotifications } = useNotifications();
     const [showNotifDropdown, setShowNotifDropdown] = useState(false);
     const notifDropdownRef = useRef(null);
+    const userDropdownRef = useRef(null);
 
     // Initial fetch handled by Context, but we can re-fetch on mount if needed or relies on context auto-polling
 
@@ -24,6 +25,9 @@ function Header() {
         const handleClickOutside = (event) => {
             if (notifDropdownRef.current && !notifDropdownRef.current.contains(event.target)) {
                 setShowNotifDropdown(false);
+            }
+            if (userDropdownRef.current && !userDropdownRef.current.contains(event.target)) {
+                setShowDropdown(false);
             }
         };
         document.addEventListener("mousedown", handleClickOutside);
@@ -252,7 +256,7 @@ function Header() {
                             </button>
 
                             {/* User Dropdown */}
-                            <div className="dropdown">
+                            <div className="dropdown" ref={userDropdownRef}>
                                 <button
                                     onClick={() => setShowDropdown(!showDropdown)}
                                     style={{
@@ -288,9 +292,13 @@ function Header() {
                                                 <span>Settings</span>
                                             </Link>
                                             <div className="dropdown-divider"></div>
-                                            <div className="dropdown-item" onClick={handleLogout}>
+                                            <button
+                                                className="dropdown-item"
+                                                onClick={handleLogout}
+                                                style={{ width: '100%', border: 'none', textAlign: 'left', background: 'none', cursor: 'pointer', fontFamily: 'inherit' }}
+                                            >
                                                 <span>Sign Out</span>
-                                            </div>
+                                            </button>
                                         </div>
                                     )}
                                 </button>
@@ -306,22 +314,7 @@ function Header() {
 
 
 
-            {/* Click outside to close dropdown */}
-            {
-                showDropdown && (
-                    <div
-                        onClick={() => setShowDropdown(false)}
-                        style={{
-                            position: 'fixed',
-                            top: 0,
-                            left: 0,
-                            right: 0,
-                            bottom: 0,
-                            zIndex: 39
-                        }}
-                    />
-                )
-            }
+
             {/* Mobile Menu Overlay */}
             {
                 mobileMenuOpen && user && (
