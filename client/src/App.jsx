@@ -32,10 +32,10 @@ function AppRoutes() {
         <Routes>
           <Route path="/" element={user ? <Dashboard /> : <Navigate to="/login" />} />
           <Route path="/users" element={user?.role === 'Admin' ? <ManageUsers /> : <Navigate to="/" />} />
-          <Route path="/attendance" element={user ? <AttendanceForm /> : <Navigate to="/login" />} />
+          <Route path="/attendance" element={user && user.email !== 'admin@worksync.com' ? <AttendanceForm /> : <Navigate to="/" />} />
           <Route path="/settings" element={user ? <Settings /> : <Navigate to="/login" />} />
           <Route path="/add-user" element={user?.role === 'Admin' ? <AddUser /> : <Navigate to="/" />} />
-          <Route path="/leaves" element={user ? <Leaves /> : <Navigate to="/login" />} />
+          <Route path="/leaves" element={user && user.email !== 'admin@worksync.com' ? <Leaves /> : <Navigate to="/" />} />
           <Route path="/profile" element={user ? <Profile /> : <Navigate to="/login" />} /> {/* Added Profile route */}
           <Route path="/announcements" element={user ? <Announcements /> : <Navigate to="/login" />} />
           <Route path="/login" element={user ? <Navigate to="/" /> : <Login />} />
