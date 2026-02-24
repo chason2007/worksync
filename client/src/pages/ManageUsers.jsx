@@ -5,10 +5,12 @@ import { useAuth } from '../context/AuthContext';
 import ConfirmModal from '../components/ConfirmModal';
 import Avatar from '../components/Avatar';
 import Skeleton from '../components/Skeleton';
+import { useNavigate } from 'react-router-dom';
 import StatusBadge from '../components/StatusBadge';
 
 function ManageUsers() {
     const { user: currentUser } = useAuth();
+    const navigate = useNavigate();
     const { showToast } = useToast();
     const [users, setUsers] = useState([]);
     const [filteredUsers, setFilteredUsers] = useState([]);
@@ -97,9 +99,14 @@ function ManageUsers() {
 
     return (
         <div className="fade-in max-w-screen-xl mx-auto p-4 md:p-8">
-            <div className="mb-6">
-                <h1>User Management</h1>
-                <p className="text-muted">View, edit, and manage application users</p>
+            <div className="flex justify-between items-center mb-6">
+                <div>
+                    <h1>User Management</h1>
+                    <p className="text-muted">View, edit, and manage application users</p>
+                </div>
+                <button className="btn btn-primary" onClick={() => navigate('/add-user')}>
+                    + Add User
+                </button>
             </div>
 
             <div className="card">

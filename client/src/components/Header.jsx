@@ -133,13 +133,6 @@ function Header() {
                             {user.role === 'Admin' && (
                                 <>
                                     <Link
-                                        to="/add-user"
-                                        className={`nav-link ${isActive('/add-user') ? 'active' : ''}`}
-                                        style={{ fontWeight: '500', color: 'var(--pk-text-main)', textDecoration: 'none' }}
-                                    >
-                                        Add User
-                                    </Link>
-                                    <Link
                                         to="/users"
                                         className={`nav-link ${isActive('/users') ? 'active' : ''}`}
                                         style={{ fontWeight: '500', color: 'var(--pk-text-main)', textDecoration: 'none' }}
@@ -351,9 +344,6 @@ function Header() {
                             )}
                             {user.role === 'Admin' && (
                                 <>
-                                    <Link to="/add-user" className="btn" onClick={() => setMobileMenuOpen(false)} style={{ justifyContent: 'flex-start', background: 'transparent', color: 'var(--pk-text-main)', border: 'none' }}>
-                                        Add User
-                                    </Link>
                                     <Link to="/users" className="btn" onClick={() => setMobileMenuOpen(false)} style={{ justifyContent: 'flex-start', background: 'transparent', color: 'var(--pk-text-main)', border: 'none' }}>
                                         Users
                                     </Link>
