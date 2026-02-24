@@ -58,21 +58,11 @@ function Profile() {
                 }
             });
 
-            // Update local user state via login/auth context hack or specific update method if available
-            // Since AuthContext doesn't expose strict update, we might need to rely on re-fetch or manual update.
-            // For now, let's try to update the user object in AuthContext if possible, or just force a reload/re-fetch.
-            // Actually, AuthContext usually hydrates from token/API on load. 
-            // Better: update the user object we have.
-
             // Re-fetch user profile to sync everything
             await axios.get(`${import.meta.env.VITE_API_URL}/api/users/profile`, {
                 headers: { 'auth-token': token }
             });
 
-            // We need a way to update the global auth state. 
-            // If uses local storage + user object, we might simple update the storage if that's how it works, 
-            // but AuthContext usually keeps it in state. 
-            // Assuming we can't easily update AuthContext without a page reload or a specific method.
             showToast('Profile image updated!', 'success');
             setTimeout(() => window.location.reload(), 1000);
 
