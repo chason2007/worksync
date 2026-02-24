@@ -198,28 +198,30 @@ function Settings() {
                             </button>
                         </div>
 
-                        {/* Reset System */}
-                        <div className="flex justify-between items-center p-4 bg-danger rounded border-danger">
-                            <div style={{ flex: 1 }}>
-                                <div className="flex items-center gap-2 mb-1">
-                                    <strong className="text-danger">RESET SYSTEM</strong>
+                        {/* Reset System — Super Admin only */}
+                        {user?.email === 'admin@worksync.com' && (
+                            <div className="flex justify-between items-center p-4 bg-danger rounded border-danger">
+                                <div style={{ flex: 1 }}>
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <strong className="text-danger">RESET SYSTEM</strong>
+                                    </div>
+                                    <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                                        Deletes ALL data (Users, Attendance, Leaves). Only Super Admin remains.
+                                    </div>
                                 </div>
-                                <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-                                    Deletes ALL data (Users, Attendance, Leaves). Only Super Admin remains.
-                                </div>
+                                <button
+                                    onClick={() => openModal(
+                                        'RESET ENTIRE SYSTEM',
+                                        'WARNING: This will delete ALL attendance records, ALL leaves, and ALL users (except you). This cannot be undone. Are you absolutely sure?',
+                                        handleSystemReset
+                                    )}
+                                    className="btn btn-danger"
+                                    style={{ fontWeight: 'bold', backgroundColor: '#dc2626', color: 'white' }}
+                                >
+                                    RESET SYSTEM
+                                </button>
                             </div>
-                            <button
-                                onClick={() => openModal(
-                                    'RESET ENTIRE SYSTEM',
-                                    'WARNING: This will delete ALL attendance records, ALL leaves, and ALL users (except you). This cannot be undone. Are you absolutely sure?',
-                                    handleSystemReset
-                                )}
-                                className="btn btn-danger"
-                                style={{ fontWeight: 'bold', backgroundColor: '#dc2626', color: 'white' }}
-                            >
-                                RESET SYSTEM
-                            </button>
-                        </div>
+                        )}
                     </div>
                 </div>
             )}
