@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNotifications } from '../context/NotificationContext';
-import { useNavigate, Link, useLocation } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import Avatar from './Avatar';
 import { formatDateTime } from '../utils/dateUtils';
 
@@ -45,7 +45,7 @@ function Header() {
     };
 
     const isActive = (path) => {
-        return location.pathname === path;
+        return globalThis.location.pathname === path;
     };
 
     const toggleMobileMenu = () => {

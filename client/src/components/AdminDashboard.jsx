@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import api from '../services/api';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useToast } from '../context/ToastContext';
 import { useAuth } from '../context/AuthContext';
 import ConfirmModal from './ConfirmModal';
@@ -14,7 +14,7 @@ import AnnouncementSection from './AnnouncementSection';
 
 function AdminDashboard() {
     const navigate = useNavigate();
-    const { user } = useAuth();
+    useAuth();
     const [attendanceLogs, setAttendanceLogs] = useState([]);
     const [attendancePage, setAttendancePage] = useState(1);
     const [attendanceMeta, setAttendanceMeta] = useState({ pages: 1, total: 0 });
