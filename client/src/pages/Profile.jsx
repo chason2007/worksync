@@ -4,7 +4,6 @@ import { useToast } from '../context/ToastContext';
 import axios from 'axios';
 import Avatar from '../components/Avatar';
 import { resizeImage } from '../utils/imageUtils';
-import { resizeImage } from '../utils/imageUtils';
 
 function Profile() {
     const { user } = useAuth();

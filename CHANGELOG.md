@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Application Branding**: Updated the footer to reflect the new version `v1.3.0`.
 
 ### Fixed
+- **Hotfix**: Resolved a build error caused by a duplicate import of `resizeImage` in `Profile.jsx`.
 - **State Management**: Resolved issues with attendance date filtering and state consistency in `AdminDashboard.jsx`.
 - **Form Logic**: Removed a duplicate `setRole` call during user creation in `AddUser.jsx`.
 - **UI Consistency**: Standardized Avatar sizing and component spacing across the dashboard and profile pages.
