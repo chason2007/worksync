@@ -72,7 +72,7 @@ router.get('/next-id', verify, async (req, res) => {
         const lastUser = await User.findOne({ employeeId: { $exists: true } }).sort({ employeeId: -1 });
         let nextId = 'EMP001';
 
-        if (lastUser && lastUser.employeeId) {
+        if (lastUser?.employeeId) {
             const match = lastUser.employeeId.match(/^EMP(\d+)$/);
             if (match) {
                 const nextNum = Number.parseInt(match[1], 10) + 1;
