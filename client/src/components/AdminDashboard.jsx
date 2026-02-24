@@ -21,36 +21,6 @@ function AdminDashboard() {
     const [stats, setStats] = useState({ todayAttendance: 0, pendingLeaves: 0, totalUsers: 0 });
 
     const [pageLoading, setPageLoading] = useState(true);
-
-
-    // Initialize with LOCAL date string (YYYY-MM-DD)
-    const [selectedDate, setSelectedDate] = useState(() => {
-        const now = new Date();
-        const yyyy = now.getFullYear();
-        const mm = String(now.getMonth() + 1).padStart(2, '0');
-        const dd = String(now.getDate()).padStart(2, '0');
-        return `${yyyy}-${mm}-${dd}`;
-    });
-
-    const [isAttendanceLoading, setIsAttendanceLoading] = useState(false);
-
-    // ... (existing code for date change) ...
-
-    const handleDateChange = (days) => {
-        const result = new Date(selectedDate);
-        result.setDate(result.getDate() + days);
-        const yyyy = result.getFullYear();
-        const mm = String(result.getMonth() + 1).padStart(2, '0');
-        const dd = String(result.getDate()).padStart(2, '0');
-        setSelectedDate(`${yyyy}-${mm}-${dd}`);
-    };
-
-    // ... (existing state) ...
-    const [users, setUsers] = useState([]);
-    const [filteredUsers, setFilteredUsers] = useState([]);
-    const [searchTerm, setSearchTerm] = useState('');
-    const [editingUser, setEditingUser] = useState(null);
-    const [editForm, setEditForm] = useState({ name: '', email: '', role: 'Employee', position: '', employeeId: '' });
     const [leaves, setLeaves] = useState([]);
     const [leavePage, setLeavePage] = useState(1);
     const [leaveMeta, setLeaveMeta] = useState({ pages: 1, total: 0 });
@@ -60,7 +30,17 @@ function AdminDashboard() {
     const [showEditAttendanceModal, setShowEditAttendanceModal] = useState(false);
     const [modalConfig, setModalConfig] = useState({ isOpen: false, title: '', message: '', onConfirm: null });
 
-    // Leave Request State
+    // Attendance Date State
+    const [selectedDate, setSelectedDate] = useState(() => {
+        const now = new Date();
+        const yyyy = now.getFullYear();
+        const mm = String(now.getMonth() + 1).padStart(2, '0');
+        const dd = String(now.getDate()).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd}`;
+    });
+    const [isAttendanceLoading, setIsAttendanceLoading] = useState(false);
+
+    // Leave Request State (Admins can also request leave)
     const [leaveReason, setLeaveReason] = useState('');
     const [leaveStartDate, setLeaveStartDate] = useState('');
     const [leaveEndDate, setLeaveEndDate] = useState('');
@@ -76,26 +56,13 @@ function AdminDashboard() {
         setModalConfig({ isOpen: false, title: '', message: '', onConfirm: null });
     };
 
-    const handleEditClick = (user) => {
-        setEditingUser(user._id);
-        setEditForm({
-            name: user.name,
-            email: user.email,
-            role: user.role,
-            position: user.position || '',
-            employeeId: user.employeeId || ''
-        });
-    };
-
-    const handleUpdateUser = async () => {
-        try {
-            const res = await api.put(`/api/admin/users/${editingUser}`, editForm);
-            setUsers(users.map(u => u._id === editingUser ? res.data : u));
-            setEditingUser(null);
-            showToast("User updated successfully", 'success');
-        } catch (err) {
-            showToast("Failed to update user: " + (err.response?.data?.error || err.message), 'error');
-        }
+    const handleDateChange = (days) => {
+        const result = new Date(selectedDate);
+        result.setDate(result.getDate() + days);
+        const yyyy = result.getFullYear();
+        const mm = String(result.getMonth() + 1).padStart(2, '0');
+        const dd = String(result.getDate()).padStart(2, '0');
+        setSelectedDate(`${yyyy}-${mm}-${dd}`);
     };
 
     const fetchAttendance = useCallback(async () => {
@@ -125,26 +92,14 @@ function AdminDashboard() {
         }
     }, [selectedDate, attendancePage]);
 
-    // Initial Load (Users, Stats)
+    // Initial Load (Stats)
     useEffect(() => {
         const fetchInitialData = async () => {
             setPageLoading(true);
             try {
-                // Fetch Users
-                const usersRes = await api.get('/api/admin/users');
-                const visibleUsers = (Array.isArray(usersRes.data) ? usersRes.data : []).filter(u => u.email !== 'admin@worksync.com');
-                const sortedUsers = visibleUsers.sort((a, b) => {
-                    if (a.role === 'Admin' && b.role !== 'Admin') return -1;
-                    if (a.role !== 'Admin' && b.role === 'Admin') return 1;
-                    return 0;
-                });
-                setUsers(sortedUsers);
-                setFilteredUsers(sortedUsers);
-
                 // Fetch Stats
                 const statsRes = await api.get('/api/admin/stats');
                 setStats(statsRes.data);
-
             } catch (err) {
                 console.error("Failed to fetch admin data", err);
                 showToast("Failed to load dashboard data", 'error');
@@ -179,51 +134,6 @@ function AdminDashboard() {
         fetchLeaves();
     }, [leavePage]);
 
-    // Search functionality
-    useEffect(() => {
-        if (searchTerm) {
-            const filtered = users.filter(u =>
-                u.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                u.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                u.position?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                u.employeeId?.toLowerCase().includes(searchTerm.toLowerCase())
-            );
-            setFilteredUsers(filtered);
-        } else {
-            setFilteredUsers(users);
-        }
-    }, [searchTerm, users]);
-
-    if (pageLoading) {
-        return (
-            <div className="p-6 max-w-7xl mx-auto space-y-6">
-                {/* Header Skeleton */}
-                <div className="flex justify-between items-center mb-8">
-                    <div>
-                        <Skeleton width="200px" height="32px" className="mb-2" />
-                        <Skeleton width="150px" height="20px" />
-                    </div>
-                    <Skeleton width="120px" height="40px" />
-                </div>
-
-                {/* Stats Grid Skeleton */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <Skeleton type="card" />
-                    <Skeleton type="card" />
-                    <Skeleton type="card" />
-                </div>
-
-                {/* Table Skeleton */}
-                <div className="card">
-                    <Skeleton width="150px" height="24px" className="mb-4" />
-                    <Skeleton height="300px" />
-                </div>
-            </div>
-        );
-    }
-
-
-
     const submitLeaveRequest = async (e) => {
         e.preventDefault();
         setIsSubmittingLeave(true);
@@ -236,8 +146,6 @@ function AdminDashboard() {
             });
 
             showToast("Leave request submitted successfully!", 'success');
-            // If the admin needs to approve their own leave, it will appear in the 'leaves' list
-            // We can optionally add it to the local state if the API returns the full object
             setLeaves([res.data, ...leaves]);
             setLeaveReason('');
             setLeaveStartDate('');
@@ -259,16 +167,6 @@ function AdminDashboard() {
         }
     };
 
-    const handleDeleteUser = async (id) => {
-        try {
-            await api.delete(`/api/admin/users/${id}`);
-            setUsers(users.filter(u => u._id !== id));
-            showToast("User deleted successfully", 'success');
-        } catch {
-            showToast("Failed to delete user", 'error');
-        }
-    };
-
     // Export attendance to CSV
     const exportToCSV = () => {
         if (attendanceLogs.length === 0) {
@@ -276,10 +174,7 @@ function AdminDashboard() {
             return;
         }
 
-        // Prepare CSV headers
         const headers = ['Employee Name', 'Email', 'Date', 'Time', 'Status'];
-
-        // Prepare CSV rows
         const rows = attendanceLogs.map(log => {
             const date = new Date(log.date);
             return [
@@ -291,13 +186,11 @@ function AdminDashboard() {
             ];
         });
 
-        // Combine headers and rows
         const csvContent = [
             headers.join(','),
             ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
         ].join('\n');
 
-        // Create blob and download
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement('a');
         const url = URL.createObjectURL(blob);
@@ -331,71 +224,68 @@ function AdminDashboard() {
             showToast(`Attendance updated for ${editingAttendance.userId?.name || 'User'}`, 'success');
             setShowEditAttendanceModal(false);
             setEditingAttendance(null);
-
-            // Refresh logs
             await fetchAttendance();
-
         } catch (err) {
             console.error('Update attendance error:', err);
             showToast(err.response?.data?.error || 'Failed to update attendance', 'error');
         }
     };
 
-    // Calculate stats
-    // Local calculation removed as they are unused and we use fetched stats
-
-    // Tab State
-
-
-
+    if (pageLoading) {
+        return (
+            <div className="p-6 max-w-7xl mx-auto space-y-6">
+                <div className="flex justify-between items-center mb-8">
+                    <div>
+                        <Skeleton width="200px" height="32px" className="mb-2" />
+                        <Skeleton width="150px" height="20px" />
+                    </div>
+                    <Skeleton width="120px" height="40px" />
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <Skeleton type="card" />
+                    <Skeleton type="card" />
+                    <Skeleton type="card" />
+                </div>
+                <div className="card">
+                    <Skeleton width="150px" height="24px" className="mb-4" />
+                    <Skeleton height="300px" />
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="fade-in max-w-screen-xl mx-auto p-4 md:p-8">
             <div className="flex justify-between items-center mb-6">
                 <div>
                     <h1 className="mb-2">Admin Dashboard</h1>
-                    <p className="text-muted">Manage users, attendance, and leave requests</p>
+                    <p className="text-muted">Manage attendance and leave requests</p>
                 </div>
                 <div>
-                    <button className="btn btn-primary" onClick={() => navigate('/add-user')}>
-                        + Add Employee
+                    <button className="btn btn-primary" onClick={() => navigate('/users')}>
+                        Manage Users
                     </button>
                 </div>
             </div>
 
-            {/* Dashboard Content */}
             <div className="flex flex-col gap-8 fade-in">
-
-                {/* 1. Announcements */}
                 <AnnouncementSection />
 
-                {/* 2. Overview Stats */}
                 <div className="stats-grid">
-                    {pageLoading ? (
-                        <>
-                            <Skeleton type="card" height="120px" />
-                            <Skeleton type="card" height="120px" />
-                            <Skeleton type="card" height="120px" />
-                        </>
-                    ) : (
-                        <>
-                            <div className="stat-card">
-                                <h4 className="stat-label">Today's Attendance</h4>
-                                <p className="stat-value text-success">{stats.todayAttendance}</p>
-                            </div>
-                            <div className="stat-card">
-                                <h4 className="stat-label">Pending Leaves</h4>
-                                <p className="stat-value text-warning">{stats.pendingLeaves}</p>
-                            </div>
-                            <div className="stat-card">
-                                <h4 className="stat-label">Total Users</h4>
-                                <p className="stat-value text-primary">{stats.totalUsers}</p>
-                            </div>
-                        </>
-                    )}
+                    <div className="stat-card">
+                        <h4 className="stat-label">Today's Attendance</h4>
+                        <p className="stat-value text-success">{stats.todayAttendance}</p>
+                    </div>
+                    <div className="stat-card">
+                        <h4 className="stat-label">Pending Leaves</h4>
+                        <p className="stat-value text-warning">{stats.pendingLeaves}</p>
+                    </div>
+                    <div className="stat-card">
+                        <h4 className="stat-label">Total Users</h4>
+                        <p className="stat-value text-primary">{stats.totalUsers}</p>
+                    </div>
                 </div>
 
-                {/* 2. Attendance Section */}
                 <div className="card">
                     <div className="flex justify-between items-center mb-6">
                         <h3>Attendance Logs</h3>
@@ -467,7 +357,7 @@ function AdminDashboard() {
                                 ))}
                                 {attendanceLogs.length === 0 && !isAttendanceLoading && (
                                     <tr>
-                                        <td colSpan="5">
+                                        <td colSpan="4">
                                             <EmptyState
                                                 title="No Attendance"
                                                 message={`No records for ${formatDate(selectedDate)}.`}
@@ -479,7 +369,6 @@ function AdminDashboard() {
                         </table>
                     </div>
 
-                    {/* Attendance Pagination Controls */}
                     {attendanceMeta.pages > 1 && (
                         <div className="flex justify-center gap-2 mt-4">
                             <button
@@ -503,107 +392,7 @@ function AdminDashboard() {
                     )}
                 </div>
 
-                {/* 3. Users Section */}
-                <div className="card">
-                    <div className="flex justify-between items-center mb-6">
-                        <h3>User Management</h3>
-                        <div className="input-group w-64">
-                            <span className="input-icon"></span>
-                            <input
-                                type="text"
-                                placeholder="Search users..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                aria-label="Search users"
-                            />
-                        </div>
-                    </div>
-                    <div className="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>User</th>
-                                    <th>Role</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {pageLoading ? (
-                                    <tr><td colSpan="3"><Skeleton /></td></tr>
-                                ) : (
-                                    <>
-                                        {filteredUsers.map(u => (
-                                            <tr key={u._id}>
-                                                {editingUser === u._id ? (
-                                                    <>
-                                                        <td colSpan="2">
-                                                            <div className="flex-col gap-2">
-                                                                <input
-                                                                    type="text"
-                                                                    value={editForm.name}
-                                                                    onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                                                                    placeholder="Name"
-                                                                    aria-label="User Name"
-                                                                />
-                                                                <input
-                                                                    type="email"
-                                                                    value={editForm.email}
-                                                                    onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
-                                                                    placeholder="Email"
-                                                                    aria-label="User Email"
-                                                                />
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <div className="flex gap-2">
-                                                                <button onClick={handleUpdateUser} className="btn btn-primary btn-sm">Save</button>
-                                                                <button onClick={() => setEditingUser(null)} className="btn btn-ghost btn-sm">Cancel</button>
-                                                            </div>
-                                                        </td>
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <td>
-                                                            <div className="flex items-center gap-3">
-                                                                <Avatar user={u} size="sm" />
-                                                                <div>
-                                                                    <div className="font-bold">{u.name}</div>
-                                                                    <div className="text-sm text-muted">{u.email}</div>
-                                                                </div>
-                                                            </div>
-                                                        </td>
-                                                        <td><StatusBadge status={u.role} /></td>
-                                                        <td>
-                                                            {(u.role !== 'Admin' || currentUser?.email === 'admin@worksync.com') && (
-                                                                <div className="flex gap-2">
-                                                                    <button onClick={() => handleEditClick(u)} className="btn btn-ghost p-2">Edit</button>
-                                                                    <button
-                                                                        onClick={() => openModal(
-                                                                            'Delete User',
-                                                                            `Are you sure you want to delete ${u.name}?`,
-                                                                            () => handleDeleteUser(u._id)
-                                                                        )}
-                                                                        className="btn btn-ghost p-2 text-danger"
-                                                                    >
-                                                                        Delete
-                                                                    </button>
-                                                                </div>
-                                                            )}
-                                                        </td>
-                                                    </>
-                                                )}
-                                            </tr>
-                                        ))}
-                                    </>
-                                )}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                {/* 4. Leaves Section */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    {/* Request Leave Section for Admin */}
                     <div className="card h-fit md:col-span-1">
                         <h3 className="mb-4">Request Leave</h3>
                         <form onSubmit={submitLeaveRequest} className="flex flex-col gap-4">
@@ -653,7 +442,6 @@ function AdminDashboard() {
                         </form>
                     </div>
 
-                    {/* Leave Requests */}
                     <div className="card md:col-span-2">
                         <h3 className="mb-4">Leave Requests</h3>
                         <div className="table-container">
@@ -702,7 +490,6 @@ function AdminDashboard() {
                                 </tbody>
                             </table>
                         </div>
-                        {/* Leave Pagination Controls */}
                         {leaveMeta.pages > 1 && (
                             <div className="flex justify-center gap-2 mt-4">
                                 <button
@@ -737,7 +524,6 @@ function AdminDashboard() {
                 danger={true}
             />
 
-            {/* Edit Attendance Modal */}
             {showEditAttendanceModal && editingAttendance && (
                 <>
                     <button

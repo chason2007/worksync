@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import AddUser from './pages/AddUser';
 import Settings from './pages/Settings';
 import Profile from './pages/Profile';
+import ManageUsers from './pages/ManageUsers';
 import Announcements from './pages/Announcements';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
@@ -29,6 +30,7 @@ function AppRoutes() {
       <main className="fade-in">
         <Routes>
           <Route path="/" element={user ? <Dashboard /> : <Navigate to="/login" />} />
+          <Route path="/users" element={user?.role === 'Admin' ? <ManageUsers /> : <Navigate to="/" />} />
           <Route path="/attendance" element={user ? <AttendanceForm /> : <Navigate to="/login" />} />
           <Route path="/settings" element={user ? <Settings /> : <Navigate to="/login" />} />
           <Route path="/add-user" element={user?.role === 'Admin' ? <AddUser /> : <Navigate to="/" />} />
