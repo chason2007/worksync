@@ -22,7 +22,12 @@ router.get('/seed-admin', async (req, res) => {
         if (existing) return res.send('Admin account already exists.');
 
         const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(process.env.SUPER_ADMIN_PASSWORD || 'admin', salt);
+        // SECURITY UPDATE: Removed hardcoded 'admin' fallback which is a severe vulnerability.
+        // It will now throw an error if SUPER_ADMIN_PASSWORD is not set in the environment.
+        if (!process.env.SUPER_ADMIN_PASSWORD) {
+            return res.status(500).send('Server configuration error: SUPER_ADMIN_PASSWORD is not set.');
+        }
+        const hashedPassword = await bcrypt.hash(process.env.SUPER_ADMIN_PASSWORD, salt);
 
         const admin = new User({
             name: 'Super Admin',

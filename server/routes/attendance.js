@@ -151,11 +151,15 @@ router.put('/:id', verify, async (req, res) => {
 
 // Get Logs for a User
 // Get Logs for a User (with Pagination)
-router.get('/user/:userId', async (req, res) => {
+router.get('/user/:userId', verify, async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 20;
         const skip = (page - 1) * limit;
+        // Security Check: Only allow if it's the user themselves OR an Admin
+        if (req.user.role !== 'Admin' && req.user._id !== req.params.userId) {
+            return res.status(403).json({ error: 'Access Denied: You can only view your own logs.' });
+        }
 
         const query = { userId: req.params.userId };
 
