@@ -13,7 +13,13 @@ const app = express();
 
 // Security Middleware
 app.use(helmet());
-app.use(cors()); // CORS should be configured more restrictively in production
+app.use(cors({
+  origin: [
+    process.env.CLIENT_URL || 'http://localhost:5173',
+    'https://worksync-8fdf.vercel.app'
+  ],
+  credentials: true,
+}));
 
 // Rate Limiting - Global
 const limiter = rateLimit({
