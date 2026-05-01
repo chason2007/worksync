@@ -1,0 +1,120 @@
+.heroBanner {
+    background: linear-gradient(135deg, var(--pk-primary) 0%, #818cf8 100%);
+    border-radius: var(--pk-radius);
+    padding: 2rem 2.5rem;
+    margin-bottom: 2rem;
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    position: relative;
+    overflow: hidden;
+}
+
+.heroDecoTop {
+    position: absolute;
+    right: -40px;
+    top: -40px;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    pointer-events: none;
+}
+
+.heroDecoBottom {
+    position: absolute;
+    right: 60px;
+    bottom: -60px;
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.06);
+    pointer-events: none;
+}
+
+.heroContent {
+    position: relative;
+}
+
+.heroCategory {
+    margin: 0;
+    opacity: 0.8;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.heroTitle {
+    margin: 0.2rem 0 0.4rem;
+    color: #fff;
+    font-size: 1.75rem;
+}
+
+.heroSubtitle {
+    margin: 0;
+    opacity: 0.75;
+    font-size: 0.875rem;
+}
+
+.actionRow {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    position: relative;
+    flex-wrap: wrap;
+}
+
+.userCountBadge {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(6px);
+    border-radius: var(--pk-radius-sm);
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.addUserBtn {
+    background: #fff;
+    color: #4f46e5;
+    font-weight: 700;
+    border: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.cardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.cardTitle {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.searchContainer {
+    position: relative;
+}
+
+.searchIcon {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--pk-text-muted);
+    display: flex;
+    pointer-events: none;
+}
+
+.searchInput {
+    padding-left: 2.25rem;
+    width: 220px;
+}

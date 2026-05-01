@@ -1,241 +1,24 @@
 const express = require('express');
 const router = express.Router();
-const Attendance = require('../models/Attendance');
-
 const verify = require('./verifyToken');
+const attendanceController = require('../controllers/attendanceController');
 
 // Check if user has attendance for today
-router.get('/today/:userId', verify, async (req, res) => {
-    try {
-        // Security Check: Only allow if it's the user themselves OR an Admin
-        if (req.user.role !== 'Admin' && req.user._id !== req.params.userId) {
-            return res.status(403).json({ error: 'Access Denied: You can only view your own attendance.' });
-        }
-
-        const today = new Date();
-        const startOfDay = new Date(today.setHours(0, 0, 0, 0));
-        const endOfDay = new Date(today.setHours(23, 59, 59, 999));
-
-        const attendance = await Attendance.findOne({
-            userId: String(req.params.userId),
-            date: {
-                $gte: startOfDay,
-                $lte: endOfDay
-            }
-        });
-
-        res.json({
-            hasAttendance: !!attendance,
-            attendance: attendance || null
-        });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
+router.get('/today/:userId', verify, attendanceController.getTodayAttendance);
 
 // Get User Stats
-router.get('/stats/:userId', verify, async (req, res) => {
-    try {
-        // Security Check
-        if (req.user.role !== 'Admin' && req.user._id !== req.params.userId) {
-            return res.status(403).json({ error: 'Access Denied' });
-        }
+router.get('/stats/:userId', verify, attendanceController.getStats);
 
-        const now = new Date();
-        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-        const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
-
-        const totalPresent = await Attendance.countDocuments({
-            userId: String(req.params.userId),
-            status: 'Present'
-        });
-
-        const totalHalfDays = await Attendance.countDocuments({
-            userId: String(req.params.userId),
-            status: 'Half-day'
-        });
-
-        const thisMonthPresent = await Attendance.countDocuments({
-            userId: String(req.params.userId),
-            status: 'Present',
-            date: { $gte: startOfMonth, $lte: endOfMonth }
-        });
-
-        res.json({
-            totalPresent,
-            totalHalfDays,
-            thisMonthPresent
-        });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// Mark Attendance (with duplicate prevention)
-// Mark Attendance (Simple Daily Status)
-router.post('/mark', verify, async (req, res) => {
-    try {
-        const userId = req.user._id;
-        const { status } = req.body;
-
-        // Check if user already has attendance for today
-        const today = new Date();
-        const startOfDay = new Date(today.setHours(0, 0, 0, 0));
-        const endOfDay = new Date(today.setHours(23, 59, 59, 999));
-
-        const existingAttendance = await Attendance.findOne({
-            userId,
-            date: {
-                $gte: startOfDay,
-                $lte: endOfDay
-            }
-        });
-
-        if (existingAttendance) {
-            return res.status(400).json({
-                error: 'Attendance already marked for today',
-                attendance: existingAttendance
-            });
-        }
-
-        // Create new attendance record
-        const newRecord = new Attendance({
-            userId,
-            status,
-            date: new Date()
-        });
-
-        await newRecord.save();
-        res.status(201).json(newRecord);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
+// Mark Attendance
+router.post('/mark', verify, attendanceController.markAttendance);
 
 // Update Attendance (Admin only)
-router.put('/:id', verify, async (req, res) => {
-    try {
-        // Check if user is admin
-        if (req.user.role !== 'Admin') {
-            return res.status(403).json({ error: 'Access Denied: Admins Only' });
-        }
-
-        const { status } = req.body;
-
-        if (!status) {
-            return res.status(400).json({ error: 'Status is required' });
-        }
-
-        const attendance = await Attendance.findByIdAndUpdate(
-            req.params.id,
-            {
-                status,
-                modifiedBy: req.user._id,
-                modifiedAt: new Date()
-            },
-            { new: true }
-        ).populate('userId', 'name email profileImage');
-
-        if (!attendance) {
-            return res.status(404).json({ error: 'Attendance record not found' });
-        }
-
-        res.json({
-            message: 'Attendance updated successfully',
-            attendance
-        });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
+router.put('/:id', verify, attendanceController.updateAttendance);
 
 // Get Logs for a User
-// Get Logs for a User (with Pagination)
-router.get('/user/:userId', verify, async (req, res) => {
-    try {
-        const page = Math.max(1, Number.parseInt(req.query.page, 10) || 1);
-        const limit = Math.min(100, Math.max(1, Number.parseInt(req.query.limit, 10) || 20));
-        const skip = (page - 1) * limit;
-        // Security Check: Only allow if it's the user themselves OR an Admin
-        if (req.user.role !== 'Admin' && req.user._id !== req.params.userId) {
-            return res.status(403).json({ error: 'Access Denied: You can only view your own logs.' });
-        }
-
-        const query = { userId: String(req.params.userId) };
-
-        const logs = await Attendance.find(query)
-            .sort({ date: -1 })
-            .skip(skip)
-            .limit(limit);
-
-        const total = await Attendance.countDocuments(query);
-
-        res.json({
-            data: logs,
-            pagination: {
-                total,
-                page,
-                limit,
-                pages: Math.ceil(total / limit)
-            }
-        });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
+router.get('/user/:userId', verify, attendanceController.getUserLogs);
 
 // Get ALL Logs (Admin only)
-router.get('/', verify, async (req, res) => {
-    try {
-        // Check if user is admin (req.user is populated by verifyToken)
-        if (req.user.role !== 'Admin') {
-            return res.status(403).send('Access Denied: Admins Only');
-        }
-
-        let query = {};
-
-        // Date Filtering
-        // Priority: Explicit Range (from/to) > Simple Date (UTC Day)
-        if (req.query.from && req.query.to) {
-            query.date = {
-                $gte: new Date(req.query.from),
-                $lte: new Date(req.query.to)
-            };
-        } else if (req.query.date) {
-            // Fallback: Full UTC day for the given date string
-            const startOfDay = new Date(req.query.date + 'T00:00:00.000Z');
-            const endOfDay = new Date(req.query.date + 'T23:59:59.999Z');
-            query.date = {
-                $gte: startOfDay,
-                $lte: endOfDay
-            };
-        }
-
-        const page = Math.max(1, Number.parseInt(req.query.page, 10) || 1);
-        const limit = Math.min(100, Math.max(1, Number.parseInt(req.query.limit, 10) || 50));
-        const skip = (page - 1) * limit;
-
-        // Find records based on query
-        const logs = await Attendance.find(query)
-            .populate('userId', 'name email role profileImage')
-            .sort({ date: -1 })
-            .skip(skip)
-            .limit(limit);
-
-        const total = await Attendance.countDocuments(query);
-
-        res.json({
-            data: logs,
-            pagination: {
-                total,
-                page,
-                limit,
-                pages: Math.ceil(total / limit)
-            }
-        });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
+router.get('/', verify, attendanceController.getAllLogs);
 
 module.exports = router;

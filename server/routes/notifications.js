@@ -1,57 +1,18 @@
-const router = require('express').Router();
-const Notification = require('../models/Notification');
+const express = require('express');
+const router = express.Router();
 const verify = require('./verifyToken');
+const notificationController = require('../controllers/notificationController');
 
 // Clear All Notifications
-router.delete('/clear-all', verify, async (req, res) => {
-    try {
-        await Notification.deleteMany({ userId: req.user._id });
-        res.json({ message: 'All notifications cleared' });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
+router.delete('/clear-all', verify, notificationController.clearAll);
 
 // Get Notifications for User
-router.get('/', verify, async (req, res) => {
-    try {
-        const notifications = await Notification.find({ userId: req.user._id })
-            .sort({ createdAt: -1 })
-            .limit(20); // Last 20
-        res.json(notifications);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
+router.get('/', verify, notificationController.getNotifications);
 
 // Mark Single Notification as Read
-router.put('/:id/read', verify, async (req, res) => {
-    try {
-        const notification = await Notification.findOneAndUpdate(
-            { _id: String(req.params.id), userId: req.user._id },
-            { isRead: true },
-            { new: true }
-        );
-        res.json(notification);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
+router.put('/:id/read', verify, notificationController.markAsRead);
 
 // Mark All as Read
-router.put('/mark-all-read', verify, async (req, res) => {
-    try {
-        await Notification.updateMany(
-            { userId: req.user._id, isRead: false },
-            { isRead: true }
-        );
-        res.json({ message: 'All marked as read' });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// Internal Helper: Create Notification (Not exposed as route, used by other routes)
-// But to keep it simple, we will import the model directly in other files.
+router.put('/mark-all-read', verify, notificationController.markAllAsRead);
 
 module.exports = router;

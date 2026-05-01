@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
-import axios from 'axios';
+import { userService } from '../services/userService';
 import { resizeImage } from '../utils/imageUtils';
 import Avatar from '../components/Avatar';
+import styles from './Profile.module.css';
 
 function Profile() {
     const { user } = useAuth();
@@ -29,8 +30,7 @@ function Profile() {
             const resizedFile = await resizeImage(file, 500, 500);
             const fd = new FormData();
             fd.append('profileImage', resizedFile);
-            const token = localStorage.getItem('auth-token') || sessionStorage.getItem('auth-token');
-            await axios.post(`${import.meta.env.VITE_API_URL}/api/users/profile/image`, fd, { headers: { 'auth-token': token, 'Content-Type': 'multipart/form-data' } });
+            await userService.uploadProfileImage(fd);
             showToast('Profile image updated!', 'success');
             setTimeout(() => globalThis.location.reload(), 1000);
         } catch (err) {
@@ -42,8 +42,7 @@ function Profile() {
         e.preventDefault();
         try {
             setLoading(true);
-            const token = localStorage.getItem('auth-token') || sessionStorage.getItem('auth-token');
-            await axios.put(`${import.meta.env.VITE_API_URL}/api/users/profile`, formData, { headers: { 'auth-token': token } });
+            await userService.updateProfile(formData);
             showToast('Profile updated successfully', 'success');
             setIsEditing(false);
             setTimeout(() => globalThis.location.reload(), 500);
@@ -58,37 +57,21 @@ function Profile() {
         <div className="fade-in max-w-screen-xl mx-auto p-4 md:p-8">
 
             {/* Hero Banner */}
-            <div style={{
-                background: 'linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)',
-                borderRadius: 'var(--pk-radius)',
-                padding: '2rem 2.5rem',
-                marginBottom: '2rem',
-                color: '#fff',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                gap: '1.5rem',
-                flexWrap: 'wrap',
-                position: 'relative',
-                overflow: 'hidden',
-            }}>
-                <div style={{ position: 'absolute', right: '-40px', top: '-40px', width: '180px', height: '180px', borderRadius: '50%', background: 'rgba(255,255,255,0.08)', pointerEvents: 'none' }} />
-                <div style={{ position: 'absolute', right: '60px', bottom: '-60px', width: '140px', height: '140px', borderRadius: '50%', background: 'rgba(255,255,255,0.06)', pointerEvents: 'none' }} />
+            <div className={styles.heroBanner}>
+                <div className={styles.heroDecoTop} />
+                <div className={styles.heroDecoBottom} />
 
                 {/* Avatar + info */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', position: 'relative' }}>
+                <div className={styles.userInfo}>
                     {/* Clickable avatar */}
                     <button
                         type="button"
                         onClick={() => fileInputRef.current.click()}
                         title="Change profile photo"
-                        style={{ position: 'relative', background: 'none', border: '3px solid rgba(255,255,255,0.4)', borderRadius: '50%', padding: 0, cursor: 'pointer', flexShrink: 0 }}
+                        className={styles.avatarBtn}
                     >
                         <Avatar user={user} size="lg" />
-                        <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0, transition: 'opacity 0.2s' }}
-                            onMouseEnter={e => e.currentTarget.style.opacity = '1'}
-                            onMouseLeave={e => e.currentTarget.style.opacity = '0'}
-                        >
+                        <div className={styles.avatarOverlay}>
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" /><circle cx="12" cy="13" r="4" />
                             </svg>
@@ -97,23 +80,23 @@ function Profile() {
                     </button>
 
                     <div>
-                        <p style={{ margin: 0, opacity: 0.8, fontSize: '0.85rem', fontWeight: 500 }}>My Account</p>
-                        <h1 style={{ margin: '0.2rem 0 0.35rem', color: '#fff', fontSize: '1.75rem' }}>{user.name}</h1>
-                        <p style={{ margin: 0, opacity: 0.75, fontSize: '0.875rem' }}>{user.position || user.role}</p>
+                        <p className={styles.category}>My Account</p>
+                        <h1 className={styles.name}>{user.name}</h1>
+                        <p className={styles.role}>{user.position || user.role}</p>
                     </div>
                 </div>
 
                 {/* Employee ID pill */}
-                <div style={{ background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(6px)', borderRadius: 'var(--pk-radius-sm)', padding: '0.6rem 1.1rem', fontSize: '0.82rem', fontWeight: 600, color: '#fff', border: '1px solid rgba(255,255,255,0.2)', position: 'relative', textAlign: 'center' }}>
-                    <div style={{ opacity: 0.8, fontSize: '0.72rem', marginBottom: '0.15rem', letterSpacing: '0.05em' }}>EMPLOYEE ID</div>
+                <div className={styles.idBadge}>
+                    <div className={styles.idLabel}>EMPLOYEE ID</div>
                     <div>{user.employeeId || 'N/A'}</div>
                 </div>
             </div>
 
             {/* Profile Form Card */}
             <div className="card" style={{ maxWidth: '800px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-                    <h2 style={{ fontSize: '1.05rem', fontWeight: 700, margin: 0 }}>Personal Information</h2>
+                <div className={styles.cardHeader}>
+                    <h2 className={styles.cardTitle}>Personal Information</h2>
                     {!isEditing && (
                         <button className="btn btn-secondary btn-sm" onClick={() => setIsEditing(true)}>Edit Profile</button>
                     )}

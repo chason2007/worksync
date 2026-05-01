@@ -1,0 +1,157 @@
+.heroBanner {
+    background: linear-gradient(135deg, #475569 0%, #64748b 100%);
+    border-radius: var(--pk-radius);
+    padding: 2rem 2.5rem;
+    margin-bottom: 2rem;
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    position: relative;
+    overflow: hidden;
+}
+
+.heroDecoTop {
+    position: absolute;
+    right: -40px;
+    top: -40px;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.07);
+    pointer-events: none;
+}
+
+.heroDecoBottom {
+    position: absolute;
+    right: 60px;
+    bottom: -60px;
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    pointer-events: none;
+}
+
+.heroCategory {
+    margin: 0;
+    opacity: 0.8;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.heroTitle {
+    margin: 0.2rem 0 0.4rem;
+    color: #fff;
+    font-size: 1.75rem;
+}
+
+.heroSubtitle {
+    margin: 0;
+    opacity: 0.75;
+    font-size: 0.875rem;
+}
+
+.heroIconContainer {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(6px);
+    border-radius: var(--pk-radius-sm);
+    padding: 0.75rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    position: relative;
+}
+
+.sectionCard {
+    margin-bottom: 1.5rem;
+}
+
+.sectionTitle {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 1.25rem;
+}
+
+.themeRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.themeLabel {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.themeDesc {
+    font-size: 0.85rem;
+    color: var(--pk-text-muted);
+    margin-top: 0.2rem;
+}
+
+.dangerCard {
+    border: 1px solid var(--pk-danger, #ef4444);
+}
+
+.dangerTitle {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--pk-danger, #ef4444);
+}
+
+.dangerSubtitle {
+    color: var(--pk-text-muted);
+    margin-bottom: 1.5rem;
+    font-size: 0.875rem;
+}
+
+.dangerActionRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: rgba(239, 68, 68, 0.05);
+    border-radius: var(--pk-radius-sm);
+    border: 1px solid rgba(239, 68, 68, 0.15);
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.dangerActionLabel {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--pk-danger, #ef4444);
+    margin-bottom: 0.2rem;
+}
+
+.dangerActionDesc {
+    font-size: 0.82rem;
+    color: var(--pk-text-muted);
+}
+
+.systemResetRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: rgba(239, 68, 68, 0.1);
+    border-radius: var(--pk-radius-sm);
+    border: 2px solid rgba(239, 68, 68, 0.4);
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.systemResetLabel {
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--pk-danger, #ef4444);
+    margin-bottom: 0.2rem;
+}
+
+.systemResetBtn {
+    font-weight: 700;
+    flex-shrink: 0;
+}

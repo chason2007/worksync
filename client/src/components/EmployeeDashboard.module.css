@@ -1,0 +1,139 @@
+.heroBanner {
+    background: linear-gradient(135deg, var(--pk-primary) 0%, #818cf8 100%);
+    border-radius: var(--pk-radius);
+    padding: 2rem 2.5rem;
+    margin-bottom: 2rem;
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    position: relative;
+    overflow: hidden;
+}
+
+.heroDecoTop {
+    position: absolute;
+    right: -40px;
+    top: -40px;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    pointer-events: none;
+}
+
+.heroDecoBottom {
+    position: absolute;
+    right: 60px;
+    bottom: -60px;
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.06);
+    pointer-events: none;
+}
+
+.userInfoContainer {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    position: relative;
+}
+
+.avatarWrapper {
+    border-radius: 50%;
+    border: 3px solid rgba(255, 255, 255, 0.4);
+    flex-shrink: 0;
+}
+
+.greeting {
+    margin: 0;
+    opacity: 0.85;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.userName {
+    margin: 0.15rem 0 0.35rem;
+    color: #fff;
+    font-size: 1.75rem;
+}
+
+.userRole {
+    margin: 0;
+    opacity: 0.75;
+    font-size: 0.85rem;
+}
+
+.dateContainer {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(6px);
+    border-radius: var(--pk-radius-sm);
+    padding: 0.6rem 1rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    position: relative;
+    text-align: right;
+}
+
+.dateText {
+    opacity: 0.8;
+    margin-bottom: 0.15rem;
+}
+
+.sectionTitle {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: var(--pk-text-main);
+}
+
+.actionCard {
+    background: var(--pk-surface);
+    border: 1px solid var(--pk-border);
+    border-radius: var(--pk-radius);
+    padding: 1.5rem;
+    text-align: left;
+    cursor: pointer;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    color: inherit;
+    width: 100%;
+}
+
+.actionIcon {
+    width: 52px;
+    height: 52px;
+    border-radius: var(--pk-radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.actionLabel {
+    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+}
+
+.actionDesc {
+    font-size: 0.82rem;
+    color: var(--pk-text-muted);
+    line-height: 1.4;
+}
+
+.actionLink {
+    margin-top: auto;
+    font-size: 0.78rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}

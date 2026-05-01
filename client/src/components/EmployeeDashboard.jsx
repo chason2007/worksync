@@ -1,12 +1,14 @@
 import { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '../context/ToastContext';
+import { leaveService } from '../services/leaveService';
+import { attendanceService } from '../services/attendanceService';
 import Avatar from './Avatar';
 import Skeleton from './Skeleton';
 import AnnouncementSection from './AnnouncementSection';
 import { formatDate } from '../utils/dateUtils';
+import styles from './EmployeeDashboard.module.css';
 
 const quickActions = [
     {
@@ -58,18 +60,13 @@ function EmployeeDashboard({ user }) {
     const navigate = useNavigate();
 
     const fetchData = useCallback(async () => {
-        const token = localStorage.getItem('auth-token') || sessionStorage.getItem('auth-token');
         try {
-            const leavesRes = await axios.get(`${import.meta.env.VITE_API_URL}/api/leaves?page=1&limit=5`, {
-                headers: { 'auth-token': token }
-            });
-            setLeaves(leavesRes.data.pagination ? leavesRes.data.data : (Array.isArray(leavesRes.data) ? leavesRes.data : []));
+            const data = await leaveService.getLeaves(1, 5);
+            setLeaves(data.pagination ? data.data : (Array.isArray(data) ? data : []));
 
             if (user?._id || user?.id) {
-                const statsRes = await axios.get(`${import.meta.env.VITE_API_URL}/api/attendance/stats/${user._id || user.id}`, {
-                    headers: { 'auth-token': token }
-                });
-                setStats(statsRes.data);
+                const statsData = await attendanceService.getStats(user._id || user.id);
+                setStats(statsData);
             }
         } catch (err) {
             showToast('Failed to load dashboard data: ' + (err.response?.data?.error || err.message), 'error');
@@ -98,44 +95,25 @@ function EmployeeDashboard({ user }) {
         <div className="fade-in max-w-screen-xl mx-auto p-4 md:p-8">
 
             {/* Hero Banner */}
-            <div style={{
-                background: 'linear-gradient(135deg, var(--pk-primary) 0%, #818cf8 100%)',
-                borderRadius: 'var(--pk-radius)',
-                padding: '2rem 2.5rem',
-                marginBottom: '2rem',
-                color: '#fff',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                gap: '1rem',
-                flexWrap: 'wrap',
-                position: 'relative',
-                overflow: 'hidden',
-            }}>
-                <div style={{ position: 'absolute', right: '-40px', top: '-40px', width: '180px', height: '180px', borderRadius: '50%', background: 'rgba(255,255,255,0.08)', pointerEvents: 'none' }} />
-                <div style={{ position: 'absolute', right: '60px', bottom: '-60px', width: '140px', height: '140px', borderRadius: '50%', background: 'rgba(255,255,255,0.06)', pointerEvents: 'none' }} />
+            <div className={styles.heroBanner}>
+                <div className={styles.heroDecoTop} />
+                <div className={styles.heroDecoBottom} />
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', position: 'relative' }}>
-                    <div style={{ borderRadius: '50%', border: '3px solid rgba(255,255,255,0.4)', flexShrink: 0 }}>
+                <div className={styles.userInfoContainer}>
+                    <div className={styles.avatarWrapper}>
                         <Avatar user={user} size="lg" />
                     </div>
                     <div>
-                        <p style={{ margin: 0, opacity: 0.85, fontSize: '0.9rem', fontWeight: 500 }}>{greeting()},</p>
-                        <h1 style={{ margin: '0.15rem 0 0.35rem', color: '#fff', fontSize: '1.75rem' }}>{user?.name} 👋</h1>
-                        <p style={{ margin: 0, opacity: 0.75, fontSize: '0.85rem' }}>
+                        <p className={styles.greeting}>{greeting()},</p>
+                        <h1 className={styles.userName}>{user?.name} 👋</h1>
+                        <p className={styles.userRole}>
                             {user?.role}{user?.position ? ` · ${user.position}` : ''}
                         </p>
                     </div>
                 </div>
 
-                <div style={{
-                    background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(6px)',
-                    borderRadius: 'var(--pk-radius-sm)', padding: '0.6rem 1rem',
-                    fontSize: '0.8rem', fontWeight: 600, color: '#fff',
-                    border: '1px solid rgba(255,255,255,0.2)', position: 'relative',
-                    textAlign: 'right',
-                }}>
-                    <div style={{ opacity: 0.8, marginBottom: '0.15rem' }}>{formatDate(new Date())}</div>
+                <div className={styles.dateContainer}>
+                    <div className={styles.dateText}>{formatDate(new Date())}</div>
                     <div>{user?.employeeId || user?.role}</div>
                 </div>
             </div>
@@ -154,25 +132,19 @@ function EmployeeDashboard({ user }) {
 
             {/* Announcements */}
             <div style={{ marginBottom: '2rem' }}>
-                <h2 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '1rem', color: 'var(--pk-text-main)' }}>Announcements</h2>
+                <h2 className={styles.sectionTitle}>Announcements</h2>
                 <AnnouncementSection />
             </div>
 
             {/* Quick Actions */}
             <div>
-                <h2 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '1rem', color: 'var(--pk-text-main)' }}>Quick Actions</h2>
+                <h2 className={styles.sectionTitle}>Quick Actions</h2>
                 <div className="stats-grid">
                     {quickActions.map(action => (
                         <button
                             key={action.path}
                             onClick={() => navigate(action.path)}
-                            style={{
-                                background: 'var(--pk-surface)', border: '1px solid var(--pk-border)',
-                                borderRadius: 'var(--pk-radius)', padding: '1.5rem', textAlign: 'left',
-                                cursor: 'pointer', transition: 'transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease',
-                                display: 'flex', flexDirection: 'column', gap: '0.75rem',
-                                color: 'inherit', width: '100%',
-                            }}
+                            className={styles.actionCard}
                             onMouseEnter={e => {
                                 e.currentTarget.style.transform = 'translateY(-3px)';
                                 e.currentTarget.style.boxShadow = `0 8px 24px ${action.accent}22`;
@@ -184,14 +156,14 @@ function EmployeeDashboard({ user }) {
                                 e.currentTarget.style.borderColor = 'var(--pk-border)';
                             }}
                         >
-                            <div style={{ width: '52px', height: '52px', borderRadius: 'var(--pk-radius-sm)', background: action.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', color: action.accent, flexShrink: 0 }}>
+                            <div className={styles.actionIcon} style={{ background: action.bg, color: action.accent }}>
                                 {action.icon}
                             </div>
                             <div>
-                                <div style={{ fontWeight: 700, fontSize: '1rem', marginBottom: '0.25rem' }}>{action.label}</div>
-                                <div style={{ fontSize: '0.82rem', color: 'var(--pk-text-muted)', lineHeight: 1.4 }}>{action.description}</div>
+                                <div className={styles.actionLabel}>{action.label}</div>
+                                <div className={styles.actionDesc}>{action.description}</div>
                             </div>
-                            <div style={{ marginTop: 'auto', fontSize: '0.78rem', fontWeight: 600, color: action.accent, display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                            <div className={styles.actionLink} style={{ color: action.accent }}>
                                 Open
                                 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6" /></svg>
                             </div>

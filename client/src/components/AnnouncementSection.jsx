@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
-import api from '../services/api';
+import { announcementService } from '../services/announcementService';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { formatDateTime } from '../utils/dateUtils';
-
 import Skeleton from './Skeleton';
 
 function AnnouncementSection() {
@@ -20,8 +19,8 @@ function AnnouncementSection() {
 
     const fetchAnnouncements = async () => {
         try {
-            const res = await api.get('/api/announcements');
-            setAnnouncements(res.data);
+            const data = await announcementService.getAll();
+            setAnnouncements(data);
         } catch (err) {
             console.error("Failed to fetch announcements", err);
         } finally {
@@ -37,7 +36,7 @@ function AnnouncementSection() {
         e.preventDefault();
         setIsPosting(true);
         try {
-            await api.post('/api/announcements', { title, content });
+            await announcementService.create(title, content);
             showToast('Announcement posted successfully', 'success');
             setTitle('');
             setContent('');
@@ -53,7 +52,7 @@ function AnnouncementSection() {
     const handleDelete = async (id) => {
         if (!globalThis.confirm('Are you sure you want to delete this announcement?')) return;
         try {
-            await api.delete(`/api/announcements/${id}`);
+            await announcementService.delete(id);
             showToast('Announcement deleted', 'success');
             setAnnouncements(announcements.filter(a => a._id !== id));
         } catch (err) {

@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
+import { authService } from '../services/authService';
 
 function Login() {
     const [email, setEmail] = useState('');
@@ -20,13 +20,8 @@ function Login() {
         setLoading(true);
 
         try {
-            const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
-                email,
-                password,
-                rememberMe
-            });
-
-            login(res.data.token, res.data.user, rememberMe);
+            const data = await authService.login(email, password, rememberMe);
+            login(data.token, data.user, rememberMe);
             showToast('Login successful! Welcome back.', 'success');
             navigate('/');
         } catch (err) {

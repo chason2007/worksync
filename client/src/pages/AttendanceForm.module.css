@@ -1,0 +1,155 @@
+.heroBanner {
+    background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+    border-radius: var(--pk-radius);
+    padding: 2rem 2.5rem;
+    margin-bottom: 2rem;
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    position: relative;
+    overflow: hidden;
+}
+
+.heroDecoTop {
+    position: absolute;
+    right: -40px;
+    top: -40px;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    pointer-events: none;
+}
+
+.heroDecoBottom {
+    position: absolute;
+    right: 60px;
+    bottom: -60px;
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.06);
+    pointer-events: none;
+}
+
+.heroContent {
+    position: relative;
+}
+
+.heroCategory {
+    margin: 0;
+    opacity: 0.8;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.heroTitle {
+    margin: 0.2rem 0 0.4rem;
+    color: #fff;
+    font-size: 1.75rem;
+}
+
+.heroSubtitle {
+    margin: 0;
+    opacity: 0.75;
+    font-size: 0.875rem;
+}
+
+.liveTimeContainer {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(6px);
+    border-radius: var(--pk-radius-sm);
+    padding: 0.75rem 1.25rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    position: relative;
+    text-align: center;
+    min-width: 120px;
+}
+
+.liveTime {
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    font-variant-numeric: tabular-nums;
+}
+
+.liveTimeLabel {
+    opacity: 0.7;
+    font-size: 0.72rem;
+    margin-top: 0.15rem;
+    letter-spacing: 0.05em;
+}
+
+.attendanceCard {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.markedContainer {
+    padding: 2rem 1rem;
+}
+
+.markedIcon {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: rgba(16, 185, 129, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.25rem;
+    color: #10b981;
+}
+
+.markedTitle {
+    margin-bottom: 0.5rem;
+}
+
+.sectionTitle {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+}
+
+.optionsGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    max-width: 480px;
+    margin: 0 auto 1.5rem;
+}
+
+.optionButton {
+    border-radius: var(--pk-radius);
+    padding: 1.25rem 0.75rem;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.15s ease;
+    font-family: inherit;
+}
+
+.optionLabel {
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.submitBtn {
+    width: 100%;
+    max-width: 480px;
+    height: 48px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    box-shadow: 0 4px 14px rgba(14, 165, 233, 0.35);
+}
+
+.historyTitle {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 1.25rem;
+}

@@ -1,148 +1,18 @@
 const express = require('express');
 const router = express.Router();
-const Leave = require('../models/Leave');
-const Notification = require('../models/Notification');
-const User = require('../models/User'); // To find admins
 const verify = require('./verifyToken');
+const leaveController = require('../controllers/leaveController');
 
 // GET ALL LEAVES (or just user's)
-router.get('/', verify, async (req, res) => {
-    try {
-        let query = {};
-        // If not admin, only show own leaves
-        if (req.user.role !== 'Admin') {
-            query.userId = req.user._id;
-        }
-
-        const page = Math.max(1, Number.parseInt(req.query.page, 10) || 1);
-        const limit = Math.min(100, Math.max(1, Number.parseInt(req.query.limit, 10) || 20));
-        const skip = (page - 1) * limit;
-
-        const leaves = await Leave.find(query)
-            .populate('userId', 'name email role profileImage')
-            .sort({ createdAt: -1 })
-            .skip(skip)
-            .limit(limit);
-
-        const total = await Leave.countDocuments(query);
-
-        res.json({
-            data: leaves,
-            pagination: {
-                total,
-                page,
-                limit,
-                pages: Math.ceil(total / limit)
-            }
-        });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
+router.get('/', verify, leaveController.getLeaves);
 
 // SUBMIT LEAVE REQUEST
-router.post('/', verify, async (req, res) => {
-    try {
-        const { reason, startDate, endDate } = req.body;
-        const newLeave = new Leave({
-            userId: req.user._id, // From token
-            reason,
-            startDate,
-            endDate
-        });
-
-        // Validation: Date logic
-        if (new Date(startDate) > new Date(endDate)) {
-            return res.status(400).json({ error: 'End date cannot be before start date' });
-        }
-
-        // Validation: Overlap check
-        const overlap = await Leave.findOne({
-            userId: req.user._id,
-            status: { $ne: 'Rejected' },
-            $or: [
-                { startDate: { $lte: endDate }, endDate: { $gte: startDate } }
-            ]
-        });
-
-        if (overlap) {
-            return res.status(400).json({ error: 'Leave request overlaps with an existing leave.' });
-        }
-
-        const savedLeave = await newLeave.save();
-
-        // NOTIFICATION: Notify all Admins
-        const currentUser = await User.findById(req.user._id);
-        const admins = await User.find({ role: 'Admin' });
-        const notifications = admins.map(admin => ({
-            userId: admin._id,
-            message: `New Leave Request from ${currentUser.name}: ${req.body.reason}`,
-            type: 'info',
-            link: '/' // Admin Dashboard
-        }));
-        await Notification.insertMany(notifications);
-
-        // Populate user details so frontend can display it immediately
-        await savedLeave.populate('userId', 'name email profileImage');
-        res.status(201).json(savedLeave);
-    } catch (err) {
-        res.status(400).json({ error: err.message });
-    }
-});
+router.post('/', verify, leaveController.submitLeave);
 
 // APPROVE/REJECT LEAVE (Admin Only)
-router.put('/:id', verify, async (req, res) => {
-    if (req.user.role !== 'Admin') return res.status(403).send('Access Denied');
-
-    try {
-        const { status } = req.body; // 'Approved' or 'Rejected'
-        if (!['Approved', 'Rejected'].includes(status)) {
-            return res.status(400).json({ error: "Invalid status update" });
-        }
-
-        const updatedLeave = await Leave.findByIdAndUpdate(
-            req.params.id,
-            { status: status },
-            { new: true }
-        ).populate('userId', 'name email profileImage');
-
-        if (!updatedLeave) return res.status(404).json({ error: 'Leave not found' });
-
-        // NOTIFICATION: Notify Employee
-        await Notification.create({
-            userId: updatedLeave.userId._id,
-            message: `Your Leave Request for ${new Date(updatedLeave.startDate).toLocaleDateString()} has been ${status}.`,
-            type: status === 'Approved' ? 'success' : 'error',
-            link: '/' // Dashboard
-        });
-
-        res.json(updatedLeave);
-    } catch (err) {
-        res.status(400).json({ error: err.message });
-    }
-});
-
-module.exports = router;
+router.put('/:id', verify, leaveController.updateLeaveStatus);
 
 // CANCEL LEAVE (User can cancel own Pending leaves)
-router.delete('/:id', verify, async (req, res) => {
-    try {
-        const leave = await Leave.findById(req.params.id);
-        if (!leave) return res.status(404).json({ error: 'Leave request not found' });
+router.delete('/:id', verify, leaveController.cancelLeave);
 
-        // Check ownership
-        if (leave.userId.toString() !== req.user._id) {
-            return res.status(403).json({ error: 'Access Denied' });
-        }
-
-        // Check status
-        if (leave.status !== 'Pending') {
-            return res.status(400).json({ error: 'Cannot cancel leave that is already processed' });
-        }
-
-        await Leave.findByIdAndDelete(req.params.id);
-        res.json({ message: 'Leave request cancelled successfully' });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
+module.exports = router;
